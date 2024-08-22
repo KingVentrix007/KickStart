@@ -16,11 +16,24 @@
   - A `README.md` file.
 - **File Header Comments**: Automatically adds a header of comments to the main file, including the author's name, license information, copyright details, and project description.
 - **Compiler Detection**: Detects whether the correct compiler is installed on the system. If not, it provides a URL for downloading the appropriate compiler.
-- **Custom Templates and Licenses**: Users can create custom templates and licenses. Additional libraries can be added to projects, with each library stored on GitHub in a JSON file. The necessary files are downloaded into the `libs` directory and built into a library archive (`.a` or the equivalent on Windows).
+- **Custom Templates and Licenses**: Users can create custom templates and licenses. Additional libraries can be added to projects, with each library stored on GitHub in a JSON file. The necessary files are downloaded into the `libs` directory and built into a language-specific library archive (`.a` or the equivalent on Windows).
+- **Git Integration**: If Git is installed, Code Starter will initialize a Git repository in the project directory. It will also create an initial commit with the generated files and offer the option to link to a remote repository (GitHub, GitLab, Bitbucket, etc.).
+- **Project Configuration Files**:
+  - **`project.json`**: This file stores project metadata, including dependencies, project type, license, and other configuration details. The format is compatible with major repository hosting services (e.g., GitHub, GitLab, Bitbucket).
+  - **`package.json`**: For languages with package managers, this file includes dependencies and project metadata, similar to Node.js's `package.json`. It can be used by the software to automatically install necessary libraries.
 
 ## Future Plans
 
 - **Library Management Enhancements**: The way libraries are managed may evolve, with potential changes to how they are stored, built, and integrated into projects.
+- **Custom Build System**: Develop a custom build system similar to `npm` or `npx` that allows for easy management of build scripts, running commands, and integrating dependencies across different languages.
+- **Debugger Support**: Include built-in debugger support for each language. For example:
+  - **C/C++**: Integration with GDB or LLDB.
+  - **Python**: Integration with `pdb` or other Python debuggers.
+  - **Rust**: Integration with `gdb` or `rust-lldb`.
+- **Common Project Templates**:
+  - **Operating System Template**: Creates a basic OS project structure, including a `boot.asm` file and support for bootloaders like GRUB or Limine.
+  - **Web Browser/Chat App Templates**: Provides starter templates for common project types like a web browser or chat application, influencing the main file structure and included dependencies.
+- **Credits Screen**: Optionally generates a `CREDITS.md` file and integrates a credits display feature within the project. Supported languages can render a terminal-based credits screen.
 
 ## Getting Started
 
