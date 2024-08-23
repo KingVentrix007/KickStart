@@ -1,7 +1,7 @@
 GCC_FLAGS = -g -Wall -Wextra -Werror
 CC = gcc
 
-C_FILES = ./*.c
+C_FILES = ./src/*.c
 OUTPUT_FILE = main
 
 main:
@@ -9,5 +9,6 @@ main:
 
 run: main
 	./main
-
+clean:
+	rm -f $(OUTPUT_FILE)
 .PHONY: clean run main
