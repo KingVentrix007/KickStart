@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../licence.h"
 #define DEBUG
 void remove_trailing_newline(char *str) {
     size_t len = strlen(str);
@@ -84,7 +85,8 @@ void create_project_c(const char *project_name, const char *project_description,
             perror("Error creating LICENSE");
             exit(EXIT_FAILURE);
         }
-        fprintf(license_file, "%s License\n", project_license);
+        char *license_file_content = get_license(project_license);
+        fprintf(license_file, "%s", license_file_content);
         fclose(license_file);
     }
 
@@ -159,20 +161,39 @@ void create_project_c(const char *project_name, const char *project_description,
         perror("Error creating project.json");
         exit(EXIT_FAILURE);
     }
-    remove_trailing_newline(project_name);
-remove_trailing_newline(project_version);
-remove_trailing_newline(project_description);
-remove_trailing_newline(project_author);
-remove_trailing_newline(project_license);
-remove_trailing_newline(project_dependencies);
+   char project_name_copy[strlen(project_name) + 1];
+    strcpy(project_name_copy, project_name);
+
+    char project_version_copy[strlen(project_version) + 1];
+    strcpy(project_version_copy, project_version);
+
+    char project_description_copy[strlen(project_description) + 1];
+    strcpy(project_description_copy, project_description);
+
+    char project_author_copy[strlen(project_author) + 1];
+    strcpy(project_author_copy, project_author);
+
+    char project_license_copy[strlen(project_license) + 1];
+    strcpy(project_license_copy, project_license);
+
+    char project_dependencies_copy[strlen(project_dependencies) + 1];
+    strcpy(project_dependencies_copy, project_dependencies);
+
+    // Call the function with mutable copies
+    remove_trailing_newline(project_name_copy);
+    remove_trailing_newline(project_version_copy);
+    remove_trailing_newline(project_description_copy);
+    remove_trailing_newline(project_author_copy);
+    remove_trailing_newline(project_license_copy);
+    remove_trailing_newline(project_dependencies_copy);
 
 fprintf(project_json, "{\n");
-fprintf(project_json, "    \"name\": \"%s\",\n", project_name);
-fprintf(project_json, "    \"version\": \"%s\",\n", project_version);
-fprintf(project_json, "    \"description\": \"%s\",\n", project_description);
-fprintf(project_json, "    \"author\": \"%s\",\n", project_author);
-fprintf(project_json, "    \"license\": \"%s\",\n", project_license);
-fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies);
+fprintf(project_json, "    \"name\": \"%s\",\n", project_name_copy);
+fprintf(project_json, "    \"version\": \"%s\",\n", project_version_copy);
+fprintf(project_json, "    \"description\": \"%s\",\n", project_description_copy);
+fprintf(project_json, "    \"author\": \"%s\",\n", project_author_copy);
+fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
+fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies_copy);
 fprintf(project_json, "}\n");
 fclose(project_json);
 char new_main_path[1024];

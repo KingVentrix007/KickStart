@@ -1,5 +1,7 @@
-GCC_FLAGS = -g -Wall -Wextra -Werror
+# Compiler and flags
 CC = gcc
+CFLAGS = -g -Wall -Wextra -Werror
+LDFLAGS = -lcurl
 
 # Automatically gather all .c files in the current directory and subdirectories
 SRCS = $(shell find . -name '*.c')
@@ -19,6 +21,7 @@ $(TARGET): $(OBJS)
 
 run:
 	./$(TARGET)
+
 # Clean up build files
 clean:
 	rm -f $(OBJS) $(TARGET)
