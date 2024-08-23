@@ -1,14 +1,24 @@
 GCC_FLAGS = -g -Wall -Wextra -Werror
 CC = gcc
 
-C_FILES = ./src/*.c
-OUTPUT_FILE = main
+# Automatically gather all .c files in the current directory and subdirectories
+SRCS = $(shell find . -name '*.c')
+OBJS = $(SRCS:.c=.o)
+TARGET = main
 
-main:
-	$(CC) $(C_FILES) $(GCC_FLAGS) -o $(OUTPUT_FILE)
+# Default rule
+all: $(TARGET)
 
-run: main
-	./main
+# Compile object files
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Link the program
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) -o $@
+
+run:
+	./$(TARGET)
+# Clean up build files
 clean:
-	rm -f $(OUTPUT_FILE)
-.PHONY: clean run main
+	rm -f $(OBJS) $(TARGET)
