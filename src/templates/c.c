@@ -2,13 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../licence.h"
-#define DEBUG
-void remove_trailing_newline(char *str) {
-    size_t len = strlen(str);
-    if (len > 0 && str[len - 1] == '\n') {
-        str[len - 1] = '\0';
-    }
-}
+#include "config.h"
+#include "utils.h"
+
 void create_project_c(const char *project_name, const char *project_description, const char *project_author, const char *project_license, const char *project_version, const char *project_dependencies, const char *generate_readme, const char *initialize_git, const char *create_license_file, const char *generate_structure) {
     // Determine base directory based on DEBUG macro
     const char *base_dir = "tests";
@@ -87,6 +83,8 @@ void create_project_c(const char *project_name, const char *project_description,
         }
         char *license_file_content = get_license(project_license);
         fprintf(license_file, "%s", license_file_content);
+        free(license_file_content);
+
         fclose(license_file);
     }
 

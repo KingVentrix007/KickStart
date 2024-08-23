@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "./templates/c.h"
+#include "./templates/py.h"
 
 
 
@@ -47,9 +48,13 @@ int main_build()
     scanf("%s", generate_structure);
         // printf("")
     // Check if the selected language is C
-    if (strcmp(project_language, "C") == 0) {
+    if (strcmp(project_language, "C") == 0 || strcmp(project_language, "c") == 0) {
         create_project_c(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     }
-
+    else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
+        create_project_py(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+    } else {
+        printf("Unsupported language: %s\n", project_language);
+    }
     return 0;
 }
