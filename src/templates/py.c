@@ -74,7 +74,14 @@ void create_project_py(const char *project_name, const char *project_description
             system("git commit -m \"Initial commit\"");
         }
     }
-
+    if(system("python --version") == 0 || system("python --version") == 0)
+    {
+        
+    }
+    else
+    {
+        printf("Python is not installed. Download from https://www.python.org/downloads/\n");
+    }
     // Create LICENSE file if create_license_file == "yes"
     if (strcmp(create_license_file, "yes") == 0) {
         char license_file_path[1024];

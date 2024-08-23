@@ -1,10 +1,9 @@
-# Compiler and flags
 CC = gcc
 CFLAGS = -g -Wall -Wextra -Werror
 LDFLAGS = -lcurl
 
-# Automatically gather all .c files in the current directory and subdirectories
-SRCS = $(shell find . -name '*.c')
+# Automatically gather all .c files in the current directory and subdirectories, excluding the tests directory
+SRCS = $(shell find . -path ./tests -prune -o -name '*.c' -print)
 OBJS = $(SRCS:.c=.o)
 TARGET = main
 

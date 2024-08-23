@@ -7,6 +7,7 @@
 #include "./templates/c.h"
 #include "./templates/py.h"
 #include "./templates/utils.h"
+#include "language.h"
 
 #include "licence.h"
 #include "ctype.h"
@@ -35,8 +36,13 @@ int main_build()
     printf("Enter project version (E.G 1.0.0): ");
     scanf("%s", project_version);
     char project_language[256];
-    printf("Enter project programming language (E.G C, Python, Java): ");
+    printf("Enter project programming language (Type L/l for interactive list): ");
     scanf("%s", project_language);
+     if(strcmp(project_language, "l") == 0 || strcmp(project_language, "L") == 0)
+    {
+        const char *lang = language_menu();
+        strcpy(project_language,lang);
+    }
     char project_dependencies[1024*4];
     printf("Enter project dependencies (comma-separated): ");
     getchar();
