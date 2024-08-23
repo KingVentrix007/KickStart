@@ -6,8 +6,10 @@
 #include <unistd.h>
 #include "./templates/c.h"
 #include "./templates/py.h"
+#include "./templates/utils.h"
 
-
+#include "licence.h"
+#include "ctype.h"
 
 int main_build()
 {
@@ -22,8 +24,13 @@ int main_build()
     printf("Enter project author: ");
     scanf("%s", project_author);
     char project_licence[1024];
-    printf("Enter project licence(E.G MIT,GPL,BSD): ");
+    printf("Enter project licence(Type L/l for interactive list): ");
     scanf("%s", project_licence);
+    if(strcmp(project_licence, "l") == 0 || strcmp(project_licence, "L") == 0)
+    {
+        const char *lic = license_menu();
+        strcpy(project_licence,lic);
+    }
     char project_version[256];
     printf("Enter project version (E.G 1.0.0): ");
     scanf("%s", project_version);
@@ -47,6 +54,7 @@ int main_build()
     printf("Generate default file structure? (yes/no): ");
     scanf("%s", generate_structure);
         // printf("")
+    lowercase(project_language);
     // Check if the selected language is C
     if (strcmp(project_language, "C") == 0 || strcmp(project_language, "c") == 0) {
         create_project_c(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);

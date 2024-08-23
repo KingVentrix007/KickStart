@@ -167,5 +167,8 @@ void create_project_py(const char *project_name, const char *project_description
         fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies_copy);
         fprintf(project_json, "}\n");
         fclose(project_json);
+        char new_main_path[1024];
+        snprintf(new_main_path, sizeof(new_main_path), "%s/src/main.py", base_dir);
+        rename(main_file_path,new_main_path);
     }
 }

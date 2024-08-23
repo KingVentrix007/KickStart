@@ -4,6 +4,8 @@
         "stdio.h": "c",
         "string.h": "c",
         "licence.h": "c",
-        "c.h": "c"
+        "c.h": "c",
+        "utils.h": "c",
+        "config.h": "c"
     }
 }

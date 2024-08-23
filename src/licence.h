@@ -3,4 +3,5 @@
 
 
 char * get_license(const char *name);
+const char* license_menu() ;
 #endif
