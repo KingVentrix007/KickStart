@@ -11,7 +11,7 @@
 
 #include "licence.h"
 #include "ctype.h"
-
+int create_project(char *project_name, char *project_description, char *project_author,char *project_licence, char *project_version, char *project_language,char *project_dependencies, char *generate_readme, char *initialize_git,char *create_license_file, char *generate_structure);
 int main_build()
 {
      char project_name[1024];
@@ -68,7 +68,7 @@ int main_build()
     else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
         create_project_py(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     } else {
-        printf("Unsupported language: %s\n", project_language);
+        create_project(project_name, project_description, project_author, project_licence, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     }
     return 0;
 }

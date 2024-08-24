@@ -2,12 +2,12 @@
     "name": "go",
     "system_support": ["windows", "linux"],
     "build_type": ["makefile", "bash"],
-    "lib_support": "false",
+    "lib_support": false,
     "file_template_path": "templates/go",
     "version_template_path": "templates/go/version.go",
     "build_file_path": {
         "local": "build/go/Makefile",
-        "url": "http://example.com/go-build.sh"
+        "url": "http://example.com/make.sh"
     },
     "compiler_urls": ["http://golang.org/dl/"],
     "description": "Go is a statically typed, compiled programming language designed at Google.",
@@ -22,5 +22,13 @@
     "dependencies": ["go.mod"],
     "instructions": "Use `go build` to compile your Go project.",
     "template_version": "1.0.0",
-    "update_url": "http://example.com/go-template-update.json"
+    "update_url": "http://example.com/go-template-update.json",
+    "folders_to_create": [
+        "cmd/${project_name}",
+        "pkg"
+    ],
+    "commands_to_run": [
+        "go mod init github.com/username/myproject",
+        "go build ./cmd/myapp"
+    ]
 }

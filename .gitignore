@@ -2,3 +2,5 @@ main
 prompt
 *.o
 tests
+tmp
+test

@@ -44,7 +44,7 @@ char *encode_url(const char *url) {
 }
 
 // Callback function to write data to the MemoryBlock structure
-size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
+size_t write_callback_l(void *contents, size_t size, size_t nmemb, void *userp) {
     size_t total_size = size * nmemb;
     MemoryBlock *mem = (MemoryBlock *)userp;
 
@@ -100,7 +100,7 @@ char* get_license_text(const char *license_name) {
     //     return NULL;
     // }
 
-    snprintf(url, sizeof(url), "https://raw.githubusercontent.com/KingVentrix007/CodeStarterFiles/main/%s", license_name);
+    snprintf(url, sizeof(url), "https://raw.githubusercontent.com/KingVentrix007/CodeStarterFiles/main/LICENCE/%s", license_name);
     char *new_url = encode_url(url);
     printf("URL:%s\n",new_url);
     curl = curl_easy_init();
@@ -110,7 +110,7 @@ char* get_license_text(const char *license_name) {
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, new_url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_l);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memory);
 
     res = curl_easy_perform(curl);

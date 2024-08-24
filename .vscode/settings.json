@@ -6,6 +6,7 @@
         "licence.h": "c",
         "c.h": "c",
         "utils.h": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "custom.h": "c"
     }
 }

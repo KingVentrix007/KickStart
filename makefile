@@ -1,26 +1,33 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -Werror
-LDFLAGS = -lcurl
+CFLAGS = -g -Wall -Wextra
+LDFLAGS = -lcurl -ljansson
 
-# Automatically gather all .c files in the current directory and subdirectories, excluding the tests directory
-SRCS = $(shell find . -path ./tests -prune -o -name '*.c' -print)
-OBJS = $(SRCS:.c=.o)
+# Directories
+SRC_DIR = src
+OBJ_DIR = obj
 TARGET = main
+
+# Generate the list of source files recursively
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
+OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Default rule
 all: $(TARGET)
 
-# Compile object files
-%.o: %.c
+# Create object directory structure
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Link the program
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $@
 
-run:
-	./$(TARGET)
+run: $(TARGET)
+	./$(TARGET) init
 
 # Clean up build files
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET)
+
+.PHONY: all run clean

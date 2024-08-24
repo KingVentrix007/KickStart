@@ -4,20 +4,21 @@
 #include "../licence.h"
 #include "config.h"
 #include "utils.h"
+void create_project_c(
+    const char *project_name, const char *project_description, const char *project_author,
+    const char *project_license, const char *project_version, const char *project_dependencies,
+    const char *generate_readme, const char *initialize_git, const char *create_license_file,
+    const char *generate_structure) {
 
-void create_project_c(const char *project_name, const char *project_description, const char *project_author, const char *project_license, const char *project_version, const char *project_dependencies, const char *generate_readme, const char *initialize_git, const char *create_license_file, const char *generate_structure) {
-    // Determine base directory based on DEBUG macro
     const char *base_dir = "tests";
     #ifndef DEBUG
     base_dir = ".";
     #endif
 
-    // Ensure base directory exists
     if (strcmp(base_dir, "tests") == 0) {
         system("mkdir -p tests");
     }
 
-    // Create main.c file
     char main_file_path[1024];
     snprintf(main_file_path, sizeof(main_file_path), "%s/main.c", base_dir);
     FILE *main_file = fopen(main_file_path, "w");
@@ -26,7 +27,6 @@ void create_project_c(const char *project_name, const char *project_description,
         exit(EXIT_FAILURE);
     }
 
-    // Write the contents to main.c
     fprintf(main_file, "// File: main.c\n");
     fprintf(main_file, "// Author: %s\n", project_author);
     fprintf(main_file, "// License: %s\n", project_license);
@@ -39,7 +39,6 @@ void create_project_c(const char *project_name, const char *project_description,
     fprintf(main_file, "}\n");
     fclose(main_file);
 
-    // Create README.md if generate_readme == "yes"
     if (strcmp(generate_readme, "yes") == 0) {
         char readme_file_path[1024];
         snprintf(readme_file_path, sizeof(readme_file_path), "%s/README.md", base_dir);
@@ -50,16 +49,9 @@ void create_project_c(const char *project_name, const char *project_description,
         }
         fprintf(readme_file, "# %s\n\n", project_name);
         fprintf(readme_file, "%s\n\n", project_description);
-        fprintf(readme_file, "# Installation\n\n");
-        fprintf(readme_file, "# Usage\n\n");
-        fprintf(readme_file, "# License\n\n");
-        fprintf(readme_file, "# Credits\n\n");
-        fprintf(readme_file, "# Contact\n\n");
-        fprintf(readme_file, "# Acknowledgments\n\n");
         fclose(readme_file);
     }
 
-    // Initialize Git if initialize_git == "yes"
     if (strcmp(initialize_git, "yes") == 0) {
         if (system("git --version") != 0) {
             printf("Git is not installed. Download Git from https://git-scm.com/downloads\n");
@@ -72,7 +64,6 @@ void create_project_c(const char *project_name, const char *project_description,
         }
     }
 
-    // Create LICENSE file if create_license_file == "yes"
     if (strcmp(create_license_file, "yes") == 0) {
         char license_file_path[1024];
         snprintf(license_file_path, sizeof(license_file_path), "%s/LICENSE", base_dir);
@@ -84,17 +75,15 @@ void create_project_c(const char *project_name, const char *project_description,
         char *license_file_content = get_license(project_license);
         fprintf(license_file, "%s", license_file_content);
         free(license_file_content);
-
         fclose(license_file);
     }
 
-    // Generate project structure if generate_structure == "yes"
     if (strcmp(generate_structure, "yes") == 0) {
         char mkdir_cmd[1024];
-        snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p %s/src %s/build %s/include %s/tests %s/docs %s/examples %s/scripts %s/data", base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir);
+        snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p %s/src %s/build %s/include %s/tests %s/docs %s/examples %s/scripts %s/data %s/libs", 
+                base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir);
         system(mkdir_cmd);
 
-        // Create Makefile
         char makefile_path[1024];
         snprintf(makefile_path, sizeof(makefile_path), "%s/Makefile", base_dir);
         FILE *makefile = fopen(makefile_path, "w");
@@ -106,11 +95,14 @@ void create_project_c(const char *project_name, const char *project_description,
         fprintf(makefile, "CFLAGS = -Wall -Wextra -Werror -std=c11\n");
         fprintf(makefile, "CONFIG_FILE = ./config.cfg\n\n");
         fprintf(makefile, "include $(CONFIG_FILE)\n\n");
-        fprintf(makefile, "SRC_FILES = $(wildcard $(SRC_DIR)/*.c)\n");
+        fprintf(makefile, "SRC_FILES = $(wildcard $(SRC_DIR)/*.c)\n\n");
+        fprintf(makefile, "LIB_INCLUDE_DIRS = $(wildcard $(LIBS_DIR)/*/include)\n");
+        fprintf(makefile, "LIB_INCLUDES = $(foreach dir,$(LIB_INCLUDE_DIRS),-I$(dir))\n");
+        fprintf(makefile, "LIB_FILES = $(wildcard $(LIBS_DIR)/*/lib/*.a)\n\n");
         fprintf(makefile, "TARGET = $(BUILD_DIR)/main\n\n");
         fprintf(makefile, "all: $(TARGET)\n\n");
         fprintf(makefile, "$(TARGET): $(SRC_FILES)\n");
-        fprintf(makefile, "\t$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $^\n\n");
+        fprintf(makefile, "\t$(CC) $(CFLAGS) $(LIB_INCLUDES) -I$(INCLUDE_DIR) -o $@ $^ $(LIB_FILES)\n\n");
         fprintf(makefile, "run: $(TARGET)\n");
         fprintf(makefile, "\t./$(TARGET)\n\n");
         fprintf(makefile, "clean:\n");
@@ -118,7 +110,6 @@ void create_project_c(const char *project_name, const char *project_description,
         fprintf(makefile, ".PHONY: all clean run\n");
         fclose(makefile);
 
-        // Create config file (config.cfg)
         char config_file_path[1024];
         snprintf(config_file_path, sizeof(config_file_path), "%s/config.cfg", base_dir);
         FILE *config_file = fopen(config_file_path, "w");
@@ -129,10 +120,10 @@ void create_project_c(const char *project_name, const char *project_description,
         fprintf(config_file, "SRC_DIR=./src\n");
         fprintf(config_file, "BUILD_DIR=./build\n");
         fprintf(config_file, "INCLUDE_DIR=./include\n");
+        fprintf(config_file, "LIBS_DIR=./libs\n");
         fclose(config_file);
     }
 
-    // Create .gitignore if git is initialized
     if (strcmp(initialize_git, "yes") == 0) {
         char gitignore_path[1024];
         snprintf(gitignore_path, sizeof(gitignore_path), "%s/.gitignore", base_dir);
@@ -151,7 +142,6 @@ void create_project_c(const char *project_name, const char *project_description,
         fclose(gitignore);
     }
 
-    // Create project.json
     char project_json_path[1024];
     snprintf(project_json_path, sizeof(project_json_path), "%s/project.json", base_dir);
     FILE *project_json = fopen(project_json_path, "w");
@@ -159,7 +149,8 @@ void create_project_c(const char *project_name, const char *project_description,
         perror("Error creating project.json");
         exit(EXIT_FAILURE);
     }
-   char project_name_copy[strlen(project_name) + 1];
+
+    char project_name_copy[strlen(project_name) + 1];
     strcpy(project_name_copy, project_name);
 
     char project_version_copy[strlen(project_version) + 1];
@@ -177,7 +168,6 @@ void create_project_c(const char *project_name, const char *project_description,
     char project_dependencies_copy[strlen(project_dependencies) + 1];
     strcpy(project_dependencies_copy, project_dependencies);
 
-    // Call the function with mutable copies
     remove_trailing_newline(project_name_copy);
     remove_trailing_newline(project_version_copy);
     remove_trailing_newline(project_description_copy);
@@ -185,16 +175,19 @@ void create_project_c(const char *project_name, const char *project_description,
     remove_trailing_newline(project_license_copy);
     remove_trailing_newline(project_dependencies_copy);
 
-fprintf(project_json, "{\n");
-fprintf(project_json, "    \"name\": \"%s\",\n", project_name_copy);
-fprintf(project_json, "    \"version\": \"%s\",\n", project_version_copy);
-fprintf(project_json, "    \"description\": \"%s\",\n", project_description_copy);
-fprintf(project_json, "    \"author\": \"%s\",\n", project_author_copy);
-fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
-fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies_copy);
-fprintf(project_json, "}\n");
-fclose(project_json);
-char new_main_path[1024];
- snprintf(new_main_path, sizeof(new_main_path), "%s/src/main.c", base_dir);
-rename(main_file_path,new_main_path);
+    fprintf(project_json, "{\n");
+    fprintf(project_json, "    \"name\": \"%s\",\n", project_name_copy);
+    fprintf(project_json, "    \"version\": \"%s\",\n", project_version_copy);
+    fprintf(project_json, "    \"description\": \"%s\",\n", project_description_copy);
+    fprintf(project_json, "    \"author\": \"%s\",\n", project_author_copy);
+    fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
+    fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies_copy);
+    fprintf(project_json, "    \"lang\": \"c\"\n");
+    fprintf(project_json, "}\n");
+    fclose(project_json);
+
+    char new_main_path[1024];
+    snprintf(new_main_path, sizeof(new_main_path), "%s/src/main.c", base_dir);
+    rename(main_file_path, new_main_path);
 }
+
