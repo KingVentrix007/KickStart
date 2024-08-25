@@ -119,7 +119,15 @@ int main_build() {
     } else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
         create_project_py(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     } else {
-        create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+        printf("Searching for language template%s\n", project_language);
+
+        int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+        if(ret != 0)
+        {
+            printf("Failed to build project %s for language %d\n",project_name,project_language);
+            printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
+            printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/CodeStarterFiles/tree/main and add a template for your language\n");
+        }
     }
 
     return 0;
