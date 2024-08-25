@@ -39,4 +39,4 @@ To get started with Code Starter, simply run the tool and follow the on-screen p
 
 ---
 
-**Note**: Code Starter is a work in progress, and features may be added, modified, or removed in future updates. Stay tuned for improvements and new functionalities.
+**Note**: Code Starter is a work in progress, and features may be added, modified, or removed in future updates. Stay tuned for improvements and new functionalities. Please see the [ROADMAP](ROADMAP.md)
