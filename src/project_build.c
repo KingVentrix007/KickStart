@@ -8,67 +8,119 @@
 #include "./templates/py.h"
 #include "./templates/utils.h"
 #include "language.h"
-
+#include "./templates/config.h"
 #include "licence.h"
 #include "ctype.h"
 int create_project(char *project_name, char *project_description, char *project_author,char *project_licence, char *project_version, char *project_language,char *project_dependencies, char *generate_readme, char *initialize_git,char *create_license_file, char *generate_structure);
-int main_build()
-{
-     char project_name[1024];
-    printf("Enter project name(E.G test_code): ");
-    scanf("%s", project_name);
-    char project_description[1024*4];
-    printf("Enter project description: ");
-    getchar();
-    fgets(project_description, 1024*4, stdin);
-    char project_author[1024];
-    printf("Enter project author: ");
-    scanf("%s", project_author);
-    char project_licence[1024];
-    printf("Enter project licence(Type L/l for interactive list): ");
-    scanf("%s", project_licence);
-    if(strcmp(project_licence, "l") == 0 || strcmp(project_licence, "L") == 0)
-    {
-        const char *lic = license_menu();
-        strcpy(project_licence,lic);
-    }
-    char project_version[256];
-    printf("Enter project version (E.G 1.0.0): ");
-    scanf("%s", project_version);
-    char project_language[256];
-    printf("Enter project programming language (Type L/l for interactive list): ");
-    scanf("%s", project_language);
-     if(strcmp(project_language, "l") == 0 || strcmp(project_language, "L") == 0)
-    {
-        const char *lang = language_menu();
-        strcpy(project_language,lang);
-    }
-    char project_dependencies[1024*4];
-    printf("Enter project dependencies (comma-separated): ");
-    getchar();
-    fgets(project_dependencies, 1024*4, stdin);
-    char generate_readme[10];
-    printf("Generate README file? (yes/no): ");
-    scanf("%s", generate_readme);
-    char initialize_git[10];
-    printf("Initialize Git repository? (yes/no): ");
-    scanf("%s", initialize_git);
-    char create_license_file[10];
-    printf("Create LICENSE file? (yes/no): ");
-    scanf("%s", create_license_file);
-    char generate_structure[10];
-    printf("Generate default file structure? (yes/no): ");
-    scanf("%s", generate_structure);
-        // printf("")
-    lowercase(project_language);
-    // Check if the selected language is C
-    if (strcmp(project_language, "C") == 0 || strcmp(project_language, "c") == 0) {
-        create_project_c(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
-    }
-    else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
-        create_project_py(project_name, project_description, project_author, project_licence, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+int main_build() {
+    char project_name[1024] = "my_project";
+    printf("Enter project name (e.g., test_code) [default: %s]: ", project_name);
+    fgets(project_name, sizeof(project_name), stdin);
+    if (project_name[0] == '\n') {
+        strcpy(project_name, "my_project");
     } else {
-        create_project(project_name, project_description, project_author, project_licence, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+        project_name[strcspn(project_name, "\n")] = 0;  // Remove trailing newline
     }
+    
+    char project_description[4096] = "";
+    printf("Enter project description (optional): ");
+    fgets(project_description, sizeof(project_description), stdin);
+    project_description[strcspn(project_description, "\n")] = 0;  // Remove trailing newline
+
+    char project_author[1024] = "anonymous";
+    printf("Enter author name [default: %s]: ", project_author);
+    fgets(project_author, sizeof(project_author), stdin);
+    if (project_author[0] == '\n') {
+        strcpy(project_author, "anonymous");
+    } else {
+        project_author[strcspn(project_author, "\n")] = 0;  // Remove trailing newline
+    }
+
+    char project_license[1024] = "MIT";
+    printf("Enter license (type L/l for a list) [default: %s]: ", project_license);
+    fgets(project_license, sizeof(project_license), stdin);
+    if (project_license[0] == '\n') {
+        strcpy(project_license, "MIT");
+    } else {
+        project_license[strcspn(project_license, "\n")] = 0;  // Remove trailing newline
+        if (strcmp(project_license, "l") == 0 || strcmp(project_license, "L") == 0) {
+            const char *lic = license_menu();
+            strcpy(project_license, lic);
+        }
+    }
+
+    char project_version[256] = "1.0.0";
+    printf("Enter project version (e.g., 1.0.0) [default: %s]: ", project_version);
+    fgets(project_version, sizeof(project_version), stdin);
+    if (project_version[0] == '\n') {
+        strcpy(project_version, "1.0.0");
+    } else {
+        project_version[strcspn(project_version, "\n")] = 0;  // Remove trailing newline
+    }
+
+    char project_language[256] = "C";
+    printf("Enter programming language (type L/l for a list) [default: %s]: ", project_language);
+    fgets(project_language, sizeof(project_language), stdin);
+    if (project_language[0] == '\n') {
+        strcpy(project_language, "C");
+    } else {
+        project_language[strcspn(project_language, "\n")] = 0;  // Remove trailing newline
+        if (strcmp(project_language, "l") == 0 || strcmp(project_language, "L") == 0) {
+            const char *lang = language_menu();
+            strcpy(project_language, lang);
+        }
+    }
+
+    char project_dependencies[4096] = "";
+    printf("Enter project dependencies (comma-separated, optional): ");
+    fgets(project_dependencies, sizeof(project_dependencies), stdin);
+    project_dependencies[strcspn(project_dependencies, "\n")] = 0;  // Remove trailing newline
+
+    char generate_readme[10] = "yes";
+    printf("Generate README file? (yes/no) [default: %s]: ", generate_readme);
+    fgets(generate_readme, sizeof(generate_readme), stdin);
+    if (generate_readme[0] == '\n') {
+        strcpy(generate_readme, "yes");
+    } else {
+        generate_readme[strcspn(generate_readme, "\n")] = 0;  // Remove trailing newline
+    }
+
+    char initialize_git[10] = "yes";
+    printf("Initialize Git repository? (yes/no) [default: %s]: ", initialize_git);
+    fgets(initialize_git, sizeof(initialize_git), stdin);
+    if (initialize_git[0] == '\n') {
+        strcpy(initialize_git, "yes");
+    } else {
+        initialize_git[strcspn(initialize_git, "\n")] = 0;  // Remove trailing newline
+    }
+
+    char create_license_file[10] = "yes";
+    printf("Create LICENSE file? (yes/no) [default: %s]: ", create_license_file);
+    fgets(create_license_file, sizeof(create_license_file), stdin);
+    if (create_license_file[0] == '\n') {
+        strcpy(create_license_file, "yes");
+    } else {
+        create_license_file[strcspn(create_license_file, "\n")] = 0;  // Remove trailing newline
+    }
+
+#ifndef DEBUG
+    char generate_structure[10] = "yes";
+    printf("Generate default file structure? (yes/no) [default: yes]: ");
+    fgets(generate_structure, sizeof(generate_structure), stdin);
+    generate_structure[strcspn(generate_structure, "\n")] = 0;  // Remove trailing newline
+#else
+    const char *generate_structure = "yes";
+#endif
+
+    lowercase(project_language);
+
+    if (strcmp(project_language, "c") == 0) {
+        create_project_c(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+    } else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
+        create_project_py(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+    } else {
+        create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+    }
+
     return 0;
 }
