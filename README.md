@@ -33,8 +33,6 @@
 - **Common Project Templates**:
   - **Operating System Template**: Creates a basic OS project structure, including a `boot.asm` file and support for bootloaders like GRUB or Limine.
   - **Web Browser/Chat App Templates**: Provides starter templates for common project types like a web browser or chat application, influencing the main file structure and included dependencies.
-- **Credits Screen**: Optionally generates a `CREDITS.md` file and integrates a credits display feature within the project. Supported languages can render a terminal-based credits screen.
-
 ## Getting Started
 
 To get started with Code Starter, simply run the tool and follow the on-screen prompts to create your project. The tool will guide you through the process of naming your project, providing a description, selecting a license, and more.
