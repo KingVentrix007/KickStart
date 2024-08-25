@@ -508,6 +508,11 @@ int create_project(char *project_name, char *project_description, char *project_
     char *formatted_main_file_path = replace_string(main_file_create_path, "${project_name}", project_name);
     printf("main_file_create_path == %s\n",formatted_main_file_path);
     FILE *fp2 = fopen(formatted_main_file_path,"w");
+    fprintf(fp2, "%s File: %s\n",info.comment,info.default_main_file);
+    fprintf(fp2, "%s Author: %s\n",info.comment, project_author);
+    fprintf(fp2, "%s License: %s\n",info.comment, project_licence);
+    fprintf(fp2, "%s Version: %s\n", info.comment,project_version);
+    fprintf(fp2, "%s Description: %s\n\n", info.comment,project_description);
     fwrite(main_file_data, 1, strlen(main_file_data), fp2);
     fclose(fp2);
     free(main_file_path);
