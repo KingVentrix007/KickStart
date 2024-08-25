@@ -24,6 +24,7 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
 
 // Function to fetch data from a URL using libcurl
 char *fetch_data(const char *url) {
+    // printf("Fetcjing data from %s\n",url);
     CURL *curl;
     CURLcode res;
     char *data = NULL;
