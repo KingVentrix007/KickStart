@@ -5,7 +5,7 @@ LDFLAGS = -lcurl -ljansson
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
-TARGET = main
+TARGET = kpm
 
 # Generate the list of source files recursively
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
