@@ -167,7 +167,7 @@ const char *find_language_path(const char *lang, const char *json_data) {
     return ret_path;
 }
 
-// #define LANG_BASE_URL "https://raw.githubusercontent.com/KingVentrix007/CodeStarterFiles/main/langs"
+// #define LANG_BASE_URL "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/langs"
 
 char *get_lang_path(const char *lang) {
     char url[1024];

@@ -5,7 +5,7 @@ void create_project_c(const char *project_name, const char *project_description,
 }
 
 Heres what must happen
-A c file, called main.c, must be created in the current dir, with code inside that prints "Hello from CodeStarter"
+A c file, called main.c, must be created in the current dir, with code inside that prints "Hello from KickStart"
 It must all so have comments at the top, that say
 File: main.c
 Author: <project_author>

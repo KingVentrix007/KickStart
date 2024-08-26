@@ -34,7 +34,7 @@ void create_project_c(
     fprintf(main_file, "// Description: %s\n\n", project_description);
     fprintf(main_file, "#include <stdio.h>\n\n");
     fprintf(main_file, "int main() {\n");
-    fprintf(main_file, "    printf(\"Hello from CodeStarter\\n\");\n");
+    fprintf(main_file, "    printf(\"Hello from KickStart\\n\");\n");
     fprintf(main_file, "    return 0;\n");
     fprintf(main_file, "}\n");
     fclose(main_file);

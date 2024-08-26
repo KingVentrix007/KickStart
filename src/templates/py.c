@@ -37,7 +37,7 @@ void create_project_py(const char *project_name, const char *project_description
     fprintf(main_file, "Description: %s\n", project_description);
     fprintf(main_file, "\"\"\"\n\n");
     fprintf(main_file, "def main():\n");
-    fprintf(main_file, "    print(\"Hello from CodeStarter\")\n\n");
+    fprintf(main_file, "    print(\"Hello from KickStart\")\n\n");
     fprintf(main_file, "if __name__ == '__main__':\n");
     fprintf(main_file, "    main()\n");
     fclose(main_file);

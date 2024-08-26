@@ -1,12 +1,12 @@
 # ROADMAP
 
-Welcome to the CodeStarter Roadmap. Here we keep track of all the implemented and further planned features.
+Welcome to the KickStart Roadmap. Here we keep track of all the implemented and further planned features.
 
 
 ## Implemented
 - [X] Hardcoded setup - C and Python have builtin support, with there values hardcoded into the source code. This is intended to change in hte near future
-- [X] Basic template loading - Templates file for other languages are supported, they sre stored in a [git repo](https://github.com/KingVentrix007/CodeStarterFiles/tree/main) in the langs folder
-- [X] Open-source license support. The licences supported by github are all so supported by CodeStarter, is currently a little buggy, but should be fixed soon
+- [X] Basic template loading - Templates file for other languages are supported, they sre stored in a [git repo](https://github.com/KingVentrix007/KickStartFiles/tree/main) in the langs folder
+- [X] Open-source license support. The licences supported by github are all so supported by KickStart, is currently a little buggy, but should be fixed soon
 - [X] Create a project directory structure, with separate folders for source code and build files. The project directory includes:
 
 ## Planned

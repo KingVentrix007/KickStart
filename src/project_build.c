@@ -126,7 +126,7 @@ int main_build() {
         {
             printf("Failed to build project %s for language %d\n",project_name,project_language);
             printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
-            printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/CodeStarterFiles/tree/main and add a template for your language\n");
+            printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/KickStartFiles/tree/main and add a template for your language\n");
         }
     }
 

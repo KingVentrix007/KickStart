@@ -74,7 +74,7 @@ void build_library(const char *build_dir, json_t *build_commands) {
 
 void process_library(const char *name) {
     char url[256];
-    snprintf(url, sizeof(url), "https://github.com/KingVentrix007/CodeStarterFiles/libs/%s.json", name);
+    snprintf(url, sizeof(url), "https://github.com/KingVentrix007/KickStartFiles/libs/%s.json", name);
 
     CURL *curl = curl_easy_init();
     if (!curl) {

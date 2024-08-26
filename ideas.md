@@ -1,4 +1,4 @@
-# CodeStarter
+# KickStart
 ## Making projects easy
 
 Code starter is a simple piece of software designed to help you get your projects started.
