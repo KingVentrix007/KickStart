@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra
+CFLAGS = -g -Wall -Wextra -Werror -DDEBUG
 LDFLAGS = -lcurl -ljansson
 
 # Directories
@@ -11,8 +11,12 @@ TARGET = kpm
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# Default rule
+# Default rule (build with DEBUG defined)
 all: $(TARGET)
+
+# Build without DEBUG defined
+build: CFLAGS := $(filter-out -DDEBUG,$(CFLAGS))
+build: $(TARGET)
 
 # Create object directory structure
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
@@ -30,4 +34,4 @@ run: $(TARGET)
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
-.PHONY: all run clean
+.PHONY: all build run clean

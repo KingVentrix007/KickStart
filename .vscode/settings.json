@@ -7,6 +7,13 @@
         "c.h": "c",
         "utils.h": "c",
         "config.h": "c",
-        "custom.h": "c"
+        "custom.h": "c",
+        "package_manager.h": "c",
+        "ctype.h": "c",
+        "language.h": "c",
+        "curlhelp.h": "c",
+        "unistd.h": "c",
+        "stat.h": "c",
+        "limits.h": "c"
     }
 }

@@ -11,7 +11,7 @@
 #include "./templates/config.h"
 #include "licence.h"
 #include "ctype.h"
-int create_project(char *project_name, char *project_description, char *project_author,char *project_licence, char *project_version, char *project_language,char *project_dependencies, char *generate_readme, char *initialize_git,char *create_license_file, char *generate_structure);
+int create_project(char *project_name, char *project_description, char *project_author,char *project_licence, char *project_version, char *project_language,char *project_dependencies, char *generate_readme, char *initialize_git,char *create_license_file);
 int main_build() {
     char project_name[1024] = "my_project";
     printf("Enter project name (e.g., test_code) [default: %s]: ", project_name);
@@ -103,14 +103,14 @@ int main_build() {
         create_license_file[strcspn(create_license_file, "\n")] = 0;  // Remove trailing newline
     }
 
-#ifndef DEBUG
-    char generate_structure[10] = "yes";
-    printf("Generate default file structure? (yes/no) [default: yes]: ");
-    fgets(generate_structure, sizeof(generate_structure), stdin);
-    generate_structure[strcspn(generate_structure, "\n")] = 0;  // Remove trailing newline
-#else
-    const char *generate_structure = "yes";
-#endif
+// #ifndef DEBUG
+//     char generate_structure[10] = "yes";
+//     printf("Generate default file structure? (yes/no) [default: yes]: ");
+//     fgets(generate_structure, sizeof(generate_structure), stdin);
+//     generate_structure[strcspn(generate_structure, "\n")] = 0;  // Remove trailing newline
+// #else
+    char *generate_structure = "yes";
+// #endif
 
     lowercase(project_language);
 
@@ -119,12 +119,12 @@ int main_build() {
     } else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
         create_project_py(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     } else {
-        printf("Searching for language template%s\n", project_language);
+        printf("Searching for language template %s\n", project_language);
 
-        int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
+        int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file);
         if(ret != 0)
         {
-            printf("Failed to build project %s for language %d\n",project_name,project_language);
+            printf("Failed to build project %s for language %s\n",project_name,project_language);
             printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
             printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/KickStartFiles/tree/main and add a template for your language\n");
         }

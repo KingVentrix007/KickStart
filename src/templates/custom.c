@@ -4,13 +4,19 @@
 #include <curl/curl.h>
 #include <jansson.h>
 #include "custom.h"
-#include "config.h"
+// #include "config.h"
 #include "../curlhelp.h"
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
 #include "utils.h"
 #include "../licence.h"
+#include "limits.h"
+
+struct MemoryStruct {
+    char *memory;
+    size_t size;
+};
 // Function to replace ${project_name} with the actual project name
 char *replace_placeholder(const char *path, const char *project_name) {
     const char *placeholder = "${project_name}";
@@ -70,29 +76,23 @@ int create_directories(const char *full_path) {
     return 0;
 }
 // Callback function to write data from curl to a buffer
-size_t write_callback_json(void *contents, size_t size, size_t nmemb, void *userp) {
-    size_t total_size = size * nmemb;
-    char **buffer = (char **)userp;
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    size_t realsize = size * nmemb;
+    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
-    if (*buffer == NULL) {
-        *buffer = malloc(total_size + 1);
-        if (*buffer == NULL) {
-            fprintf(stderr, "Failed to allocate memory\n");
-            return 0;
-        }
-        (*buffer)[0] = '\0';  // Ensure the buffer is null-terminated
-    } else {
-        *buffer = realloc(*buffer, strlen(*buffer) + total_size + 1);
-        if (*buffer == NULL) {
-            fprintf(stderr, "Failed to reallocate memory\n");
-            return 0;
-        }
+    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+    if(ptr == NULL) {
+        // Out of memory!
+        printf("Not enough memory (realloc returned NULL)\n");
+        return 0;
     }
 
-    memcpy(*buffer + strlen(*buffer), contents, total_size);
-    (*buffer)[strlen(*buffer) + total_size] = '\0';
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
 
-    return total_size;
+    return realsize;
 }
 
 // Function to fetch JSON data from a URL
@@ -100,13 +100,13 @@ char *fetch_json(const char *url) {
     CURL *curl;
     CURLcode res;
     char *buffer = NULL;
-
+    long http_code = 0;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
 
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_json);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 
         res = curl_easy_perform(curl);
@@ -116,12 +116,16 @@ char *fetch_json(const char *url) {
             free(buffer);
             buffer = NULL;
         }
-
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+        if (http_code != 200) {
+            fprintf(stderr, "Failed to fetch data. HTTP response code: %ld\n", http_code);
+        }
+        
         curl_easy_cleanup(curl);
     }
 
     curl_global_cleanup();
-
+    printf("buffer == [%s]\n",buffer);
     return buffer;
 }
 
@@ -407,8 +411,10 @@ void clean_url(char *url) {
     }
 }
 // Function to create a project
-int create_project(char *project_name, char *project_description, char *project_author, char *project_licence, char *project_version, char *project_language, char *project_dependencies, char *generate_readme, char *initialize_git, char *create_license_file, char *generate_structure) {
+int create_project(char *project_name, char *project_description, char *project_author, char *project_licence, char *project_version, char *project_language, char *project_dependencies, char *generate_readme, char *initialize_git, char *create_license_file) {
     const char *base_dir = "tests";
+    // char *temp = generate_structure;
+    // memset(temp,0,1);
     #ifndef DEBUG
     base_dir = ".";
     #endif
@@ -435,7 +441,7 @@ int create_project(char *project_name, char *project_description, char *project_
 
     // Initialize ProjectInfo structure
     ProjectInfo info;
-    printf("lang_json_data == %s\n",lang_json_data);
+    printf("lang_json_data == [%s]\n",lang_json_data);
     memset(&info, 0, sizeof(info));
     parse_json(lang_json_data, &info);
     free(lang_json_data);  // Free lang_json_data after use
@@ -483,7 +489,7 @@ int create_project(char *project_name, char *project_description, char *project_
     // clean_url(makefile_path);
     char *makefile_data = fetch_data(makefile_path);
     // clean_url(makefile_path);
-    printf(makefile_data);
+    printf("%s\n",makefile_data);
     char makefile_create_path[1024];
     char *makefile =  "makefile";
     snprintf(makefile_create_path, sizeof(makefile_create_path), "%s/%s", base_dir,makefile);

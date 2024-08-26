@@ -21,6 +21,8 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "init") == 0) {
         main_build();
     } else if (strcmp(argv[1], "install") == 0) {
+        printf("Package manager is not enabled at the moment\n");
+        return 0;
         if (argc < 3) {
             fprintf(stderr, "Usage: %s install <package_name>\n", argv[0]);
             return 1;
