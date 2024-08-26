@@ -28,7 +28,9 @@ $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $@
 
 run: $(TARGET)
-	./$(TARGET) init
+	mkdir -p "tests"
+	(cd tests && ../$(TARGET) init)
+# ./$(TARGET) init
 
 # Clean up build files
 clean:
