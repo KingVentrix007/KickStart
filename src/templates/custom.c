@@ -412,16 +412,16 @@ void clean_url(char *url) {
 }
 // Function to create a project
 int create_project(char *project_name, char *project_description, char *project_author, char *project_licence, char *project_version, char *project_language, char *project_dependencies, char *generate_readme, char *initialize_git, char *create_license_file) {
-    const char *base_dir = "tests";
+    const char *base_dir = ".";
     // char *temp = generate_structure;
     // memset(temp,0,1);
     #ifndef DEBUG
     base_dir = ".";
     #endif
-    if (strcmp(base_dir, "tests") == 0) {
-        system("mkdir -p tests");
-    }
-    system("mkdir -p tests/tests");
+    // if (strcmp(base_dir, "tests") == 0) {
+        // system("mkdir -p tests");
+    // }
+    // system("mkdir -p tests/tests");
     char *lang_path = get_lang_path(project_language);
     if (lang_path == NULL) {
         fprintf(stderr, "Failed to get path for language '%s'\n", project_language);
@@ -523,7 +523,7 @@ int create_project(char *project_name, char *project_description, char *project_
     fclose(fp2);
     free(main_file_path);
     free(main_file_data);
-    chdir(base_dir);
+    // chdir(base_dir);
     //Run commnads
     for (size_t i = 0; i < info.commands_to_run_count; i++) {
         char *command = replace_string(info.commands_to_run[i], "${project_name}", project_name);
@@ -535,10 +535,10 @@ int create_project(char *project_name, char *project_description, char *project_
             // return 1;
             }
     }
-    if (strcmp(base_dir, "tests") == 0) {
-        // system("mkdir -p tests");
-        chdir("..");
-    }
+    // if (strcmp(base_dir, "tests") == 0) {
+    //     // system("mkdir -p tests");
+    //     chdir("..");
+    // }
     //Config.mk
     char *config_mk_path = malloc(strlen(LANG_BASE_URL) + strlen("config.mk") + 12);
     if (config_mk_path == NULL) {
