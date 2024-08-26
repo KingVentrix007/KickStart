@@ -48,7 +48,7 @@ char *replace_placeholder(const char *path, const char *project_name) {
     return result;
 }
 int create_directories(const char *full_path) {
-    char temp_path[PATH_MAX];
+    char temp_path[4096];
     snprintf(temp_path, sizeof(temp_path), "%s", full_path);
 
     for (char *p = temp_path + 1; *p; p++) {
@@ -202,6 +202,10 @@ char *get_lang_path(const char *lang) {
         } \
         free(array); \
     } while (0)
+typedef struct {
+    char *makefile_path;
+    char *bash_path;
+} BuildFilePaths;
 
 // Structure to hold project information
 typedef struct {
@@ -211,10 +215,9 @@ typedef struct {
     char **build_type;
     size_t build_type_count;
     int lib_support;
+    BuildFilePaths build_file_paths;  // Updated field
+    char *git_ignore_path;            // Added field
     char *version_template_path;
-    char *build_file_path;
-    char **compiler_urls;
-    size_t compiler_urls_count;
     char *description;
     char *template_author;
     char *git_repo;
@@ -235,7 +238,10 @@ typedef struct {
     char *main_file_path;
     char *main_file_template;
     char *comment;
+     char **compiler_urls;
+    size_t compiler_urls_count;
 } ProjectInfo;
+
 
 // Function to parse JSON data into ProjectInfo structure
 //! Check this function for Segmentation fault, might be deref error
@@ -252,10 +258,13 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         return;
     }
     LOG_LOCATION
+
     // Free previous values if they exist
     if (info->name) free(info->name);
     if (info->version_template_path) free(info->version_template_path);
-    if (info->build_file_path) free(info->build_file_path);
+    if (info->build_file_paths.makefile_path) free(info->build_file_paths.makefile_path);
+    if (info->build_file_paths.bash_path) free(info->build_file_paths.bash_path);
+    if (info->git_ignore_path) free(info->git_ignore_path);
     if (info->description) free(info->description);
     if (info->template_author) free(info->template_author);
     if (info->git_repo) free(info->git_repo);
@@ -276,6 +285,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     FREE_STRING_ARRAY(info->folders_to_create, info->folders_to_create_count);
     FREE_STRING_ARRAY(info->commands_to_run, info->commands_to_run_count);
     LOG_LOCATION
+
     info->system_support = NULL;
     info->build_type = NULL;
     info->compiler_urls = NULL;
@@ -284,9 +294,11 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     info->folders_to_create = NULL;
     info->commands_to_run = NULL;
     LOG_LOCATION
+
     // Parse JSON fields
     info->name = strdup(json_string_value(json_object_get(root, "name")));
     LOG_LOCATION
+
     json_t *array;
     size_t i;
 
@@ -299,6 +311,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->system_support[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Build Type
     array = json_object_get(root, "build_type");
     LOG_LOCATION
@@ -308,15 +321,25 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->build_type[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Lib Support
     info->lib_support = json_boolean_value(json_object_get(root, "lib_support"));
     LOG_LOCATION
+
+    // Updated Build File Paths
+    json_t *build_file_path = json_object_get(root, "build_file_path");
+    info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
+    info->build_file_paths.bash_path = strdup(json_string_value(json_object_get(build_file_path, "bash")));
+    LOG_LOCATION
+
+    // Git Ignore Path
+    info->git_ignore_path = strdup(json_string_value(json_object_get(root, "git_ignore_path")));
+    LOG_LOCATION
+
     // Version Template Path
     info->version_template_path = strdup(json_string_value(json_object_get(root, "version_template_path")));
     LOG_LOCATION
-    // Build File Path
-    info->build_file_path = strdup(json_string_value(json_object_get(root, "build_file_path")));
-    LOG_LOCATION
+
     // Compiler URLs
     array = json_object_get(root, "compiler_urls");
     LOG_LOCATION
@@ -326,23 +349,29 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->compiler_urls[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Description
     info->description = strdup(json_string_value(json_object_get(root, "description")));
     LOG_LOCATION
+
     // Template Author
     info->template_author = strdup(json_string_value(json_object_get(root, "template_author")));
     LOG_LOCATION
+
     // Git Repo
     info->git_repo = strdup(json_string_value(json_object_get(root, "git_repo")));
     LOG_LOCATION
+
     // Lang License
     json_t *lang_license = json_object_get(root, "lang_license");
     info->lang_license_type = strdup(json_string_value(json_object_get(lang_license, "type")));
     info->lang_license_url = strdup(json_string_value(json_object_get(lang_license, "url")));
     LOG_LOCATION
+
     // Default Main File
     info->default_main_file = strdup(json_string_value(json_object_get(root, "default_main_file")));
     LOG_LOCATION
+
     // Extensions
     array = json_object_get(root, "extensions");
     info->extensions_count = json_array_size(array);
@@ -351,6 +380,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->extensions[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Dependencies
     array = json_object_get(root, "dependencies");
     info->dependencies_count = json_array_size(array);
@@ -359,15 +389,19 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->dependencies[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Instructions
     info->instructions = strdup(json_string_value(json_object_get(root, "instructions")));
     LOG_LOCATION
+
     // Template Version
     info->template_version = strdup(json_string_value(json_object_get(root, "template_version")));
     LOG_LOCATION
+
     // Update URL
     info->update_url = strdup(json_string_value(json_object_get(root, "update_url")));
     LOG_LOCATION
+
     // Folders to Create
     array = json_object_get(root, "folders_to_create");
     info->folders_to_create_count = json_array_size(array);
@@ -376,6 +410,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->folders_to_create[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Commands to Run
     array = json_object_get(root, "commands_to_run");
     info->commands_to_run_count = json_array_size(array);
@@ -384,16 +419,18 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->commands_to_run[i] = strdup(json_string_value(json_array_get(array, i)));
     }
     LOG_LOCATION
+
     // Main File Path
     info->main_file_path = strdup(json_string_value(json_object_get(root, "main_file_path")));
     LOG_LOCATION
+
     // Main File Template
     info->main_file_template = strdup(json_string_value(json_object_get(root, "main_file_template")));
     LOG_LOCATION
+
     // Comment
     info->comment = strdup(json_string_value(json_object_get(root, "comment")));
     LOG_LOCATION
-    printf("Made it here\n");
     // json_decref(root);
 }
 void clean_url(char *url) {
@@ -474,31 +511,75 @@ int create_project(char *project_name, char *project_description, char *project_
     }
 
     // ds
-    char *makefile_path = malloc(strlen(LANG_BASE_URL) + strlen(info.build_file_path) + 10);
+    if(system("make -v") == 0)
+    {
+        char *makefile_path = malloc(strlen(LANG_BASE_URL) + strlen(info.build_file_paths.makefile_path) + 10);
 
-    if (makefile_path == NULL) {
-        fprintf(stderr, "Memory allocation failed!\n");
-        return 1;
+        if (makefile_path == NULL) {
+            fprintf(stderr, "Memory allocation failed!\n");
+            return 1;
+        }
+
+        // Format the string safely using snprintf
+        snprintf(makefile_path, strlen(LANG_BASE_URL) + strlen(info.build_file_paths.makefile_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_paths.makefile_path);
+
+        // Output the final path
+        // printf("Makefile Path: %s\n", makefile_path);
+        // clean_url(makefile_path);
+        char *makefile_data = fetch_data(makefile_path);
+        // clean_url(makefile_path);
+        printf("%s\n",makefile_data);
+        char makefile_create_path[1024];
+        char *makefile =  "makefile";
+        snprintf(makefile_create_path, sizeof(makefile_create_path), "%s/%s", base_dir,makefile);
+        FILE *fp = fopen(makefile_create_path,"w");
+        fwrite(makefile_data, 1, strlen(makefile_data), fp);
+        fclose(fp);
+        // free(makefile_create_path);
+        free(makefile_path);
+        free(makefile_data);
+            char *config_mk_path = malloc(strlen(LANG_BASE_URL) + strlen("config.mk") + 12);
+        if (config_mk_path == NULL) {
+            fprintf(stderr, "Memory allocation failed!\n");
+            return 1;
+        }
+        // Format the string safely using snprintf
+        snprintf(config_mk_path, strlen(LANG_BASE_URL) + strlen("config.mk") + 12, "%s/%s/%s", LANG_BASE_URL, project_language,"config.mk");
+        char *config_mk_data = fetch_data(config_mk_path);
+        char config_mk_create_path[1024];
+        snprintf(config_mk_create_path, sizeof(config_mk_create_path), "%s/%s", base_dir, "config.mk");
+        // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
+        char *config_mk_data_formatted = replace_string(config_mk_data, "${project_name}", project_name);
+        FILE *fp3 = fopen(config_mk_create_path,"w");
+        fwrite(config_mk_data_formatted, 1, strlen(config_mk_data_formatted), fp3);
+        fclose(fp3);
+        free(config_mk_path);
+        free(config_mk_data);
+        free(config_mk_data_formatted);
     }
+    else
+    {
+        printf("make is not installed\n");
+        printf("It is recommended to install make to build your project, but a bash script will be used i ints place\n");
+        char *bash_script_path = malloc(strlen(info.build_file_paths.bash_path)+20);
+        if (bash_script_path == NULL) {
+            fprintf(stderr, "Memory allocation failed!\n");
+            return 1;
+        }
+        // Format the string safely using snprintf
+        snprintf(bash_script_path, strlen(LANG_BASE_URL) + strlen(info.build_file_paths.bash_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_paths.bash_path);
+        char *bash_script_data = fetch_data(bash_script_path);
+        char bash_script_create_path[1024];
+        snprintf(bash_script_create_path, sizeof(bash_script_create_path), "%s/%s", base_dir, "build.sh");
+        char *bash_script_data_formatted = replace_string(bash_script_data, "${project_name}", project_name);
+        FILE *fp5 = fopen(bash_script_create_path,"w");
+        fwrite(bash_script_data_formatted, 1, strlen(bash_script_data_formatted), fp5);
+        fclose(fp5);
+        free(bash_script_path);
+        free(bash_script_data);
 
-    // Format the string safely using snprintf
-    snprintf(makefile_path, strlen(LANG_BASE_URL) + strlen(info.build_file_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_path);
 
-    // Output the final path
-    // printf("Makefile Path: %s\n", makefile_path);
-    // clean_url(makefile_path);
-    char *makefile_data = fetch_data(makefile_path);
-    // clean_url(makefile_path);
-    printf("%s\n",makefile_data);
-    char makefile_create_path[1024];
-    char *makefile =  "makefile";
-    snprintf(makefile_create_path, sizeof(makefile_create_path), "%s/%s", base_dir,makefile);
-    FILE *fp = fopen(makefile_create_path,"w");
-    fwrite(makefile_data, 1, strlen(makefile_data), fp);
-    fclose(fp);
-    // free(makefile_create_path);
-    free(makefile_path);
-    free(makefile_data);
+    }
     // Create main.
     char *main_file_path = malloc(strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 10);
     if (main_file_path == NULL) {
@@ -540,24 +621,7 @@ int create_project(char *project_name, char *project_description, char *project_
     //     chdir("..");
     // }
     //Config.mk
-    char *config_mk_path = malloc(strlen(LANG_BASE_URL) + strlen("config.mk") + 12);
-    if (config_mk_path == NULL) {
-        fprintf(stderr, "Memory allocation failed!\n");
-        return 1;
-    }
-    // Format the string safely using snprintf
-    snprintf(config_mk_path, strlen(LANG_BASE_URL) + strlen("config.mk") + 12, "%s/%s/%s", LANG_BASE_URL, project_language,"config.mk");
-    char *config_mk_data = fetch_data(config_mk_path);
-    char config_mk_create_path[1024];
-    snprintf(config_mk_create_path, sizeof(config_mk_create_path), "%s/%s", base_dir, "config.mk");
-    // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
-    char *config_mk_data_formatted = replace_string(config_mk_data, "${project_name}", project_name);
-    FILE *fp3 = fopen(config_mk_create_path,"w");
-    fwrite(config_mk_data_formatted, 1, strlen(config_mk_data_formatted), fp3);
-    fclose(fp3);
-    free(config_mk_path);
-    free(config_mk_data);
-    free(config_mk_data_formatted);
+   
     // free(config_mk_create_path_formatted);
     // Create README.md
     if (strcmp(create_license_file, "yes") == 0) {
@@ -595,6 +659,20 @@ int create_project(char *project_name, char *project_description, char *project_
             system("git add .");
             system("git commit -m \"Initial commit\"");
         }
+        char *gitignore_path = malloc(strlen(info.git_ignore_path)+10);
+        if (gitignore_path == NULL) {
+            fprintf(stderr, "Memory allocation failed!\n");
+            return 1;
+        }
+        char *gitignore_data = fetch_data(gitignore_path);
+        char gitignore_create_path[1024];
+        snprintf(gitignore_create_path, sizeof(gitignore_create_path), "%s/%s", base_dir, ".gitignore");
+        // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
+        char *gitignore_data_formatted = replace_string(gitignore_data, "${project_name}", project_name);
+        FILE *fp4 = fopen(gitignore_create_path,"w");
+        fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
+        fclose(fp4);
+        
     }
     char project_json_path[1024];
     snprintf(project_json_path, sizeof(project_json_path), "%s/project.json", base_dir);
@@ -602,6 +680,7 @@ int create_project(char *project_name, char *project_description, char *project_
     if (project_json == NULL) {
         perror("Error creating project.json");
         exit(EXIT_FAILURE);
+        
     }
     char project_name_copy[strlen(project_name) + 1];
     strcpy(project_name_copy, project_name);

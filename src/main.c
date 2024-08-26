@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "package_manager/package_manager.h"
+        int create_template();
 
 
 char* get_lang();
@@ -35,7 +36,12 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Unsupported language: %s\n", lang);
             return 1;
         }
-    } else {
+    }else if (strcmp(argv[1],"template") == 0)
+    {
+        create_template();
+    }
+     
+    else {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
         return 1;
     }
