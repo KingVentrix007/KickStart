@@ -95,19 +95,38 @@ void create_project_c(
         fprintf(makefile, "CFLAGS = -Wall -Wextra -Werror -std=c11\n");
         fprintf(makefile, "CONFIG_FILE = ./config.cfg\n\n");
         fprintf(makefile, "include $(CONFIG_FILE)\n\n");
-        fprintf(makefile, "SRC_FILES = $(wildcard $(SRC_DIR)/*.c)\n\n");
-        fprintf(makefile, "LIB_INCLUDE_DIRS = $(wildcard $(LIBS_DIR)/*/include)\n");
+
+        // Find all .c files in the source directory
+        fprintf(makefile, "SRC_FILES = $(shell find $(SRC_DIR) -name '*.c')\n\n");
+
+        // Find all include directories and header files
+        fprintf(makefile, "INCLUDE_DIRS = $(shell find $(SRC_DIR) -type d)\n");
+        fprintf(makefile, "LIB_INCLUDE_DIRS = $(shell find $(LIBS_DIR) -name 'include' -type d)\n");
         fprintf(makefile, "LIB_INCLUDES = $(foreach dir,$(LIB_INCLUDE_DIRS),-I$(dir))\n");
+        fprintf(makefile, "HEADER_FILES = $(shell find $(SRC_DIR) -name '*.h')\n\n");
+
+        // Find all library files
         fprintf(makefile, "LIB_FILES = $(wildcard $(LIBS_DIR)/*/lib/*.a)\n\n");
+
+        // Define the target
         fprintf(makefile, "TARGET = $(BUILD_DIR)/main\n\n");
+
+        // Build rules
         fprintf(makefile, "all: $(TARGET)\n\n");
         fprintf(makefile, "$(TARGET): $(SRC_FILES)\n");
-        fprintf(makefile, "\t$(CC) $(CFLAGS) $(LIB_INCLUDES) -I$(INCLUDE_DIR) -o $@ $^ $(LIB_FILES)\n\n");
+        fprintf(makefile, "\t$(CC) $(CFLAGS) $(LIB_INCLUDES) $(foreach dir,$(INCLUDE_DIRS),-I$(dir)) -o $@ $^ $(LIB_FILES)\n\n");
+
+        // Run the program
         fprintf(makefile, "run: $(TARGET)\n");
         fprintf(makefile, "\t./$(TARGET)\n\n");
+
+        // Clean up
         fprintf(makefile, "clean:\n");
         fprintf(makefile, "\trm -rf $(BUILD_DIR)/*\n\n");
+
+        // Declare phony targets
         fprintf(makefile, ".PHONY: all clean run\n");
+
         fclose(makefile);
 
         char config_file_path[1024];
@@ -181,8 +200,8 @@ void create_project_c(
     fprintf(project_json, "    \"description\": \"%s\",\n", project_description_copy);
     fprintf(project_json, "    \"author\": \"%s\",\n", project_author_copy);
     fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
-    fprintf(project_json, "    \"dependencies\": \"%s\"\n", project_dependencies_copy);
-    fprintf(project_json, "    \"lang\": \"c\"\n");
+    fprintf(project_json, "    \"dependencies\": \"%s\",\n", project_dependencies_copy);
+    fprintf(project_json, "    \"language\": \"c\"\n");
     fprintf(project_json, "}\n");
     fclose(project_json);
 
