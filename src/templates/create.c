@@ -113,7 +113,7 @@ int create_template() {
 
     char build_types[MAX_ENTRIES][MAX_INPUT];
     int build_types_count = 0;
-    printf("Enter build systems (e.g., make, bash). Type 'done' to finish:\n");
+    printf("Enter build systems (e.g., makefile, bash). Type 'done' to finish:\n");
     while (build_types_count < MAX_ENTRIES) {
         get_input("> ", build_types[build_types_count], sizeof(build_types[build_types_count]));
         if (strcmp(build_types[build_types_count], "done") == 0) {
