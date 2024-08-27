@@ -14,6 +14,9 @@
         "curlhelp.h": "c",
         "unistd.h": "c",
         "stat.h": "c",
-        "limits.h": "c"
+        "limits.h": "c",
+        "jansson.h": "c",
+        "fetch.h": "c",
+        "cerrno": "c"
     }
 }
