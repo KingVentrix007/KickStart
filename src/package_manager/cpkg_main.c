@@ -340,6 +340,7 @@ int directory_exists(const char *path) {
 // }
 int cpkg_main(char *lib_name,char *language)
 {
+    printf("Installing package\n");
     char *path = get_lib_path(lib_name, language);
     if(directory_exists("libs") != 1)
     {

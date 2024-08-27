@@ -17,6 +17,7 @@
         "limits.h": "c",
         "jansson.h": "c",
         "fetch.h": "c",
-        "cerrno": "c"
+        "cerrno": "c",
+        "cpkg_main.h": "c"
     }
 }
