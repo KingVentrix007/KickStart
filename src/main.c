@@ -43,7 +43,10 @@ char* get_lang() {
 int main_build();
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <init|install> [package_name]\n", argv[0]);
+        printf("Usage: %s <init|template|install> [package_name]\n", argv[0]);
+        printf("\tinit: Initialize a new project\n");
+        printf("\ttemplate: Create a new project template\n");
+        printf("\tinstall: Install a package\n");
         return 1;
     }
 

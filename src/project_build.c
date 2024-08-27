@@ -114,9 +114,7 @@ int main_build() {
 
     lowercase(project_language);
 
-    if (strcmp(project_language, "c") == 0) {
-        create_project_c(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
-    } else if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
+    if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
         create_project_py(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
     } else {
         printf("Searching for language template %s\n", project_language);
