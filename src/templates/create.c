@@ -7,7 +7,20 @@
 
 #define MAX_INPUT 1024
 #define MAX_ENTRIES 100
+const char *supported_build_types[] = {"makefile", "bash", NULL};
 
+int is_supported_build_system(char *system)
+{
+    for (size_t i = 0; i < 2; i++)
+    {
+        if(strcmp(system,supported_build_types[i]) == 0)
+        {
+            return 0;
+        }
+    }
+    return -1;
+    
+}
 // Function to check and create a file if it does not exist
 void check_and_create_file(const char *filename, const char *content) {
     if (access(filename, F_OK) != -1) {
@@ -119,7 +132,19 @@ int create_template() {
         if (strcmp(build_types[build_types_count], "done") == 0) {
             break;
         }
+        else if (is_supported_build_system(build_types[build_types_count])!=0)
+        {
+            printf("Supported build types are. makefile,bash: \n");
+            printf("Enter build systems (e.g., makefile, bash). Type 'done' to finish:\n");
+            // build_types[build_types_count] = '\0';
+            memset(build_types[build_types_count],0,MAX_INPUT);
+
+        }
+        else
+        {
         build_types_count++;
+
+        }
     }
 
     char lib_support[MAX_INPUT];
