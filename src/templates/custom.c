@@ -210,13 +210,14 @@ typedef struct {
 // Structure to hold project information
 typedef struct {
     char *name;
+    int version;
     char **system_support;
     size_t system_support_count;
     char **build_type;
-    size_t build_type_count;
+    size_t build_type_count; 
     int lib_support;
-    BuildFilePaths build_file_paths;  // Updated field
-    char *git_ignore_path;            // Added field
+    BuildFilePaths build_file_paths;  //Might not be present in version 2
+    char *git_ignore_path;            
     char *version_template_path;
     char *description;
     char *template_author;
@@ -240,6 +241,8 @@ typedef struct {
     char *comment;
      char **compiler_urls;
     size_t compiler_urls_count;
+    char **files_to_include; // Only in version 2
+    size_t files_to_include_count; // Only in version 2
 } ProjectInfo;
 
 
@@ -252,12 +255,10 @@ void parse_json(const char *json_data, ProjectInfo *info) {
 
     // Load JSON data from the char* into a json_t object
     json_t *root = json_loads(json_data, 0, &error);
-    LOG_LOCATION
     if (!root) {
         fprintf(stderr, "Error loading JSON data: %s\n", error.text);
         return;
     }
-    LOG_LOCATION
 
     // Free previous values if they exist
     if (info->name) free(info->name);
@@ -277,161 +278,124 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     if (info->main_file_path) free(info->main_file_path);
     if (info->main_file_template) free(info->main_file_template);
     if (info->comment) free(info->comment);
+
     FREE_STRING_ARRAY(info->system_support, info->system_support_count);
     FREE_STRING_ARRAY(info->build_type, info->build_type_count);
-    FREE_STRING_ARRAY(info->compiler_urls, info->compiler_urls_count);
     FREE_STRING_ARRAY(info->extensions, info->extensions_count);
     FREE_STRING_ARRAY(info->dependencies, info->dependencies_count);
     FREE_STRING_ARRAY(info->folders_to_create, info->folders_to_create_count);
     FREE_STRING_ARRAY(info->commands_to_run, info->commands_to_run_count);
-    LOG_LOCATION
+    FREE_STRING_ARRAY(info->compiler_urls, info->compiler_urls_count);
+    FREE_STRING_ARRAY(info->files_to_include, info->files_to_include_count); // Only free in version 2
 
-    info->system_support = NULL;
-    info->build_type = NULL;
-    info->compiler_urls = NULL;
-    info->extensions = NULL;
-    info->dependencies = NULL;
-    info->folders_to_create = NULL;
-    info->commands_to_run = NULL;
-    LOG_LOCATION
+    // Parsing the JSON data into the ProjectInfo structure
+    json_t *project_name = json_object_get(root, "name");
+    json_t *version = json_object_get(root, "version"); // Assuming version is an integer now
+    json_t *system_support = json_object_get(root, "system_support");
+    json_t *build_type = json_object_get(root, "build_type");
+    json_t *lib_support = json_object_get(root, "lib_support");
+    // json_t *build_file_paths = json_object_get(root, "build_file_paths");
+    json_t *git_ignore_path = json_object_get(root, "git_ignore_path");
+    json_t *version_template_path = json_object_get(root, "version_template_path");
+    json_t *description = json_object_get(root, "description");
+    json_t *template_author = json_object_get(root, "template_author");
+    json_t *git_repo = json_object_get(root, "git_repo");
+    json_t *lang_license_type = json_object_get(root, "lang_license_type");
+    json_t *lang_license_url = json_object_get(root, "lang_license_url");
+    json_t *default_main_file = json_object_get(root, "default_main_file");
+    json_t *extensions = json_object_get(root, "extensions");
+    json_t *dependencies = json_object_get(root, "dependencies");
+    json_t *instructions = json_object_get(root, "instructions");
+    json_t *template_version = json_object_get(root, "template_version");
+    json_t *update_url = json_object_get(root, "update_url");
+    json_t *folders_to_create = json_object_get(root, "folders_to_create");
+    json_t *commands_to_run = json_object_get(root, "commands_to_run");
+    json_t *main_file_path = json_object_get(root, "main_file_path");
+    json_t *main_file_template = json_object_get(root, "main_file_template");
+    json_t *comment = json_object_get(root, "comment");
+    json_t *compiler_urls = json_object_get(root, "compiler_urls");
+    json_t *files_to_include = json_object_get(root, "files_to_include"); // Only for version 2
 
-    // Parse JSON fields
-    info->name = strdup(json_string_value(json_object_get(root, "name")));
-    LOG_LOCATION
+    // Set default values or parse the values from JSON
+    info->version = json_is_integer(version) ? json_integer_value(version) : 1;
+    info->name = project_name && json_is_string(project_name) ? strdup(json_string_value(project_name)) : NULL;
+    info->lib_support = json_is_integer(lib_support) ? json_integer_value(lib_support) : 0;
+    info->git_ignore_path = git_ignore_path && json_is_string(git_ignore_path) ? strdup(json_string_value(git_ignore_path)) : NULL;
+    info->version_template_path = version_template_path && json_is_string(version_template_path) ? strdup(json_string_value(version_template_path)) : NULL;
+    info->description = description && json_is_string(description) ? strdup(json_string_value(description)) : NULL;
+    info->template_author = template_author && json_is_string(template_author) ? strdup(json_string_value(template_author)) : NULL;
+    info->git_repo = git_repo && json_is_string(git_repo) ? strdup(json_string_value(git_repo)) : NULL;
+    info->lang_license_type = lang_license_type && json_is_string(lang_license_type) ? strdup(json_string_value(lang_license_type)) : NULL;
+    info->lang_license_url = lang_license_url && json_is_string(lang_license_url) ? strdup(json_string_value(lang_license_url)) : NULL;
+    info->default_main_file = default_main_file && json_is_string(default_main_file) ? strdup(json_string_value(default_main_file)) : NULL;
+    info->instructions = instructions && json_is_string(instructions) ? strdup(json_string_value(instructions)) : NULL;
+    info->template_version = template_version && json_is_string(template_version) ? strdup(json_string_value(template_version)) : NULL;
+    info->update_url = update_url && json_is_string(update_url) ? strdup(json_string_value(update_url)) : NULL;
+    info->main_file_path = main_file_path && json_is_string(main_file_path) ? strdup(json_string_value(main_file_path)) : NULL;
+    info->main_file_template = main_file_template && json_is_string(main_file_template) ? strdup(json_string_value(main_file_template)) : NULL;
+    info->comment = comment && json_is_string(comment) ? strdup(json_string_value(comment)) : NULL;
 
-    json_t *array;
-    size_t i;
-
-    // System Support
-    array = json_object_get(root, "system_support");
-    LOG_LOCATION
-    info->system_support_count = json_array_size(array);
-    info->system_support = malloc(info->system_support_count * sizeof(char *));
-    for (i = 0; i < info->system_support_count; i++) {
-        info->system_support[i] = strdup(json_string_value(json_array_get(array, i)));
+    // If version is 1, process build_file_paths
+    if (1 == 1) {
+        // Updated Build File Paths
+        json_t *build_file_path = json_object_get(root, "build_file_path");
+        info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
+        info->build_file_paths.bash_path = strdup(json_string_value(json_object_get(build_file_path, "bash")));
     }
-    LOG_LOCATION
 
-    // Build Type
-    array = json_object_get(root, "build_type");
-    LOG_LOCATION
-    info->build_type_count = json_array_size(array);
-    info->build_type = malloc(info->build_type_count * sizeof(char *));
-    for (i = 0; i < info->build_type_count; i++) {
-        info->build_type[i] = strdup(json_string_value(json_array_get(array, i)));
+    // Parse arrays for system_support, build_type, extensions, dependencies, folders_to_create, commands_to_run, compiler_urls
+    info->system_support_count = json_is_array(system_support) ? json_array_size(system_support) : 0;
+    info->system_support = info->system_support_count > 0 ? malloc(info->system_support_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->system_support_count; i++) {
+        info->system_support[i] = strdup(json_string_value(json_array_get(system_support, i)));
     }
-    LOG_LOCATION
 
-    // Lib Support
-    info->lib_support = json_boolean_value(json_object_get(root, "lib_support"));
-    LOG_LOCATION
-
-    // Updated Build File Paths
-    json_t *build_file_path = json_object_get(root, "build_file_path");
-    info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
-    info->build_file_paths.bash_path = strdup(json_string_value(json_object_get(build_file_path, "bash")));
-    LOG_LOCATION
-
-    // Git Ignore Path
-    info->git_ignore_path = strdup(json_string_value(json_object_get(root, "git_ignore_path")));
-    LOG_LOCATION
-
-    // Version Template Path
-    info->version_template_path = strdup(json_string_value(json_object_get(root, "version_template_path")));
-    LOG_LOCATION
-
-    // Compiler URLs
-    array = json_object_get(root, "compiler_urls");
-    LOG_LOCATION
-    info->compiler_urls_count = json_array_size(array);
-    info->compiler_urls = malloc(info->compiler_urls_count * sizeof(char *));
-    for (i = 0; i < info->compiler_urls_count; i++) {
-        info->compiler_urls[i] = strdup(json_string_value(json_array_get(array, i)));
+    info->build_type_count = json_is_array(build_type) ? json_array_size(build_type) : 0;
+    info->build_type = info->build_type_count > 0 ? malloc(info->build_type_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->build_type_count; i++) {
+        info->build_type[i] = strdup(json_string_value(json_array_get(build_type, i)));
     }
-    LOG_LOCATION
 
-    // Description
-    info->description = strdup(json_string_value(json_object_get(root, "description")));
-    LOG_LOCATION
-
-    // Template Author
-    info->template_author = strdup(json_string_value(json_object_get(root, "template_author")));
-    LOG_LOCATION
-
-    // Git Repo
-    info->git_repo = strdup(json_string_value(json_object_get(root, "git_repo")));
-    LOG_LOCATION
-
-    // Lang License
-    json_t *lang_license = json_object_get(root, "lang_license");
-    info->lang_license_type = strdup(json_string_value(json_object_get(lang_license, "type")));
-    info->lang_license_url = strdup(json_string_value(json_object_get(lang_license, "url")));
-    LOG_LOCATION
-
-    // Default Main File
-    info->default_main_file = strdup(json_string_value(json_object_get(root, "default_main_file")));
-    LOG_LOCATION
-
-    // Extensions
-    array = json_object_get(root, "extensions");
-    info->extensions_count = json_array_size(array);
-    info->extensions = malloc(info->extensions_count * sizeof(char *));
-    for (i = 0; i < info->extensions_count; i++) {
-        info->extensions[i] = strdup(json_string_value(json_array_get(array, i)));
+    info->extensions_count = json_is_array(extensions) ? json_array_size(extensions) : 0;
+    info->extensions = info->extensions_count > 0 ? malloc(info->extensions_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->extensions_count; i++) {
+        info->extensions[i] = strdup(json_string_value(json_array_get(extensions, i)));
     }
-    LOG_LOCATION
 
-    // Dependencies
-    array = json_object_get(root, "dependencies");
-    info->dependencies_count = json_array_size(array);
-    info->dependencies = malloc(info->dependencies_count * sizeof(char *));
-    for (i = 0; i < info->dependencies_count; i++) {
-        info->dependencies[i] = strdup(json_string_value(json_array_get(array, i)));
+    info->dependencies_count = json_is_array(dependencies) ? json_array_size(dependencies) : 0;
+    info->dependencies = info->dependencies_count > 0 ? malloc(info->dependencies_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->dependencies_count; i++) {
+        info->dependencies[i] = strdup(json_string_value(json_array_get(dependencies, i)));
     }
-    LOG_LOCATION
 
-    // Instructions
-    info->instructions = strdup(json_string_value(json_object_get(root, "instructions")));
-    LOG_LOCATION
-
-    // Template Version
-    info->template_version = strdup(json_string_value(json_object_get(root, "template_version")));
-    LOG_LOCATION
-
-    // Update URL
-    info->update_url = strdup(json_string_value(json_object_get(root, "update_url")));
-    LOG_LOCATION
-
-    // Folders to Create
-    array = json_object_get(root, "folders_to_create");
-    info->folders_to_create_count = json_array_size(array);
-    info->folders_to_create = malloc(info->folders_to_create_count * sizeof(char *));
-    for (i = 0; i < info->folders_to_create_count; i++) {
-        info->folders_to_create[i] = strdup(json_string_value(json_array_get(array, i)));
+    info->folders_to_create_count = json_is_array(folders_to_create) ? json_array_size(folders_to_create) : 0;
+    info->folders_to_create = info->folders_to_create_count > 0 ? malloc(info->folders_to_create_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->folders_to_create_count; i++) {
+        info->folders_to_create[i] = strdup(json_string_value(json_array_get(folders_to_create, i)));
     }
-    LOG_LOCATION
 
-    // Commands to Run
-    array = json_object_get(root, "commands_to_run");
-    info->commands_to_run_count = json_array_size(array);
-    info->commands_to_run = malloc(info->commands_to_run_count * sizeof(char *));
-    for (i = 0; i < info->commands_to_run_count; i++) {
-        info->commands_to_run[i] = strdup(json_string_value(json_array_get(array, i)));
+    info->commands_to_run_count = json_is_array(commands_to_run) ? json_array_size(commands_to_run) : 0;
+    info->commands_to_run = info->commands_to_run_count > 0 ? malloc(info->commands_to_run_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->commands_to_run_count; i++) {
+        info->commands_to_run[i] = strdup(json_string_value(json_array_get(commands_to_run, i)));
     }
-    LOG_LOCATION
 
-    // Main File Path
-    info->main_file_path = strdup(json_string_value(json_object_get(root, "main_file_path")));
-    LOG_LOCATION
+    info->compiler_urls_count = json_is_array(compiler_urls) ? json_array_size(compiler_urls) : 0;
+    info->compiler_urls = info->compiler_urls_count > 0 ? malloc(info->compiler_urls_count * sizeof(char *)) : NULL;
+    for (size_t i = 0; i < info->compiler_urls_count; i++) {
+        info->compiler_urls[i] = strdup(json_string_value(json_array_get(compiler_urls, i)));
+    }
 
-    // Main File Template
-    info->main_file_template = strdup(json_string_value(json_object_get(root, "main_file_template")));
-    LOG_LOCATION
+    if (info->version == 2) {
+        info->files_to_include_count = json_is_array(files_to_include) ? json_array_size(files_to_include) : 0;
+        info->files_to_include = info->files_to_include_count > 0 ? malloc(info->files_to_include_count * sizeof(char *)) : NULL;
+        for (size_t i = 0; i < info->files_to_include_count; i++) {
+            info->files_to_include[i] = strdup(json_string_value(json_array_get(files_to_include, i)));
+        }
+    }
 
-    // Comment
-    info->comment = strdup(json_string_value(json_object_get(root, "comment")));
-    LOG_LOCATION
-    // json_decref(root);
+    // Return the parsed information
+    // return info;
 }
 void clean_url(char *url) {
     size_t len = strlen(url);
@@ -521,6 +485,7 @@ int create_project(char *project_name, char *project_description, char *project_
         }
 
         // Format the string safely using snprintf
+        printf("Here\n");
         snprintf(makefile_path, strlen(LANG_BASE_URL) + strlen(info.build_file_paths.makefile_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_paths.makefile_path);
 
         // Output the final path
