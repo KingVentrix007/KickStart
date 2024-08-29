@@ -109,14 +109,12 @@ int main_build() {
 //     fgets(generate_structure, sizeof(generate_structure), stdin);
 //     generate_structure[strcspn(generate_structure, "\n")] = 0;  // Remove trailing newline
 // #else
-    char *generate_structure = "yes";
+    // char *generate_structure = "yes";
 // #endif
 
     lowercase(project_language);
 
-    if (strcmp(project_language, "python") == 0 || strcmp(project_language, "py") == 0) {
-        create_project_py(project_name, project_description, project_author, project_license, project_version, project_dependencies, generate_readme, initialize_git, create_license_file, generate_structure);
-    } else {
+   
         printf("Searching for language template %s\n", project_language);
 
         int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file);
@@ -126,7 +124,7 @@ int main_build() {
             printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
             printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/KickStartFiles/tree/main and add a template for your language\n");
         }
-    }
+    
 
     return 0;
 }

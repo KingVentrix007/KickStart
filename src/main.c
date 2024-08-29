@@ -40,7 +40,16 @@ int main(int argc, char **argv) {
         }
     }else if (strcmp(argv[1],"template") == 0)
     {
-        create_template();
+        if(argc >= 3 && strcmp(argv[2],"-f") == 0)
+        {
+            printf("Ill get to this, maybe\n");
+        }
+        else
+        {   
+            create_template();
+
+        }
+        
     }
      
     else {

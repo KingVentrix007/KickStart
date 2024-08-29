@@ -280,7 +280,7 @@ int create_template() {
         json_array_append_new(json_object_get(json_obj, "commands_to_run"), json_string(commands_to_run[i]));
     }
     json_object_set_new(json_obj, "main_file_path", json_string(main_file_path));
-    json_object_set_new(json_obj, "main_file_template", json_string("cpp/main.cpp")); // Default main file path
+    json_object_set_new(json_obj, "main_file_template", json_string(default_main_file)); // Default main file path
     json_object_set_new(json_obj, "comment", json_string(comment));
 
     // Write JSON object to file

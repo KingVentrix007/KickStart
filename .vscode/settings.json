@@ -18,6 +18,7 @@
         "jansson.h": "c",
         "fetch.h": "c",
         "cerrno": "c",
-        "cpkg_main.h": "c"
+        "cpkg_main.h": "c",
+        "errno.h": "c"
     }
 }
