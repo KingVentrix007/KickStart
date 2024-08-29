@@ -344,7 +344,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
 
     
     // If version is 1, process build_file_paths
-    if (info->special_build == true && info->version >= 2) {
+    if (info->special_build == false) {
         // Updated Build File Paths
         json_t *build_file_path = json_object_get(root, "build_file_path");
         info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
