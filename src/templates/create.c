@@ -92,7 +92,7 @@ void get_input(char *prompt, char *buffer, size_t size) {
 }
 
 int create_template() {
-    printf("Warning. The following code IS outdated, it is recomended to look at one of the templates, such as py, and use that to add your new language\n");
+    printf("Warning. The following code IS outdated, it is recommended to look at one of the templates, such as py, and use that to add your new language\n");
     char confirm_agreement[MAX_INPUT];
     printf("The following assumptions are made:\n");
     printf("1. You will create a makefile at <language_name>/makefile in your language repo folder.\n");

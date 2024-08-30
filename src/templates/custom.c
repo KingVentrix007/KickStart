@@ -207,6 +207,10 @@ typedef struct {
     char *bash_path;
 } BuildFilePaths;
 
+typedef struct{
+    char *name;
+    char *path;
+}BuildSystem;
 // Structure to hold project information
 typedef struct {
     char *name;
@@ -218,6 +222,8 @@ typedef struct {
     int lib_support;
     bool special_build; // Only present in version 2
     BuildFilePaths build_file_paths;  //Might not be present in version 2
+    BuildSystem *build_systems;
+    size_t build_systems_count;
     char *git_ignore_path;            
     char *version_template_path;
     char *description;
@@ -244,6 +250,7 @@ typedef struct {
     size_t compiler_urls_count;
     char **files_to_include; // Only in version 2
     size_t files_to_include_count; // Only in version 2
+    char *compiler_cmd; 
 } ProjectInfo;
 
 
@@ -317,6 +324,8 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     json_t *compiler_urls = json_object_get(root, "compiler_urls");
     json_t *files_to_include = json_object_get(root, "files_to_include"); // Only for version 2
     json_t *special_build = json_object_get(root, "special_build"); // Only for version 2
+    json_t *compiler_cmd = json_object_get(root, "compiler_cmd"); // Only for version 2
+    json_t *build_systems = json_object_get(root, "build_file_path"); // Only for version 2
     // Set default values or parse the values from JSON
     info->version = json_is_integer(version) ? json_integer_value(version) : 1;
     info->name = project_name && json_is_string(project_name) ? strdup(json_string_value(project_name)) : NULL;
@@ -335,7 +344,8 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     info->main_file_path = main_file_path && json_is_string(main_file_path) ? strdup(json_string_value(main_file_path)) : NULL;
     info->main_file_template = main_file_template && json_is_string(main_file_template) ? strdup(json_string_value(main_file_template)) : NULL;
     info->comment = comment && json_is_string(comment) ? strdup(json_string_value(comment)) : NULL;
-
+    info->compiler_cmd = compiler_cmd && json_is_string(compiler_cmd) ? strdup(json_string_value(compiler_cmd)) : NULL;
+    // json_string_value(compiler_cmd);
     if(info->version >= 2)
     {
         info->special_build = special_build && json_is_boolean(special_build);
@@ -349,6 +359,27 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         json_t *build_file_path = json_object_get(root, "build_file_path");
         info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
         info->build_file_paths.bash_path = strdup(json_string_value(json_object_get(build_file_path, "bash")));
+        if(info->version >= 2)
+        {
+            size_t index;
+            const char *key;
+            json_t *value;
+            info->build_systems_count = json_object_size(build_file_path);
+            info->build_systems = malloc(sizeof(BuildSystem) * (info->build_systems_count));
+            if (!info->build_systems) {
+                fprintf(stderr, "Error: Unable to allocate memory for build systems\n");
+                return NULL;
+            }
+            index = 0;
+            json_object_foreach(build_file_path, key, value)
+            {
+                if (json_is_string(value)) {
+                    info->build_systems[index].name = strdup(key);
+                    info->build_systems[index].path = strdup(json_string_value(value));
+                    index++;
+        }
+            }
+        }
     }
 
     // Parse arrays for system_support, build_type, extensions, dependencies, folders_to_create, commands_to_run, compiler_urls
@@ -535,7 +566,7 @@ int create_project(char *project_name, char *project_description, char *project_
         else
         {
             printf("make is not installed\n");
-            printf("It is recommended to install make to build your project, but a bash script will be used i ints place\n");
+            printf("It is recommended to install make to build your project, but a bash script will be used in its place\n");
             char *bash_script_path = malloc(strlen(info.build_file_paths.bash_path)+20);
             if (bash_script_path == NULL) {
                 fprintf(stderr, "Memory allocation failed!\n");
@@ -732,6 +763,15 @@ int create_project(char *project_name, char *project_description, char *project_
         fclose(custom_file);
     }
 }
+    if(system(info.compiler_cmd) != 0)
+    {
+        printf("Compiler for language %s is not installed\n",project_language);
+        for (size_t i = 0; i < info.compiler_urls_count; i++)
+        {
+            printf("%ld: %s",i,info.compiler_urls[i]);
+        }
+        
+    }
 
         // char *readme_data = fetch_data(readme_path);
     // Use the ProjectInfo structure for further project creation tasks...
