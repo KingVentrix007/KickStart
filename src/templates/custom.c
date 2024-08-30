@@ -325,7 +325,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     json_t *files_to_include = json_object_get(root, "files_to_include"); // Only for version 2
     json_t *special_build = json_object_get(root, "special_build"); // Only for version 2
     json_t *compiler_cmd = json_object_get(root, "compiler_cmd"); // Only for version 2
-    json_t *build_systems = json_object_get(root, "build_file_path"); // Only for version 2
+    // json_t *build_systems = json_object_get(root, "build_file_path"); // Only for version 2
     // Set default values or parse the values from JSON
     info->version = json_is_integer(version) ? json_integer_value(version) : 1;
     info->name = project_name && json_is_string(project_name) ? strdup(json_string_value(project_name)) : NULL;
@@ -368,7 +368,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
             info->build_systems = malloc(sizeof(BuildSystem) * (info->build_systems_count));
             if (!info->build_systems) {
                 fprintf(stderr, "Error: Unable to allocate memory for build systems\n");
-                return NULL;
+                return;
             }
             index = 0;
             json_object_foreach(build_file_path, key, value)
@@ -516,76 +516,38 @@ int create_project(char *project_name, char *project_description, char *project_
     // ds
     if(info.version >= 2 && info.special_build != true)
     {
-        if(system("make -v") == 0)
+
+        for (size_t i = 0; i < info.build_systems_count; i++)
         {
-            char *makefile_path = malloc(strlen(LANG_BASE_URL) + strlen(info.build_file_paths.makefile_path) + 10);
-
-            if (makefile_path == NULL) {
-                fprintf(stderr, "Memory allocation failed!\n");
-                return 1;
-            }
-
-            // Format the string safely using snprintf
-            printf("Here\n");
-            snprintf(makefile_path, strlen(LANG_BASE_URL) + strlen(info.build_file_paths.makefile_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_paths.makefile_path);
-
-            // Output the final path
-            // printf("Makefile Path: %s\n", makefile_path);
-            // clean_url(makefile_path);
-            char *makefile_data = fetch_data(makefile_path);
-            // clean_url(makefile_path);
-            printf("%s\n",makefile_data);
-            char makefile_create_path[1024];
-            char *makefile =  "makefile";
-            snprintf(makefile_create_path, sizeof(makefile_create_path), "%s/%s", base_dir,makefile);
-            FILE *fp = fopen(makefile_create_path,"w");
-            fwrite(makefile_data, 1, strlen(makefile_data), fp);
-            fclose(fp);
-            // free(makefile_create_path);
-            free(makefile_path);
-            free(makefile_data);
-                char *config_mk_path = malloc(strlen(LANG_BASE_URL) + strlen("config.mk") + 12);
-            if (config_mk_path == NULL) {
-                fprintf(stderr, "Memory allocation failed!\n");
-                return 1;
-            }
-            // Format the string safely using snprintf
-            snprintf(config_mk_path, strlen(LANG_BASE_URL) + strlen("config.mk") + 12, "%s/%s/%s", LANG_BASE_URL, project_language,"config.mk");
-            char *config_mk_data = fetch_data(config_mk_path);
-            char config_mk_create_path[1024];
-            snprintf(config_mk_create_path, sizeof(config_mk_create_path), "%s/%s", base_dir, "config.mk");
-            // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
-            char *config_mk_data_formatted = replace_string(config_mk_data, "${project_name}", project_name);
-            FILE *fp3 = fopen(config_mk_create_path,"w");
-            fwrite(config_mk_data_formatted, 1, strlen(config_mk_data_formatted), fp3);
-            fclose(fp3);
-            free(config_mk_path);
-            free(config_mk_data);
-            free(config_mk_data_formatted);
-        }
-        else
-        {
-            printf("make is not installed\n");
-            printf("It is recommended to install make to build your project, but a bash script will be used in its place\n");
-            char *bash_script_path = malloc(strlen(info.build_file_paths.bash_path)+20);
-            if (bash_script_path == NULL) {
-                fprintf(stderr, "Memory allocation failed!\n");
-                return 1;
-            }
-            // Format the string safely using snprintf
-            snprintf(bash_script_path, strlen(LANG_BASE_URL) + strlen(info.build_file_paths.bash_path) + 10, "%s/%s", LANG_BASE_URL, info.build_file_paths.bash_path);
-            char *bash_script_data = fetch_data(bash_script_path);
-            char bash_script_create_path[1024];
-            snprintf(bash_script_create_path, sizeof(bash_script_create_path), "%s/%s", base_dir, "build.sh");
-            char *bash_script_data_formatted = replace_string(bash_script_data, "${project_name}", project_name);
-            FILE *fp5 = fopen(bash_script_create_path,"w");
-            fwrite(bash_script_data_formatted, 1, strlen(bash_script_data_formatted), fp5);
-            fclose(fp5);
-            free(bash_script_path);
-            free(bash_script_data);
-
+            printf("%ld: %s\n",i,info.build_systems[i].name);
 
         }
+        printf("Please select a supported build system: ");
+
+        size_t choice = 0;
+        scanf("%ld",&choice);
+        while(choice > info.build_systems_count)
+        {
+            printf("Invalid option: ");
+            scanf("%ld",&choice);
+        }
+        char *build_script_path = info.build_systems[choice].path;
+        char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
+        snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
+        char *build_script_contents = fetch_data(build_script_url);
+        char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
+        if(build_script_contents == NULL)
+        {
+            printf("Build option not available\n");
+            return 0;
+        }
+        FILE *build_script = fopen(info.build_systems[choice].name,"w");
+        fprintf(build_script,"%s",build_script_contents_formatted);
+        fclose(build_script);
+        free(build_script_contents);
+        free(build_script_url);
+        free(build_script_contents_formatted);
+        
     }
     
     // Create main.
