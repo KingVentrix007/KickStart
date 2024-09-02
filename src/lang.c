@@ -35,3 +35,33 @@ char* get_lang() {
 
     return lang_value;
 }
+char* get_install() {
+    const char *filename = "project.json";
+    json_error_t error;
+    json_t *root;
+    json_t *install;
+    char *install_value = NULL;
+
+    // Load and parse the JSON file
+    root = json_load_file(filename, 0, &error);
+    if(!root) {
+        fprintf(stderr, "Error loading JSON file: %s\n", error.text);
+        return NULL;
+    }
+
+    // Extract the "language" value from the JSON data
+    install = json_object_get(root, "install_cmd");
+    if(!json_is_string(install)) {
+        fprintf(stderr, "Error: install field is missing or not a string\n");
+        json_decref(root);
+        return NULL;
+    }
+
+    // Copy the language value to a new string
+    install_value = strdup(json_string_value(install));
+
+    // Clean up
+    json_decref(root);
+
+    return install_value;
+}

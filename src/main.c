@@ -10,7 +10,7 @@
 
 
 char* get_lang();
-
+char* get_install();
 int main_build();
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -32,11 +32,21 @@ int main(int argc, char **argv) {
         }
 
         char *lang = get_lang();
+        char *install_cmd = get_install();
         if (strcmp(lang, "c") == 0) {
             cpkg_main(argv[2], lang);
-        } else {
-            fprintf(stderr, "Unsupported language: %s\n", lang);
-            return 1;
+        } else if (strcmp(install_cmd,"(null)") == 0)
+        {
+            cpkg_main(argv[2], lang);
+        }   
+        else
+        {
+            char *command = malloc(strlen(argv[2])+strlen(install_cmd)+50);
+            snprintf(command,strlen(argv[2])+strlen(install_cmd)+50,"%s %s",install_cmd,argv[2]);
+            system(command);
+            free(command);
+            // fprintf(stderr, "Unsupported language: %s\n", lang);
+            // return 1;
         }
     }else if (strcmp(argv[1],"template") == 0)
     {

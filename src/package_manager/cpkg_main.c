@@ -384,6 +384,11 @@ int cpkg_main(char *lib_name,char *language)
             // Save source files
             save_source_files(lib_info);
             save_header_files(lib_info);
+            free(json_data);
+            free(lib_name_buffer_file);
+            return 0;
+
+
             // Free allocated memory
             // free_library_info(lib_info);
         }
