@@ -110,7 +110,7 @@ char *fetch_json(const char *url) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 
         res = curl_easy_perform(curl);
-        printf("URL: %s\n", url);
+        // printf("URL: %s\n", url);
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
             free(buffer);
@@ -125,7 +125,7 @@ char *fetch_json(const char *url) {
     }
 
     curl_global_cleanup();
-    printf("buffer == [%s]\n",buffer);
+    // printf("buffer == [%s]\n",buffer);
     return buffer;
 }
 
@@ -178,7 +178,7 @@ char *get_lang_path(const char *lang) {
     snprintf(url, sizeof(url), "%s/index.json", LANG_BASE_URL);
 
     char *json_data = fetch_json(url);
-    printf("json_data == %s\n",json_data);
+    // printf("json_data == %s\n",json_data);
     if (!json_data) {
         fprintf(stderr, "Failed to fetch JSON data\n");
         return NULL;
@@ -188,7 +188,7 @@ char *get_lang_path(const char *lang) {
     free(json_data);  // Free the JSON data after use
 
     if (path) {
-        printf("Path for language '%s': %s\n", lang, path);
+        // printf("Path for language '%s': %s\n", lang, path);
         return strdup(path);  // Return a copy of the path
     }
     return NULL;
@@ -218,7 +218,7 @@ typedef struct {
     char **system_support;
     size_t system_support_count;
     char **build_type;
-    size_t build_type_count; 
+    // size_t build_type_count; 
     int lib_support;
     bool special_build; // Only present in version 2
     BuildFilePaths build_file_paths;  //Might not be present in version 2
@@ -251,6 +251,7 @@ typedef struct {
     char **files_to_include; // Only in version 2
     size_t files_to_include_count; // Only in version 2
     char *compiler_cmd; 
+    char *package_install_command;
 } ProjectInfo;
 
 
@@ -288,7 +289,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     if (info->comment) free(info->comment);
 
     FREE_STRING_ARRAY(info->system_support, info->system_support_count);
-    FREE_STRING_ARRAY(info->build_type, info->build_type_count);
+    // FREE_STRING_ARRAY(info->build_type, info->build_type_count);
     FREE_STRING_ARRAY(info->extensions, info->extensions_count);
     FREE_STRING_ARRAY(info->dependencies, info->dependencies_count);
     FREE_STRING_ARRAY(info->folders_to_create, info->folders_to_create_count);
@@ -300,7 +301,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     json_t *project_name = json_object_get(root, "name");
     json_t *version = json_object_get(root, "version"); // Assuming version is an integer now
     json_t *system_support = json_object_get(root, "system_support");
-    json_t *build_type = json_object_get(root, "build_type");
+    // json_t *build_type = json_object_get(root, "build_type");
     json_t *lib_support = json_object_get(root, "lib_support");
     // json_t *build_file_paths = json_object_get(root, "build_file_paths");
     json_t *git_ignore_path = json_object_get(root, "git_ignore_path");
@@ -325,6 +326,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     json_t *files_to_include = json_object_get(root, "files_to_include"); // Only for version 2
     json_t *special_build = json_object_get(root, "special_build"); // Only for version 2
     json_t *compiler_cmd = json_object_get(root, "compiler_cmd"); // Only for version 2
+    json_t *package_install_command = json_object_get(root, "package_install"); // Only for version 2
     // json_t *build_systems = json_object_get(root, "build_file_path"); // Only for version 2
     // Set default values or parse the values from JSON
     info->version = json_is_integer(version) ? json_integer_value(version) : 1;
@@ -345,6 +347,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     info->main_file_template = main_file_template && json_is_string(main_file_template) ? strdup(json_string_value(main_file_template)) : NULL;
     info->comment = comment && json_is_string(comment) ? strdup(json_string_value(comment)) : NULL;
     info->compiler_cmd = compiler_cmd && json_is_string(compiler_cmd) ? strdup(json_string_value(compiler_cmd)) : NULL;
+    info->package_install_command = package_install_command && json_is_string(package_install_command) ? strdup(json_string_value(package_install_command)) : NULL;
     // json_string_value(compiler_cmd);
     if(info->version >= 2)
     {
@@ -389,11 +392,11 @@ void parse_json(const char *json_data, ProjectInfo *info) {
         info->system_support[i] = strdup(json_string_value(json_array_get(system_support, i)));
     }
 
-    info->build_type_count = json_is_array(build_type) ? json_array_size(build_type) : 0;
-    info->build_type = info->build_type_count > 0 ? malloc(info->build_type_count * sizeof(char *)) : NULL;
-    for (size_t i = 0; i < info->build_type_count; i++) {
-        info->build_type[i] = strdup(json_string_value(json_array_get(build_type, i)));
-    }
+    // info->build_type_count = json_is_array(build_type) ? json_array_size(build_type) : 0;
+    // info->build_type = info->build_type_count > 0 ? malloc(info->build_type_count * sizeof(char *)) : NULL;
+    // for (size_t i = 0; i < info->build_type_count; i++) {
+    //     info->build_type[i] = strdup(json_string_value(json_array_get(build_type, i)));
+    // }
 
     info->extensions_count = json_is_array(extensions) ? json_array_size(extensions) : 0;
     info->extensions = info->extensions_count > 0 ? malloc(info->extensions_count * sizeof(char *)) : NULL;
@@ -467,7 +470,7 @@ int create_project(char *project_name, char *project_description, char *project_
         fprintf(stderr, "Failed to get path for language '%s'\n", project_language);
         return 1;
     }
-    printf("Language path: %s\n", lang_path);
+    // printf("Language path: %s\n", lang_path);
 
     char lang_json[1024];
     snprintf(lang_json, sizeof(lang_json), "%s%s", LANG_BASE_URL, lang_path);
@@ -481,7 +484,7 @@ int create_project(char *project_name, char *project_description, char *project_
 
     // Initialize ProjectInfo structure
     ProjectInfo info;
-    printf("lang_json_data == [%s]\n",lang_json_data);
+    // printf("lang_json_data == [%s]\n",lang_json_data);
     memset(&info, 0, sizeof(info));
     parse_json(lang_json_data, &info);
     free(lang_json_data);  // Free lang_json_data after use
@@ -558,12 +561,12 @@ int create_project(char *project_name, char *project_description, char *project_
     }
     // Format the string safely using snprintf
     snprintf(main_file_path, strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 10, "%s/%s", LANG_BASE_URL, info.main_file_template);
-    printf("main_file_path == %s\n",main_file_path);
+    // printf("main_file_path == %s\n",main_file_path);
     char *main_file_data = fetch_data(main_file_path);
     char main_file_create_path[1024];
     snprintf(main_file_create_path, sizeof(main_file_create_path), "%s/%s", base_dir,info.main_file_path);
     char *formatted_main_file_path = replace_string(main_file_create_path, "${project_name}", project_name);
-    printf("main_file_create_path == %s\n",formatted_main_file_path);
+    // printf("main_file_create_path == %s\n",formatted_main_file_path);
     FILE *fp2 = fopen(formatted_main_file_path,"w");
     fprintf(fp2, "%s File: %s\n",info.comment,info.default_main_file);
     fprintf(fp2, "%s Author: %s\n",info.comment, project_author);
@@ -684,7 +687,9 @@ int create_project(char *project_name, char *project_description, char *project_
     fprintf(project_json, "    \"author\": \"%s\",\n", project_author_copy);
     fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
     fprintf(project_json, "    \"dependencies\": \"%s\",\n", project_dependencies_copy);
-    fprintf(project_json, "    \"lang\": \"%s\"\n",project_language);
+    fprintf(project_json, "    \"language\": \"%s\",\n",project_language);
+    fprintf(project_json, "    \"install_cmd\": \"%s\"\n",info.package_install_command);
+
     fprintf(project_json, "}\n");
     fclose(project_json);
     if(info.version >= 2)
@@ -704,9 +709,12 @@ int create_project(char *project_name, char *project_description, char *project_
 
         char *file_data = fetch_data(file_url);
         if (file_data == NULL)
-        {+
+        {
             fprintf(stderr, "Failed to fetch data from URL: %s\n", file_url);
             free(file_url);
+            FILE *blankfile = fopen(file_path,"w");
+            fprintf(blankfile,"%s","# Template\n");
+            fclose(blankfile);
             continue;
         }
 

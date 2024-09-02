@@ -20,5 +20,7 @@
         "cerrno": "c",
         "cpkg_main.h": "c",
         "errno.h": "c"
-    }
+    },
+    "pieces.cloudCapabilities": "Blended",
+    "pieces.telemetry": true
 }

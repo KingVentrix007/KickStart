@@ -46,9 +46,11 @@ int main_build() {
         if (strcmp(project_license, "l") == 0 || strcmp(project_license, "L") == 0) {
             const char *lic = license_menu();
             strcpy(project_license, lic);
-        }
-    }
+            getchar();
 
+        }
+
+    }
     char project_version[256] = "1.0.0";
     printf("Enter project version (e.g., 1.0.0) [default: %s]: ", project_version);
     fgets(project_version, sizeof(project_version), stdin);
@@ -68,6 +70,8 @@ int main_build() {
         if (strcmp(project_language, "l") == 0 || strcmp(project_language, "L") == 0) {
             const char *lang = language_menu();
             strcpy(project_language, lang);
+            getchar();
+
         }
     }
 
