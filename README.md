@@ -35,8 +35,46 @@
   - **Web Browser/Chat App Templates**: Provides starter templates for common project types like a web browser or chat application, influencing the main file structure and included dependencies.
 ## Getting Started
 
+## Download
+!! Warning !! Downloads may be out of date
+
 To get started with Kick Start, simply run the tool and follow the on-screen prompts to create your project. The tool will guide you through the process of naming your project, providing a description, selecting a license, and more.
+
+### Build
+1. Clone the repo
+    ```bash
+    git clone https://github.com/KingVentrix007/KickStart.git
+    ```
+2. Enter `KickStart` dir
+    ```bash
+    cd KickStart
+    ```
+3. run `make` or `make build
+  
+    3.1. `make` builds the testing version
+    ```bash
+    make
+    ``` 
+    3.2. `make build` builds the release version
+    ```bash
+    make build
+    ``` 
+4. Run
+    ```bash
+    make run # for the testing version, will create a tests dir and build project in there
+    ```
+    ```bash
+    ./kpm <init|template|install> # for release version
+    ```
+5. Follow the on screen prompts
+
+!! Warning !!
+1. The template code is **INCOMPLETE** and will remain so for sometime, please see one of the other lang.json file to learn from
+2. ./kpm install only works with C and languages with a built in package manger
+
 
 ---
 
 **Note**: Kick Start is a work in progress, and features may be added, modified, or removed in future updates. Stay tuned for improvements and new functionalities. Please see the [ROADMAP](ROADMAP.md)
+
+
