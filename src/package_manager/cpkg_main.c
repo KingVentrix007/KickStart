@@ -57,7 +57,15 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb,
   return realsize;
 }
 
-// Function to fetch the index.json from the URL
+/**
+ * @brief Fetches the index.json file from the specified URL and returns its content as a string.
+ * 
+ * This function initializes a cURL session, sets up the necessary options to fetch the index.json file,
+ * performs the HTTP request, and stores the response in a dynamically allocated memory buffer.
+ * 
+ * @return char* A pointer to the dynamically allocated memory buffer containing the content of index.json.
+ *               Returns NULL if the fetch operation fails.
+ */
 char *fetch_index_json() {
   CURL *curl_handle;
   CURLcode res;
@@ -93,6 +101,7 @@ char *fetch_index_json() {
 
   return chunk.memory;
 }
+
 char *fetch_json_data(const char *url) {
   CURL *curl_handle;
   CURLcode res;
