@@ -286,6 +286,15 @@ void create_dirs_recursively(const char *path) {
   mkdir(tmp, 0700);
 }
 
+/**
+ * @brief Saves header files from the library information to the specified directory.
+ * 
+ * This function iterates over the list of header file paths in the library information,
+ * constructs the local path for each header file, ensures the necessary directories exist,
+ * constructs the URL for each header file, and fetches and saves the header files to the local paths.
+ * 
+ * @param lib_info Pointer to the LibraryInfo structure containing the library information.
+ */
 void save_header_files(LibraryInfo *lib_info) {
   char base_dir[256];
   snprintf(base_dir, sizeof(base_dir), "libs/%s", lib_info->name);
@@ -318,7 +327,12 @@ void save_header_files(LibraryInfo *lib_info) {
   }
 }
 
-// Function to save files from src_paths to the specified directory
+// Prev: Function to save files from src_paths to the specified directory
+/**
+ * @brief 
+ * 
+ * @param lib_info 
+ */
 void save_source_files(LibraryInfo *lib_info) {
   char base_dir[256];
   snprintf(base_dir, sizeof(base_dir), "libs/%s", lib_info->name);
@@ -350,6 +364,7 @@ void save_source_files(LibraryInfo *lib_info) {
     }
   }
 }
+
 int directory_exists(const char *path) {
   DIR *dir = opendir(path);
   if (dir) {
