@@ -327,11 +327,14 @@ void save_header_files(LibraryInfo *lib_info) {
   }
 }
 
-// Prev: Function to save files from src_paths to the specified directory
 /**
- * @brief 
+ * @brief Saves source files from the library information to the specified directory.
  * 
- * @param lib_info 
+ * This function iterates over the list of source file paths in the library information,
+ * constructs the local path for each source file, ensures the necessary directories exist,
+ * constructs the URL for each source file, and fetches and saves the source files to the local paths.
+ * 
+ * @param lib_info Pointer to the LibraryInfo structure containing the library information.
  */
 void save_source_files(LibraryInfo *lib_info) {
   char base_dir[256];
