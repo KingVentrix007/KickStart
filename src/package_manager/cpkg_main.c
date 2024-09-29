@@ -243,7 +243,7 @@ int fetch_and_save_file(const char *url, const char *local_path) {
 }
 
 /**
- * @brief Create a directory if it does'nt exist
+ * @brief Create a directory if it doesn't exist
  * 
  * @param path 
  */
