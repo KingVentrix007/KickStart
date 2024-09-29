@@ -448,6 +448,19 @@ int directory_exists(const char *path) {
 //     free(lib_name_buffer_file);
 //     return 0;
 // }
+
+/**
+ * @brief Main function to install a package.
+ * 
+ * This function is the entry point for installing a package. It retrieves the path
+ * for the specified library and language, ensures the necessary directories exist,
+ * fetches the library's JSON data, parses it, and saves the source and header files
+ * to the appropriate locations.
+ * 
+ * @param lib_name The name of the library to install.
+ * @param language The language of the library to match.
+ * @return int Returns 0 if the package was successfully installed, otherwise also returns 0.
+ */
 int cpkg_main(char *lib_name, char *language) {
   printf("Installing package\n");
   char *path = get_lib_path(lib_name, language);
