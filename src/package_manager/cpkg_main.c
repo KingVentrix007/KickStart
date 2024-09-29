@@ -102,6 +102,16 @@ char *fetch_index_json() {
   return chunk.memory;
 }
 
+/**
+ * @brief Fetches JSON data from a given URL and returns its content as a string.
+ * 
+ * This function initializes a cURL session, sets up the necessary options to fetch JSON data from the specified URL,
+ * performs the HTTP request, and stores the response in a dynamically allocated memory buffer.
+ * 
+ * @param url The URL from which to fetch the JSON data.
+ * @return char* A pointer to the dynamically allocated memory buffer containing the content of the JSON data.
+ *               Returns NULL if the fetch operation fails.
+ */
 char *fetch_json_data(const char *url) {
   CURL *curl_handle;
   CURLcode res;
@@ -132,6 +142,7 @@ char *fetch_json_data(const char *url) {
 
   return chunk.memory;
 }
+
 // Function to get the path for a specific library name and language
 char *get_lib_path(const char *lib_name, const char *language) {
   char *json_data = fetch_index_json();
