@@ -24,7 +24,19 @@ struct MemoryStruct {
   size_t size;
 };
 
-// Callback function to handle data received from cURL
+/**
+ * @brief Callback function to handle data received from cURL.
+ * 
+ * This function is called by cURL to write the received data into a `MemoryStruct`.
+ * It dynamically resizes the memory buffer to accommodate the incoming data and
+ * appends the data to the buffer.
+ * 
+ * @param contents Pointer to the data received from cURL.
+ * @param size Size of each element in the data.
+ * @param nmemb Number of elements in the data.
+ * @param userp Pointer to the user data, which in this case is a `MemoryStruct`.
+ * @return size_t The number of bytes successfully written.
+ */
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb,
                                   void *userp) {
   size_t realsize = size * nmemb;
