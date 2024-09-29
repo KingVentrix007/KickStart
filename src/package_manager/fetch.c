@@ -75,7 +75,16 @@ LibraryInfo *parse_library_json(const char *json_data) {
   return lib_info;
 }
 
-// Function to free the allocated memory for LibraryInfo
+/**
+ * @brief Frees the allocated memory for a LibraryInfo struct.
+ * 
+ * This function takes a pointer to a LibraryInfo struct and frees all the dynamically
+ * allocated memory associated with it. This includes freeing the memory for the library
+ * name, git URL, raw path, description, author, license, added_by, source paths, header
+ * paths, and keywords.
+ * 
+ * @param lib_info A pointer to the LibraryInfo struct to be freed.
+ */
 void free_library_info(LibraryInfo *lib_info) {
   if (!lib_info)
     return;
