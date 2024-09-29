@@ -250,8 +250,14 @@ void create_dir(const char *path) {
   }
 }
 
-// Function to create directories recursively if they don't exist// Function to
-// create directories recursively if they don't exist
+/**
+ * @brief Creates directories recursively if they don't exist.
+ * 
+ * This function takes a path and ensures that all directories in the path are created.
+ * It handles the creation of intermediate directories if they do not exist.
+ * 
+ * @param path The path for which directories need to be created.
+ */
 void create_dirs_recursively(const char *path) {
   char tmp[512];
   char *p = NULL;
@@ -275,6 +281,7 @@ void create_dirs_recursively(const char *path) {
   }
   mkdir(tmp, 0700);
 }
+
 void save_header_files(LibraryInfo *lib_info) {
   char base_dir[256];
   snprintf(base_dir, sizeof(base_dir), "libs/%s", lib_info->name);
