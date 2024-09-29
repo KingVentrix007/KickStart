@@ -15,7 +15,10 @@
 
 #define INDEX_NAME "index.json"
 
-// Structure to store the response data
+/**
+ * @brief A structure to store the response data from HTTP requests
+ * 
+ */
 struct MemoryStruct {
   char *memory;
   size_t size;
