@@ -4,7 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Function to parse JSON and populate the LibraryInfo struct
+/**
+ * @brief Parses JSON data and populates the LibraryInfo struct.
+ * 
+ * This function takes a JSON string as input, parses it using the Jansson library,
+ * and populates a LibraryInfo struct with the parsed data. The JSON data is expected
+ * to contain information about a library, including its name, git URL, raw path,
+ * source paths, header paths, and other metadata.
+ * 
+ * @param json_data The JSON string to parse.
+ * @return LibraryInfo* A pointer to the dynamically allocated LibraryInfo struct
+ *                     containing the parsed data. Returns NULL if the JSON parsing
+ *                     fails or if memory allocation fails.
+ */
 LibraryInfo *parse_library_json(const char *json_data) {
   json_error_t error;
   json_t *root = json_loads(json_data, 0, &error);
