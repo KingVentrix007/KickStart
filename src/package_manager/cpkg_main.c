@@ -143,7 +143,17 @@ char *fetch_json_data(const char *url) {
   return chunk.memory;
 }
 
-// Function to get the path for a specific library name and language
+/**
+ * @brief Retrieves the path for a specific library name and language from the index.json file.
+ * 
+ * This function fetches the index.json file, parses it, and searches for the specified library name and language.
+ * If the library is found and the language matches, it returns the path associated with the library.
+ * 
+ * @param lib_name The name of the library to search for.
+ * @param language The language of the library to match.
+ * @return char* A pointer to a dynamically allocated string containing the path of the library.
+ *               Returns NULL if the library is not found, the language does not match, or an error occurs.
+ */
 char *get_lib_path(const char *lib_name, const char *language) {
   char *json_data = fetch_index_json();
   if (!json_data) {
@@ -186,6 +196,7 @@ char *get_lib_path(const char *lib_name, const char *language) {
   json_decref(root);
   return result;
 }
+
 // Function to fetch a file from a URL and save it to a local path
 int fetch_and_save_file(const char *url, const char *local_path) {
   CURL *curl_handle;
