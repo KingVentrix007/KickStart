@@ -242,7 +242,11 @@ int fetch_and_save_file(const char *url, const char *local_path) {
   return 0;
 }
 
-// Function to create directories if they don't exist
+/**
+ * @brief Create a directory if it does'nt exist
+ * 
+ * @param path 
+ */
 void create_dir(const char *path) {
   struct stat st = {0};
   if (stat(path, &st) == -1) {
@@ -313,6 +317,7 @@ void save_header_files(LibraryInfo *lib_info) {
     }
   }
 }
+
 // Function to save files from src_paths to the specified directory
 void save_source_files(LibraryInfo *lib_info) {
   char base_dir[256];
