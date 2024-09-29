@@ -197,7 +197,16 @@ char *get_lib_path(const char *lib_name, const char *language) {
   return result;
 }
 
-// Function to fetch a file from a URL and save it to a local path
+/**
+ * @brief Fetches a file from a specified URL and saves it to a local path.
+ * 
+ * This function initializes a cURL session, sets up the necessary options to fetch a file from the specified URL,
+ * performs the HTTP request, and saves the response to the specified local path.
+ * 
+ * @param url The URL from which to fetch the file.
+ * @param local_path The local path where the fetched file should be saved.
+ * @return int Returns 0 if the file was successfully fetched and saved. Returns -1 if an error occurs.
+ */
 int fetch_and_save_file(const char *url, const char *local_path) {
   CURL *curl_handle;
   FILE *fp;
