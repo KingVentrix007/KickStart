@@ -368,6 +368,16 @@ void save_source_files(LibraryInfo *lib_info) {
   }
 }
 
+/**
+ * @brief Checks if a directory exists at the specified path.
+ * 
+ * This function attempts to open the directory at the given path. If the directory
+ * exists, it returns 1. If the directory does not exist, it returns 0. If an error
+ * occurs while trying to open the directory, it returns -1 and prints an error message.
+ * 
+ * @param path The path of the directory to check.
+ * @return int Returns 1 if the directory exists, 0 if it does not exist, and -1 if an error occurs.
+ */
 int directory_exists(const char *path) {
   DIR *dir = opendir(path);
   if (dir) {
@@ -380,6 +390,7 @@ int directory_exists(const char *path) {
     return -1; // Error occurred
   }
 }
+
 // int main() {
 //     const char *lib_name = "buffer";  // replace with the actual library name
 //     you're looking for const char *language = "c";       // replace with the
