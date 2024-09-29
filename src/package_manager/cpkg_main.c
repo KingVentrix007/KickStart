@@ -37,7 +37,7 @@ struct MemoryStruct {
  * @param userp Pointer to the user data, which in this case is a `MemoryStruct`.
  * @return size_t The number of bytes successfully written.
  */
-static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb,
+static size_t write_memory_callback(void *contents, size_t size, size_t nmemb,
                                   void *userp) {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
@@ -83,7 +83,7 @@ char *fetch_index_json() {
   if (ret) {
   }
   curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_memory_callback);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
@@ -124,7 +124,7 @@ char *fetch_json_data(const char *url) {
   curl_handle = curl_easy_init();
 
   curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_memory_callback);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
