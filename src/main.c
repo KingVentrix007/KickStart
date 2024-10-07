@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <jansson.h>
 #include "package_manager/cpkg_main.h"
-        int create_template();
+int create_template();
 
 
 char* get_lang();
@@ -24,7 +24,11 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "init") == 0) {
         main_build();
     } else if (strcmp(argv[1], "install") == 0) {
-        // printf("Package manager is not enabled at the moment\n");
+        printf("Package manager DOSE NOT support big packages like libcurl or jansson\n");
+        printf("In addition, due to a shortage of time. There are very,very few librarys supported, for languages like c, I recommend using clib(https://github.com/clibs/clib)\n");
+        printf("For other languages, I recommend looking for a library manger for that language\n");
+
+
         // return 0;
         if (argc < 3) {
             fprintf(stderr, "Usage: %s install <package_name>\n", argv[0]);
