@@ -22,5 +22,8 @@
         "errno.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
-    "pieces.telemetry": true
+    "pieces.telemetry": true,
+    "cSpell.words": [
+        "nesasarey"
+    ]
 }
