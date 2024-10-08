@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <jansson.h>  // Include Jansson library for JSON handling
-
+#include "stdbool.h"
 #define MAX_INPUT 1024
 #define MAX_ENTRIES 100
 const char *supported_build_types[] = {"makefile", "bash", NULL};
@@ -92,87 +92,267 @@ void get_input(char *prompt, char *buffer, size_t size) {
 }
 
 int create_template() {
-    printf("Warning. The following code IS deprecated, it is recommended to look at one of the templates, such as py, and use that to add your new language\n");
-    printf("I do have intentions of updating it, but it is a later project\n");
-    return 0;
+    // printf("Warning. The following code IS deprecated, it is recommended to look at one of the templates, such as py, and use that to add your new language\n");
+    // printf("I do have intentions of updating it, but it is a later project\n");
+    // return 0;
     char confirm_agreement[MAX_INPUT];
     printf("The following assumptions are made:\n");
-    printf("1. You will create a makefile at <language_name>/makefile in your language repo folder.\n");
-    printf("2. You will create a bash script at <language_name>/build.sh in your language repo folder.\n");
-    printf("3. You will create a .gitignore at <language_name>/.gitignore in your language repo folder.\n");
-    printf("4. You will create a main.<lang_extension> at <language_name>/main.<lang_extension> in your language repo folder.\n");
-    printf("5. You will create a config.mk at <language_name>/config.mk in your language repo folder.\n");
-    printf("6. Your main.<language_extension> will ONLY contain code to print 'Hello from KickStart' in it.\n");
-    printf("7. Your template will be submitted as a pull request to [https://github.com/KingVentrix007/KickStartFiles/tree/main].\n");
-    printf("8. You will have acknowledged that your template will be used free of charge by anyone for any means.\n");
-    printf("9. Your template does not already exist in the repo.\n");
+    printf("1. You will create ALL the files that will be used,build files,src files,As well as a config.mk\n");
+    printf("2. The commands you specify to run ONLY pertain to the template.\n");
+    printf("3. Your main.<language_extension> will ONLY contain code to print 'Hello from KickStart' in it.\n");
+    printf("4. Your template will be submitted as a pull request to [https://github.com/KingVentrix007/KickStartFiles/tree/main].\n");
+    printf("5. You will have acknowledged that your template will be used free of charge by anyone for any means.\n");
+    printf("6. Your template does not already exist in the repo.\n");
     get_input("Do you agree to the above assumptions (y/n): ", confirm_agreement, sizeof(confirm_agreement));
     
     if (strcmp(confirm_agreement, "y") != 0) {
         printf("You have not agreed to the above assumptions.\n");
         return 0;
     }
+    char lang_name[100];
+    int version = 2;
+    //Supported systems, mac,linux,windows,etc
+    char system_support[100][100];
+    size_t num_system_support = 0;
 
-    char lang_name[1024];
-    get_input("Enter the name of the language: ",lang_name,1000);
-    char system_support[MAX_ENTRIES][MAX_INPUT];
-    char curr_system[MAX_INPUT];
-    size_t curr_system_pos = 0;
-    while(strcmp(curr_system,"done") !=0)
-    {
-        get_input("Enter system support(e.g linux) type 'done' to finish: ",curr_system,MAX_INPUT);
-        strcpy(system_support[curr_system_pos],curr_system);
-        curr_system_pos++;
+    //If the system supports Libraries;
+    bool lib_support;
 
-    }
-    memset(system_support[--curr_system_pos],0,MAX_INPUT);
-    char lib_support[10];
-    get_input("Builtin lib support true/false" ,lib_support,10);
-    //TODO 
-    // char *version_template_path =  "NULL";
-    char build_file_name[1024][1024];
-    char build_file_paths[1024][1024];
-    // build_file_path = 
-    // {    
-    //      build_file_name[x]:build_file_paths[x]
-    // 
-    // }
-    size_t build_file_count = 0;
-    for (size_t i = 0; i < 1024; i++)
-    {
-        char build_file_name_cur[1024];
-        char build_file_paths_cur[1024];
-        get_input("Enter a build system(make,python,bash) or done to finish: ",build_file_name_cur,1024);
-        if(strcmp(build_file_name_cur,"done") == 0)
-        {
-            break;
-        }
-        get_input("Enter the path corresponding to your build system(c/make,c/python,c/bash): ",build_file_paths_cur,1024);
-        strcpy(build_file_name[build_file_count],build_file_name_cur);
-        strcpy(build_file_paths[build_file_count],build_file_paths_cur);
-        build_file_count++;
-
-    }
-    char compiler_urls[1024][1024];
-    size_t compiler_urls_count = 0;
-    for (size_t i = 0; i < 1024; i++)
-    {
-       char compiler_url_cur[1024];
-       get_input("Enter a complier url or command for your language or 'done' to finish: ",compiler_url_cur,1024);
-       if(strcmp(compiler_url_cur,"done") == 0)
-       {
-        break;
-       }
-       strcpy(compiler_urls[compiler_urls_count],compiler_url_cur);
-       compiler_urls_count++;
-       
-    }
-    char description[1024];
-    get_input("Please enter a description of your language: ",description,1024);
-    char template_author[1024];
-    get_input("Please enter the template author: ",template_author,1024);
-    //TODO 
-    // char *git_repo = "https://github.com/KingVentrix007/CodeStarterFiles/tree/main/langs/";
+    //The template paths, not used
+    char *version_template_path = NULL;
     
-    return 1;
+    //Path to the build files
+    // char build_file_path[100][100];
+    //size_t num_build_file_path = 0;
+
+    //Compiler urls/commands
+    char compiler_urls[100][1000];
+    size_t num_compiler_urls = 0;
+
+    //Template description
+    char description[1000];
+
+    //Template author
+    char template_author[100];
+
+    //Git Repo
+    char *git_repo = "https://github.com/KingVentrix007/CodeStarterFiles/tree/main/langs/";
+
+    //language license, NOT USED
+    char *lang_license = NULL;
+
+    //Name of the default file
+    char default_main_file[100];
+
+    //Extensions associated with the code
+    char extensions[100][100];
+    size_t num_extensions = 0;
+
+    //TODO Make this work
+    //Dependencies, NOT really used
+    // char dependencies[100][100];
+
+    //Instructions for the project
+    char instructions[1000];
+
+    //Template version
+    char template_version[100];
+
+    //URL for template update, NOT used
+    char *update_url = "N/A";
+    
+    //Path to git ignore
+    char git_ignore_path[sizeof(lang_name)+200];
+
+    //List of folders to create
+    char folders_to_create[100][1000];
+    size_t num_folders_to_create = 0;
+
+    //List of files to include
+    char files_to_include[100][1000];
+    size_t num_files_to_include = 0;
+
+    //Commands that must be run
+    char commands_to_run[100][1000];
+    size_t num_commands_to_run = 0;
+
+    //Path where the main file must be put
+    char main_file_path[100];
+
+    //Path in the git repo where the main file template is
+    char main_file_template[250];
+
+    //The type if charater that is a comment for that lang
+    char comment[100];
+
+    //Commands for the compiler that will be run
+    char compiler_cmd[100];
+    char package_install[100];
+    get_input("Enter language name(E.G c,py): ",lang_name,100);
+    get_input("Enter the supported systems(linux,windows,mac). type done when complete: ",system_support[num_system_support],100);
+    num_system_support++;
+    while(strcmp(system_support[num_system_support-1],"done") != 0)
+    {
+        get_input("Enter the supported systems(linux,windows,mac). type done when complete: ",system_support[num_system_support],100);
+        num_system_support++;
+    }
+
+    char lib_sub[100] = {0};
+    while (strcmp(lib_sub,"yes") != 0 && strcmp(lib_sub,"no") != 0)
+    {
+        get_input("Lib support(yes/no): ",lib_sub,100);
+    }
+    if(strcmp(lib_sub,"yes") == 0)
+    {
+        lib_support = true;
+    }
+    else if (strcmp(lib_sub,"no") == 0)
+    {
+        lib_support = false;
+    }
+
+    //TODO Figure out how to get build path inputs
+    printf("For the forseeable future, you must create a bash compile file called build.sh and makefile\n");
+    printf("So that the files are in %s/makefile and %s/bash",lang_name,lang_name);
+    get_input("Enter urls/commands for compiler, type done when complete: ",compiler_urls[num_compiler_urls],1000);
+    num_compiler_urls++;
+    while (strcmp(compiler_urls[num_compiler_urls-1],"done") != 0)
+    {
+        get_input("Enter urls/commands for compiler, type done when complete: ",compiler_urls[num_compiler_urls],1000);
+        num_compiler_urls++;
+    }
+    get_input("Enter the template description: ",description,1000);
+    get_input("Enter the template author: ",template_author,100);
+    get_input("Enter the main file(main.c,main.py,main.cpp): ",default_main_file,100);
+    
+    get_input("Enter the extensions associated with the language(.c,.py,.<extension>). Type done when complete: ",extensions[num_extensions],100);
+    num_extensions++;
+    while(strcmp(extensions[num_extensions-1],"done") != 0)
+    {
+        get_input("Enter the extensions associated with the language(.c,.py,.<extension>). Type done when complete: ",extensions[num_extensions],100);
+        num_extensions++;
+    }
+    get_input("Enter instructions for this language: ",instructions,1000);
+    
+    get_input("Enter folders to create(src,src/project). Type done when complete: ",folders_to_create[num_folders_to_create],1000);
+    num_folders_to_create++;
+    while(strcmp(folders_to_create[num_folders_to_create -1],"done") != 0)
+    {
+        get_input("Enter folders to create(src,src/project). Type done when complete: ",folders_to_create[num_folders_to_create],1000);
+        num_folders_to_create++;
+    }
+    get_input("Enter the EXTRA files that must be included: ",files_to_include[num_files_to_include],1000);
+    num_files_to_include++;
+    while(strcmp(files_to_include[num_files_to_include -1],"done") != 0)
+    {
+        get_input("Enter the EXTRA files that must be included: ",files_to_include[num_files_to_include],1000);
+        num_files_to_include++;
+    }
+    get_input("Enter the commands that must be run(go init,npm init). Type done when complete: ",commands_to_run[num_commands_to_run],1000);
+    num_commands_to_run++;
+    while(strcmp(commands_to_run[num_commands_to_run -1],"done") != 0)
+    {
+        get_input("Enter the commands that must be run(go init,npm init). Type done when complete: ",commands_to_run[num_commands_to_run],1000);
+        num_commands_to_run++;
+    }
+    get_input("Enter the path where the main file must be placed(src/main.c): ",main_file_path,100);
+    printf("Your main file is assumed to be in %s/%s in the KickStartFiles repo\n",lang_name,default_main_file);
+    get_input("Enter the characters that comments are(#,//): ",comment,100);
+    get_input("Enter the command that must be run to check if the complier is present: ",compiler_cmd,100);
+    get_input("Enter command to install a package(pip install,npm install): ",package_install,100);
+
+
+    json_t *json_obj = json_object();
+    json_object_set_new(json_obj, "name", json_string(lang_name));
+    json_object_set_new(json_obj, "version", json_integer(version));
+    json_t *json_system_support = json_array();
+
+    // Populate the JSON array with values from the system_support array
+    for (size_t i = 0; i < num_system_support; i++) {
+        json_array_append_new(json_system_support, json_string(system_support[i]));
+    }
+    json_object_set_new(json_obj, "system_support", json_system_support);
+    json_object_set_new(json_obj, "lib_support", json_boolean(lib_support));
+    json_object_set_new(json_obj,"version_template_path",json_string(version_template_path));
+    json_t *json_build_file_path = json_object();
+
+    // Add key-value pairs to the "build_file_path" object
+    json_object_set_new(json_build_file_path, "makefile", json_string("c/makefile"));
+    json_object_set_new(json_build_file_path, "bash", json_string("c/build.sh"));
+
+    // Add the "build_file_path" object to the main JSON object
+    json_object_set_new(json_obj, "build_file_path", json_build_file_path);
+    json_t *json_compiler_urls = json_array();
+     for (size_t i = 0; i < num_compiler_urls; i++) {
+        json_array_append_new(json_compiler_urls, json_string(compiler_urls[i]));
+    }
+    json_object_set_new(json_obj, "compiler_urls", json_compiler_urls);
+    json_object_set_new(json_obj,"description",json_string(description));
+    json_object_set_new(json_obj,"template_author",json_string(template_author));
+    json_object_set_new(json_obj,"git_repo",json_string(git_repo));
+    json_object_set_new(json_obj,"lang_license",json_string(lang_license));
+    json_object_set_new(json_obj,"default_main_file",json_string(default_main_file));
+
+    json_t *json_extensions = json_array();
+    for (size_t i = 0; i < num_extensions; i++)
+    {
+        json_array_append_new(json_extensions,json_string(extensions[i]));
+    }
+    json_object_set_new(json_obj,"extensions",json_extensions);
+    json_t *json_dependencies = json_array();
+    json_object_set_new(json_obj,"dependencies",json_dependencies);
+    json_object_set_new(json_obj,"instructions",json_string(instructions));
+    json_object_set_new(json_obj,"template_version",json_string(template_version));
+    json_object_set_new(json_obj,"update_url",json_string(update_url));
+    sprintf(git_ignore_path,"%s/.gitignore",lang_name);
+    json_object_set_new(json_obj,"git_ignore_path",json_string(git_ignore_path));
+
+    json_t *json_folders_to_create = json_array();
+    for (size_t i = 0; i < num_folders_to_create; i++)
+    {
+        json_array_append_new(json_folders_to_create,json_string(folders_to_create[i]));
+    }
+    json_object_set_new(json_obj,"folders_to_create",json_folders_to_create);
+
+    json_t *json_files_to_include = json_array();
+    for (size_t i = 0; i < num_files_to_include; i++)
+    {
+        json_array_append_new(json_files_to_include,json_string(files_to_include[i]));
+
+    }
+    json_object_set_new(json_obj,"files_to_include",json_files_to_include);
+    
+    json_t * json_commands_to_run = json_array();
+    for (size_t i = 0; i < num_commands_to_run; i++)
+    {
+        json_array_append_new(json_commands_to_run,json_string(commands_to_run[i]));
+    }
+    json_object_set_new(json_obj,"commands_to_run",json_commands_to_run);
+
+    json_object_set_new(json_obj,"main_file_path",json_string(main_file_path));
+
+    sprintf(main_file_template,"%s/%s",lang_name,default_main_file);
+    json_object_set_new(json_obj,"default_main_file",json_string(default_main_file));
+    json_object_set_new(json_obj,"comment",json_string(comment));
+    json_object_set_new(json_obj,"compiler_cmd",json_string(compiler_cmd));
+    json_object_set_new(json_obj,"package_install",json_string(package_install));
+
+    
+
+    FILE *file = fopen("lang.json", "w");
+    if (!file) {
+        perror("Unable to open file");
+        return 1;
+    }
+
+    // Write the JSON object to the file with pretty formatting
+    json_dumpf(json_obj, file, JSON_INDENT(2));
+
+    // Close the file
+    fclose(file);
+
+    // Decrement the reference count of the JSON object
+    json_decref(json_obj);
+
+    return 0;
 }

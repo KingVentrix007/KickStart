@@ -1,34 +1,46 @@
 {
-    "name": "go",
-    "system_support": ["windows", "linux"],
-    "build_type": ["makefile", "bash"],
-    "lib_support": false,
-    "file_template_path": "templates/go",
-    "version_template_path": "templates/go/version.go",
-    "build_file_path": {
-        "local": "build/go/Makefile",
-        "url": "http://example.com/make.sh"
-    },
-    "compiler_urls": ["http://golang.org/dl/"],
-    "description": "Go is a statically typed, compiled programming language designed at Google.",
-    "template_author": "FartMicStink",
-    "git_repo": "https://github.com/fartmicstink/go-template",
-    "lang_license": {
-        "type": "MIT",
-        "url": "https://opensource.org/licenses/MIT"
-    },
-    "default_main_file": "main.go",
-    "extensions": [".go"],
-    "dependencies": ["go.mod"],
-    "instructions": "Use `go build` to compile your Go project.",
-    "template_version": "1.0.0",
-    "update_url": "http://example.com/go-template-update.json",
-    "folders_to_create": [
-        "cmd/${project_name}",
-        "pkg"
-    ],
-    "commands_to_run": [
-        "go mod init github.com/username/myproject",
-        "go build ./cmd/myapp"
-    ]
+  "name": "rust",
+  "version": 2,
+  "system_support": [
+    "linux",
+    "windows",
+    "done"
+  ],
+  "lib_support": false,
+  "build_file_path": {
+    "makefile": "c/makefile",
+    "bash": "c/build.sh"
+  },
+  "compiler_urls": [
+    "done"
+  ],
+  "description": "The rust coding langugae",
+  "template_author": "KingVentrix007",
+  "git_repo": "https://github.com/KingVentrix007/CodeStarterFiles/tree/main/langs/",
+  "default_main_file": "main.rs",
+  "extensions": [
+    ".rs",
+    "done"
+  ],
+  "dependencies": [],
+  "instructions": "Use it",
+  "template_version": "",
+  "update_url": "N/A",
+  "git_ignore_path": "rust/.gitignore",
+  "folders_to_create": [
+    "src",
+    "lib",
+    "done"
+  ],
+  "files_to_include": [
+    "done"
+  ],
+  "commands_to_run": [
+    "echo cats",
+    "done"
+  ],
+  "main_file_path": "src/main.rs",
+  "comment": "//",
+  "compiler_cmd": "rust -rs",
+  "package_install": "cargo install"
 }
