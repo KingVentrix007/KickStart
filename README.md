@@ -68,6 +68,8 @@ To get started with Kick Start, simply run the tool and follow the on-screen pro
     ```
 5. Follow the on screen prompts
 
+Read the [Wiki](docs/home.md) for more info
+
 !! Warning !!
 1. The template code is **INCOMPLETE** and will remain so for sometime, please see one of the other lang.json file to learn from
 2. ./kpm install only works with C and languages with a built in package manger

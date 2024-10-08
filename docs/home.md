@@ -8,3 +8,4 @@ With KickStart, you can quickly create the foundational project structure, inclu
 
 ## Table of Contents
 - [Template Wiki](templates.md)
+- [Project Wiki](project.md)
