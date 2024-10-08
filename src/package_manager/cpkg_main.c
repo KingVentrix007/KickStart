@@ -462,6 +462,8 @@ int directory_exists(const char *path) {
  * @return int Returns 0 if the package was successfully installed, otherwise also returns 0.
  */
 int cpkg_main(char *lib_name, char *language) {
+  printf("WARNING: Some languages, such as C, can be compiled to treat ALL warnings as ERRORS.\nSome of these libraries may not compile with that flag\nYou will have to disable the flag or fix the library\n");
+  printf("DISCLAIMER: The libraries you install you do so at your OWN RISK. KickStart and its contributors make NO promises to the saftey and functionality of these libraries\n");
   printf("Installing package\n");
   char *path = get_lib_path(lib_name, language);
   if (directory_exists("libs") != 1) {

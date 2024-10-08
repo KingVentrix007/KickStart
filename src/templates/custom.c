@@ -538,6 +538,8 @@ int create_project(char *project_name, char *project_description, char *project_
         char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
         snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
         char *build_script_contents = fetch_data(build_script_url);
+        printf("build_script_contents == [%s]\n",build_script_contents);
+
         char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
         if(build_script_contents == NULL)
         {
@@ -545,6 +547,7 @@ int create_project(char *project_name, char *project_description, char *project_
             return 0;
         }
         FILE *build_script = fopen(info.build_systems[choice].name,"w");
+        // printf("build_script_contents_formatted == [%s]\n",build_script_contents_formatted);
         fprintf(build_script,"%s",build_script_contents_formatted);
         fclose(build_script);
         free(build_script_contents);
