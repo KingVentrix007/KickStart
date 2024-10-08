@@ -18,14 +18,14 @@ int main(int argc, char **argv) {
         printf("\tinit: Initialize a new project\n");
         printf("\ttemplate: Create a new project template\n");
         printf("\tinstall: Install a package\n");
-        return 1;
+        return 0;
     }
 
     if (strcmp(argv[1], "init") == 0) {
         main_build();
     } else if (strcmp(argv[1], "install") == 0) {
         printf("Package manager DOSE NOT support big packages like libcurl or jansson\n");
-        printf("In addition, due to a shortage of time. There are very,very few librarys supported, for languages like c, I recommend using clib(https://github.com/clibs/clib)\n");
+        printf("In addition, due to a shortage of time. There are very,very few libraries supported, for languages like c, I recommend using clib(https://github.com/clibs/clib)\n");
         printf("For other languages, I recommend looking for a library manger for that language\n");
 
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     {
         if(argc >= 3 && strcmp(argv[2],"-f") == 0)
         {
-            printf("Ill get to this, maybe\n");
+            printf("This feature is coming soon. It will build the json file from the contents of the current folder\n");
         }
         else
         {   
@@ -65,7 +65,15 @@ int main(int argc, char **argv) {
         }
         
     }
-     
+    else if(strcmp(argv[1],"build") == 0)
+    {
+        printf("Coming soon\n");
+    }
+    else if (strcmp(argv[1],"run") == 0)
+    {
+        printf("Coming soon\n");
+    }
+    
     else {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
         return 1;
