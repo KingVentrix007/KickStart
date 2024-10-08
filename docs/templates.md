@@ -56,3 +56,69 @@ This is the simpler approach and involves using the built-in tool to generate a 
 
 ### Known Bug
 Sometimes, files or folders named done may be created. This is a known bug and you can safely delete these files.
+
+
+## Examples
+### lang.json
+```json
+{
+    "name": "c",
+    "version":2,
+    "system_support": [
+        "linux"
+    ],
+    "lib_support": false,
+    "version_template_path": "NULL",
+    "build_file_path": {
+        "makefile": "c/makefile",
+        "bash": "c/build.sh"
+    },
+    "compiler_urls": ["sudo apt-get install gcc"],
+    "description": "The c programming languge",
+    "template_author": "KingVentrix007",
+    "git_repo": "https://github.com/KingVentrix007/CodeStarterFiles/tree/main/langs/",
+    "lang_license": {
+        "type": "MIT",
+        "url": "MIT"
+    },
+    "default_main_file": "main.c",
+    "extensions": [
+        ".c"
+    ],
+    "dependencies": [],
+    "instructions": "idk",
+    "template_version": "1.0.0",
+    "update_url": "N/A",
+    "git_ignore_path": "c/.gitignore",
+    "folders_to_create": [
+        "src",
+        "include",
+        "build",
+        "tests",
+        "docs",
+        "examples",
+        "scripts",
+        "data",
+        "libs"
+    ],
+    "files_to_include":["config.mk"],
+    "commands_to_run": [
+        "echo done"
+    ],
+    "main_file_path": "src/main.c",
+    "main_file_template": "c/main.c",
+    "comment": "//",
+    "compiler_cmd":"gcc -v",
+    "package_install":"none" 
+
+}
+```
+###  Main file
+```c
+#include <stdio.h>
+
+int main() {
+    printf("Hello from KickStart\n");
+    return 0;
+}
+```
