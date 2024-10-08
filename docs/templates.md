@@ -33,7 +33,8 @@ This is the simpler approach and involves using the built-in tool to generate a 
 ### Key Points
 1. **Using Placeholders:**
 
-    Use `${project_name}` as a placeholder wherever the project name needs to be inserted. For example, if your project name is "Example":
+    Placeholders like ${project_name} can be used in file paths or any other fields where the project name should be dynamically inserted. 
+    For example, if your project name is "Example":
     ```bash
     path = src/${project_name}/main.c
     ```
@@ -52,11 +53,17 @@ This is the simpler approach and involves using the built-in tool to generate a 
 
 3. **File Placement:**
 
-    All files included in the template will be placed at the base directory where KickStart is run. This is something that may be improved in future versions.
+    All files included (From the `files_to_include` json field) in the template will be placed at the base directory where KickStart is run. This is something that may be improved in future versions.
+    The `files_to_include` field in the template's JSON file lists all the necessary files that will be copied to the project directory during setup. These do NOT include build files and the main file. Look at the python template for an example
 
-### Known Bug
-Sometimes, files or folders named done may be created. This is a known bug and you can safely delete these files.
+## Warnings.
+The main file must ONLY contain code to output `Hello from KickStart`. This ensures that templates are clean and uniform. Any additional code will be removed, and you will NOT receive credit for the template.
 
+All commands in the `commands_to_run` json field must ONLY contain commands that are ABSOLUTELY NECESSARY for the project to be setup. If any other commands are used. IT WILL BE MODIFIED, and you will NOT be given any credit.
+
+An exception to the command rule is the `echo` command, which can be used freely
+
+Including any malicious code or commands in a template will result in future contributions not being attributed to the creator. Repeated offenses will lead to contributions being denied entirely, regardless of the nature of the submission.
 
 ## Examples
 ### lang.json
@@ -86,7 +93,7 @@ Sometimes, files or folders named done may be created. This is a known bug and y
         ".c"
     ],
     "dependencies": [],
-    "instructions": "idk",
+    "instructions": "The instructions field is where you can provide guidance for users setting up the project, such as dependencies or steps required before compiling.",
     "template_version": "1.0.0",
     "update_url": "N/A",
     "git_ignore_path": "c/.gitignore",
