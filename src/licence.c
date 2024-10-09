@@ -102,7 +102,7 @@ char* get_license_text(const char *license_name) {
 
     snprintf(url, sizeof(url), "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/LICENCE/%s", license_name);
     char *new_url = encode_url(url);
-    printf("URL:%s\n",new_url);
+    // printf("URL:%s\n",new_url);
     curl = curl_easy_init();
     if (!curl) {
         fprintf(stderr, "Failed to initialize curl.\n");

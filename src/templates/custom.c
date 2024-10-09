@@ -504,7 +504,7 @@ int create_project(char *project_name, char *project_description, char *project_
         }
 
         sprintf(full_path, "%s/%s", base_dir, folder_path);
-        printf("Creating folder: %s\n", full_path);
+        // printf("Creating folder: %s\n", full_path);
 
         if (create_directories(full_path) != 0) {
             free(folder_path);
@@ -538,7 +538,7 @@ int create_project(char *project_name, char *project_description, char *project_
         char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
         snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
         char *build_script_contents = fetch_data(build_script_url);
-        printf("build_script_contents == [%s]\n",build_script_contents);
+        // printf("build_script_contents == [%s]\n",build_script_contents);
 
         char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
         if(build_script_contents == NULL)
