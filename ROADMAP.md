@@ -1,7 +1,7 @@
 # ROADMAP
 
 Welcome to the KickStart Roadmap. Here we keep track of all the implemented and further planned features.
-
+This `ROADMAP` is only partially used, most work is going into the package manager and project creation
 
 ## Implemented
 - [X] Hardcoded setup - C and Python have builtin support, with there values hardcoded into the source code. This is intended to change in hte near future
@@ -11,7 +11,7 @@ Welcome to the KickStart Roadmap. Here we keep track of all the implemented and 
 
 ## Planned
 - [ ] Create a header file(or equivalent) with version information and a compile number, which is incremented by the Makefile with each build.
-- [ ] Compiler Detection
+- [X] Compiler Detection
     - [ ] Compiler installation
 - [ ] Cross platform support
 - [ ] Custom Licenses
