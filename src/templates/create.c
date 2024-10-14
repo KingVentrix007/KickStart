@@ -211,9 +211,22 @@ int create_template() {
         lib_support = false;
     }
 
-    //TODO Figure out how to get build path inputs
-    printf("For the forseeable future, you must create a bash compile file called build.sh and makefile\n");
-    printf("So that the files are in %s/makefile and %s/bash",lang_name,lang_name);
+    char build_file_paths[1000][100];
+    char build_file_names[1000][100];
+    size_t num_build_options_ = 0;
+    printf("Please enter the build options in the following prompts, type done to complete\n");
+    while(strcmp(build_file_paths[num_build_options_],"done") != 0 && strcmp(build_file_names[num_build_options_],"done") != 0)
+    {
+        get_input("Enter the build option name(e.g make): ",build_file_names[num_build_options_],sizeof(build_file_names[num_build_options_]));
+        get_input("Enter the build path name(e.g c/make): ",build_file_paths[num_build_options_],sizeof(build_file_paths[num_build_options_]));
+        if(strcmp(build_file_paths[num_build_options_],"done") == 0 && strcmp(build_file_names[num_build_options_],"done") == 0)
+        {
+            break;
+        }
+        num_build_options_++;
+        
+
+    }
     get_input("Enter urls/commands for compiler, type done when complete: ",compiler_urls[num_compiler_urls],1000);
     num_compiler_urls++;
     while (strcmp(compiler_urls[num_compiler_urls-1],"done") != 0)
@@ -277,9 +290,14 @@ int create_template() {
     json_t *json_build_file_path = json_object();
 
     // Add key-value pairs to the "build_file_path" object
-    json_object_set_new(json_build_file_path, "makefile", json_string("c/makefile"));
-    json_object_set_new(json_build_file_path, "bash", json_string("c/build.sh"));
-
+    // json_object_set_new(json_build_file_path, "makefile", json_string("c/makefile"));
+    // json_object_set_new(json_build_file_path, "bash", json_string("c/build.sh"));
+    for (size_t i = 0; i < num_build_options_; i++)
+    {
+        json_object_set_new(json_build_file_path, build_file_names[i], json_string(build_file_paths[i]));
+    }
+    
+    
     // Add the "build_file_path" object to the main JSON object
     json_object_set_new(json_obj, "build_file_path", json_build_file_path);
     json_t *json_compiler_urls = json_array();
