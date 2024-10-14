@@ -254,7 +254,7 @@ int create_template() {
         get_input("Enter folders to create(src,src/project). Type done when complete: ",folders_to_create[num_folders_to_create],1000);
         num_folders_to_create++;
     }
-    get_input("Enter the EXTRA files that must be included: ",files_to_include[num_files_to_include],1000);
+    get_input("Enter the EXTRA files that must be included. Type done when complete: ",files_to_include[num_files_to_include],1000);
     num_files_to_include++;
     while(strcmp(files_to_include[num_files_to_include -1],"done") != 0)
     {

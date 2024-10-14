@@ -19,7 +19,11 @@
         "fetch.h": "c",
         "cerrno": "c",
         "cpkg_main.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "dirent.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,

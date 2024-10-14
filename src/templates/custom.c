@@ -210,6 +210,8 @@ typedef struct {
 typedef struct{
     char *name;
     char *path;
+    char *build_command;
+    char *run_command;
 }BuildSystem;
 // Structure to hold project information
 typedef struct {
@@ -358,32 +360,46 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     
     // If version is 1, process build_file_paths
     if (info->special_build == false) {
-        // Updated Build File Paths
-        json_t *build_file_path = json_object_get(root, "build_file_path");
+    // Updated Build File Paths
+    json_t *build_file_path = json_object_get(root, "build_file_path");
+    
+    if (info->version == 1) {
+        // For version 1
         info->build_file_paths.makefile_path = strdup(json_string_value(json_object_get(build_file_path, "makefile")));
         info->build_file_paths.bash_path = strdup(json_string_value(json_object_get(build_file_path, "bash")));
-        if(info->version >= 2)
-        {
-            size_t index;
-            const char *key;
-            json_t *value;
-            info->build_systems_count = json_object_size(build_file_path);
-            info->build_systems = malloc(sizeof(BuildSystem) * (info->build_systems_count));
-            if (!info->build_systems) {
-                fprintf(stderr, "Error: Unable to allocate memory for build systems\n");
-                return;
-            }
-            index = 0;
-            json_object_foreach(build_file_path, key, value)
-            {
-                if (json_is_string(value)) {
-                    info->build_systems[index].name = strdup(key);
-                    info->build_systems[index].path = strdup(json_string_value(value));
-                    index++;
+    } 
+    else if (info->version >= 2) {
+        // For version >= 2
+        size_t index;
+        const char *key;
+        json_t *value;
+        info->build_systems_count = json_object_size(build_file_path);
+        info->build_systems = malloc(sizeof(BuildSystem) * info->build_systems_count);
+        
+        if (!info->build_systems) {
+            fprintf(stderr, "Error: Unable to allocate memory for build systems\n");
+            return;
         }
+        
+        index = 0;
+        json_object_foreach(build_file_path, key, value) {
+            if (json_is_object(value)) {
+                json_t *path_json = json_object_get(value, "path");
+                json_t *build_json = json_object_get(value, "build");
+                json_t *run_json = json_object_get(value, "run");
+
+                // Set the name as the key (makefile, bash, etc.)
+                info->build_systems[index].name = strdup(key);
+                // Set the path, build command, and run command
+                info->build_systems[index].path = strdup(json_string_value(path_json));
+                info->build_systems[index].build_command = strdup(json_string_value(build_json));
+                info->build_systems[index].run_command = strdup(json_string_value(run_json));
+
+                index++;
             }
         }
     }
+}
 
     // Parse arrays for system_support, build_type, extensions, dependencies, folders_to_create, commands_to_run, compiler_urls
     info->system_support_count = json_is_array(system_support) ? json_array_size(system_support) : 0;
@@ -517,6 +533,8 @@ int create_project(char *project_name, char *project_description, char *project_
     }
 
     // ds
+    char *build_script_build;
+    char *build_script_run;
     if(info.version >= 2 && info.special_build != true)
     {
 
@@ -535,6 +553,9 @@ int create_project(char *project_name, char *project_description, char *project_
             scanf("%ld",&choice);
         }
         char *build_script_path = info.build_systems[choice].path;
+        build_script_build = info.build_systems[choice].build_command;
+        build_script_run = info.build_systems[choice].run_command;
+
         char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
         snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
         char *build_script_contents = fetch_data(build_script_url);
@@ -554,6 +575,14 @@ int create_project(char *project_name, char *project_description, char *project_
         free(build_script_url);
         free(build_script_contents_formatted);
         
+    }
+    else
+    {
+        build_script_build = malloc(10);
+        build_script_run = malloc(10);
+        strcpy(build_script_build,"none");
+        strcpy(build_script_run,"none");
+
     }
     
     // Create main.
@@ -691,7 +720,11 @@ int create_project(char *project_name, char *project_description, char *project_
     fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
     fprintf(project_json, "    \"dependencies\": \"%s\",\n", project_dependencies_copy);
     fprintf(project_json, "    \"language\": \"%s\",\n",project_language);
-    fprintf(project_json, "    \"install_cmd\": \"%s\"\n",info.package_install_command);
+    fprintf(project_json, "    \"install_cmd\": \"%s\",\n",info.package_install_command);
+    fprintf(project_json, "    \"run_command\": \"%s\",\n",build_script_run);
+    fprintf(project_json, "    \"build_command\": \"%s\"\n",build_script_build);
+
+
 
     fprintf(project_json, "}\n");
     fclose(project_json);

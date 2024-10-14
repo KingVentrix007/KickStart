@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <jansson.h>
 #include "package_manager/cpkg_main.h"
+#include "run/run.h"
 int create_template();
 
 
@@ -67,11 +68,12 @@ int main(int argc, char **argv) {
     }
     else if(strcmp(argv[1],"build") == 0)
     {
-        printf("Coming soon\n");
+        build_project();
     }
     else if (strcmp(argv[1],"run") == 0)
     {
-        printf("Coming soon\n");
+        // printf("Coming soon\n");
+        run_project();
     }
     
     else {
