@@ -88,6 +88,16 @@ int main_build() {
     } else {
         generate_readme[strcspn(generate_readme, "\n")] = 0;  // Remove trailing newline
     }
+    while(strcmp(generate_readme,"yes") != 0  && strcmp(generate_readme,"no") != 0)
+    {
+        printf("Generate README file? (yes/no) [default: yes]: ");
+        fgets(generate_readme, sizeof(generate_readme), stdin);
+        if (generate_readme[0] == '\n') {
+            strcpy(generate_readme, "yes");
+        } else {
+            generate_readme[strcspn(generate_readme, "\n")] = 0;  // Remove trailing newline
+        }
+    }
 
     char initialize_git[10] = "yes";
     printf("Initialize Git repository? (yes/no) [default: %s]: ", initialize_git);
@@ -97,6 +107,17 @@ int main_build() {
     } else {
         initialize_git[strcspn(initialize_git, "\n")] = 0;  // Remove trailing newline
     }
+    while(strcmp(initialize_git,"yes") != 0  && strcmp(initialize_git,"no") != 0)
+    {
+        printf("Initialize Git repository? (yes/no) [default: yes]: ");
+        fgets(initialize_git, sizeof(initialize_git), stdin);
+        if (initialize_git[0] == '\n') {
+            strcpy(initialize_git, "yes");
+        } else {
+            initialize_git[strcspn(initialize_git, "\n")] = 0;  // Remove trailing newline
+        }
+    }
+
 
     char create_license_file[10] = "yes";
     printf("Create LICENSE file? (yes/no) [default: %s]: ", create_license_file);
@@ -106,7 +127,16 @@ int main_build() {
     } else {
         create_license_file[strcspn(create_license_file, "\n")] = 0;  // Remove trailing newline
     }
-
+    while(strcmp(create_license_file,"yes") != 0  && strcmp(create_license_file,"no") != 0)
+    {
+        printf("Create LICENSE file? (yes/no) [default: yes]: ");
+        fgets(create_license_file, sizeof(create_license_file), stdin);
+        if (create_license_file[0] == '\n') {
+            strcpy(create_license_file, "yes");
+        } else {
+            create_license_file[strcspn(create_license_file, "\n")] = 0;  // Remove trailing newline
+        }
+    }
 // #ifndef DEBUG
 //     char generate_structure[10] = "yes";
 //     printf("Generate default file structure? (yes/no) [default: yes]: ");
@@ -119,15 +149,15 @@ int main_build() {
     lowercase(project_language);
 
    
-        printf("Searching for language template %s\n", project_language);
+    printf("Searching for language template %s\n", project_language);
 
-        int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file);
-        if(ret != 0)
-        {
-            printf("Failed to build project %s for language %s\n",project_name,project_language);
-            printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
-            printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/KickStartFiles/tree/main and add a template for your language\n");
-        }
+    int ret = create_project(project_name, project_description, project_author, project_license, project_version, project_language, project_dependencies, generate_readme, initialize_git, create_license_file);
+    if(ret != 0)
+    {
+        printf("Failed to build project %s for language %s\n",project_name,project_language);
+        printf("This can be caused by\n\t-No internet connection - The templates ar stored on github repo, and require an internet connection\n");
+        printf("\t-The language is not suported. In this case, please head to https://github.com/KingVentrix007/KickStartFiles/tree/main and add a template for your language\n");
+    }
     
 
     return 0;

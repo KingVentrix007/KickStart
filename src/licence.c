@@ -121,6 +121,11 @@ char* get_license_text(const char *license_name) {
     }
 
     curl_easy_cleanup(curl);
+
+    if(strcmp(memory.data,"404: Not Found") == 0)
+    {
+        return NULL;
+    }
     return memory.data;
 }
 
@@ -134,7 +139,7 @@ char * get_license(const char *name) {
         // free(text);
     }
 
-    return 0;
+    return NULL;
 }
 
 

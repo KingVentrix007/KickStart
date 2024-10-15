@@ -658,8 +658,13 @@ int create_project(char *project_name, char *project_description, char *project_
             exit(EXIT_FAILURE);
         }
         char *license_file_content = get_license(project_licence);
-        fprintf(license_file, "%s", license_file_content);
-        free(license_file_content);
+        if(license_file_content != NULL)
+        {
+            fprintf(license_file, "%s", license_file_content);
+            free(license_file_content);
+
+
+        }
         fclose(license_file);
     }
     if (strcmp(generate_readme, "yes") == 0) {
