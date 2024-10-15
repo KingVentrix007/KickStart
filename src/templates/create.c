@@ -92,9 +92,9 @@ void get_input(char *prompt, char *buffer, size_t size) {
 }
 
 int create_template() {
-    // printf("Warning. The following code IS deprecated, it is recommended to look at one of the templates, such as py, and use that to add your new language\n");
+    printf("Warning. The following code IS deprecated, it is necessary to look at one of the templates, such as c\\rust, and use that to add your new language\n");
     // printf("I do have intentions of updating it, but it is a later project\n");
-    // return 0;
+    return 0;
     char confirm_agreement[MAX_INPUT];
     printf("The following assumptions are made:\n");
     printf("1. You will create ALL the files that will be used,build files,src files,As well as a config.mk\n");
