@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
         }
         else
         {   
+            printf("--------------------------------------------------------\nWARNING\n\nTemplate is outdated\n");
             create_template();
 
         }
