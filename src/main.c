@@ -15,10 +15,12 @@ char* get_install();
 int main_build();
 int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("Usage: %s <init|template|install> [package_name]\n", argv[0]);
+        printf("Usage: %s <init|template|install|run|build> [package_name]\n", argv[0]);
         printf("\tinit: Initialize a new project\n");
         printf("\ttemplate: Create a new project template\n");
         printf("\tinstall: Install a package\n");
+        printf("\trun: Runs the project\n");
+        printf("\tbuild: Builds the project\n");
         return 0;
     }
 
@@ -61,7 +63,7 @@ int main(int argc, char **argv) {
         }
         else
         {   
-            printf("--------------------------------------------------------\nWARNING\n\nTemplate is outdated\n");
+            printf("--------------------------------------------------------\nWARNING\n\nTemplate creation code is outdated\n");
             create_template();
 
         }
