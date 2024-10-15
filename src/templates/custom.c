@@ -212,6 +212,7 @@ typedef struct{
     char *path;
     char *build_command;
     char *run_command;
+    bool create_file;
 }BuildSystem;
 // Structure to hold project information
 typedef struct {
@@ -254,6 +255,7 @@ typedef struct {
     size_t files_to_include_count; // Only in version 2
     char *compiler_cmd; 
     char *package_install_command;
+    bool create_file;
 } ProjectInfo;
 
 
@@ -329,6 +331,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     json_t *special_build = json_object_get(root, "special_build"); // Only for version 2
     json_t *compiler_cmd = json_object_get(root, "compiler_cmd"); // Only for version 2
     json_t *package_install_command = json_object_get(root, "package_install"); // Only for version 2
+    
     // json_t *build_systems = json_object_get(root, "build_file_path"); // Only for version 2
     // Set default values or parse the values from JSON
     info->version = json_is_integer(version) ? json_integer_value(version) : 1;
@@ -349,6 +352,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
     info->main_file_template = main_file_template && json_is_string(main_file_template) ? strdup(json_string_value(main_file_template)) : NULL;
     info->comment = comment && json_is_string(comment) ? strdup(json_string_value(comment)) : NULL;
     info->compiler_cmd = compiler_cmd && json_is_string(compiler_cmd) ? strdup(json_string_value(compiler_cmd)) : NULL;
+    // info->create_file = 
     info->package_install_command = package_install_command && json_is_string(package_install_command) ? strdup(json_string_value(package_install_command)) : NULL;
     // json_string_value(compiler_cmd);
     if(info->version >= 2)
@@ -387,14 +391,19 @@ void parse_json(const char *json_data, ProjectInfo *info) {
                 json_t *path_json = json_object_get(value, "path");
                 json_t *build_json = json_object_get(value, "build");
                 json_t *run_json = json_object_get(value, "run");
-
+                json_t *create_file_json = json_object_get(value,"create_file");
                 // Set the name as the key (makefile, bash, etc.)
                 info->build_systems[index].name = strdup(key);
                 // Set the path, build command, and run command
                 info->build_systems[index].path = strdup(json_string_value(path_json));
                 info->build_systems[index].build_command = strdup(json_string_value(build_json));
                 info->build_systems[index].run_command = strdup(json_string_value(run_json));
-
+                if (create_file_json && json_is_boolean(create_file_json)) {
+                    info->build_systems[index].create_file = json_boolean_value(create_file_json);
+                } else {
+                    printf("create_file not found for %s\n",info->build_systems[index].path);
+                    info->build_systems[index].create_file = true;
+                }
                 index++;
             }
         }
@@ -567,13 +576,24 @@ int create_project(char *project_name, char *project_description, char *project_
             printf("Build option not available\n");
             return 0;
         }
-        FILE *build_script = fopen(info.build_systems[choice].name,"w");
-        // printf("build_script_contents_formatted == [%s]\n",build_script_contents_formatted);
-        fprintf(build_script,"%s",build_script_contents_formatted);
-        fclose(build_script);
-        free(build_script_contents);
-        free(build_script_url);
-        free(build_script_contents_formatted);
+        char *build_script_name__ = strchr(build_script_path, '/');
+        if(build_script_name__ == NULL)
+        {
+            
+        }
+        // printf("Create file?: %d\n",info.build_systems[choice].create_file);
+        // printf("Build choice: %s\n",info.build_systems[choice].name);
+        if(info.build_systems[choice].create_file == true)
+        {
+            FILE *build_script = fopen(build_script_name__+1,"w");
+            // printf("build_script_contents_formatted == [%s]\n",build_script_contents_formatted);
+            fprintf(build_script,"%s",build_script_contents_formatted);
+            fclose(build_script);
+            free(build_script_contents);
+            free(build_script_url);
+            free(build_script_contents_formatted);
+        }
+        
         
     }
     else
