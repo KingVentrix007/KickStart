@@ -5,7 +5,7 @@ const char* get_language_name(int choice) {
         case 2: return "C++";
         case 3: return "Java";
         case 4: return "Go";
-        case 5: return "Python";
+        case 5: return "py";
         case 6: return "Rust";
         case 7: return "JavaScript";
         case 8: return "Ruby";
@@ -19,7 +19,7 @@ const char* language_menu() {
     int choice;
 
     // Prompt user for input
-    printf("Enter a number between 1 and 10 to select a programming language:\n");
+    printf("Enter a number between 1 and 10 to select a programming language(Not all are supported):\n");
     printf("1: C\n");
     printf("2: C++\n");
     printf("3: Java\n");

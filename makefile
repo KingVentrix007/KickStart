@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -Werror -DDEBUG
+CFLAGS = -g -Wall -Wextra -Werror
 LDFLAGS = -lcurl -ljansson
 
 # Directories

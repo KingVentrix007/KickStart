@@ -401,7 +401,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
                 if (create_file_json && json_is_boolean(create_file_json)) {
                     info->build_systems[index].create_file = json_boolean_value(create_file_json);
                 } else {
-                    printf("create_file not found for %s\n",info->build_systems[index].path);
+                    // printf("create_file not found for %s\n",info->build_systems[index].path);
                     info->build_systems[index].create_file = true;
                 }
                 index++;
@@ -478,24 +478,33 @@ void clean_url(char *url) {
         url[len - 2] = '\0';
     }
 }
-// Function to create a project
+/**
+ * @brief Creates a new project with the specified parameters.
+ *
+ * This function initializes a new project by setting up the necessary directory structure,
+ * fetching language-specific templates, and optionally generating additional files such as
+ * README.md, LICENSE, and initializing a Git repository.
+ *
+ * @param project_name The name of the project.
+ * @param project_description A brief description of the project.
+ * @param project_author The author of the project.
+ * @param project_licence The license type for the project.
+ * @param project_version The version of the project.
+ * @param project_language The programming language used for the project.
+ * @param project_dependencies A string representing project dependencies.
+ * @param generate_readme A flag indicating whether to generate a README.md file ("yes" or "no").
+ * @param initialize_git A flag indicating whether to initialize a Git repository ("yes" or "no").
+ * @param create_license_file A flag indicating whether to create a LICENSE file ("yes" or "no").
+ *
+ * @return Returns 0 on success, or 1 on failure.
+ */
 int create_project(char *project_name, char *project_description, char *project_author, char *project_licence, char *project_version, char *project_language, char *project_dependencies, char *generate_readme, char *initialize_git, char *create_license_file) {
     const char *base_dir = ".";
-    // char *temp = generate_structure;
-    // memset(temp,0,1);
-    #ifndef DEBUG
-    base_dir = ".";
-    #endif
-    // if (strcmp(base_dir, "tests") == 0) {
-        // system("mkdir -p tests");
-    // }
-    // system("mkdir -p tests/tests");
     char *lang_path = get_lang_path(project_language);
     if (lang_path == NULL) {
         fprintf(stderr, "Failed to get path for language '%s'\n", project_language);
         return 1;
     }
-    // printf("Language path: %s\n", lang_path);
 
     char lang_json[1024];
     snprintf(lang_json, sizeof(lang_json), "%s%s", LANG_BASE_URL, lang_path);
@@ -509,11 +518,10 @@ int create_project(char *project_name, char *project_description, char *project_
 
     // Initialize ProjectInfo structure
     ProjectInfo info;
-    // printf("lang_json_data == [%s]\n",lang_json_data);
-    memset(&info, 0, sizeof(info));
+        memset(&info, 0, sizeof(info));
     parse_json(lang_json_data, &info);
     free(lang_json_data);  // Free lang_json_data after use
-    // Create project directorys
+    
     for (size_t i = 0; i < info.folders_to_create_count; i++) {
         char *folder_path = replace_placeholder(info.folders_to_create[i], project_name);
         if (!folder_path) {
@@ -529,7 +537,6 @@ int create_project(char *project_name, char *project_description, char *project_
         }
 
         sprintf(full_path, "%s/%s", base_dir, folder_path);
-        // printf("Creating folder: %s\n", full_path);
 
         if (create_directories(full_path) != 0) {
             free(folder_path);
@@ -665,6 +672,10 @@ int create_project(char *project_name, char *project_description, char *project_
 
 
         }
+        else
+        {
+            printf("You have chosen a unsupported license\n");
+        }
         fclose(license_file);
     }
     if (strcmp(generate_readme, "yes") == 0) {
@@ -679,31 +690,7 @@ int create_project(char *project_name, char *project_description, char *project_
         fprintf(readme_file, "%s\n\n", project_description);
         fclose(readme_file);
     }
-    if (strcmp(initialize_git, "yes") == 0) {
-        if (system("git --version") != 0) {
-            printf("Git is not installed. Download Git from https://git-scm.com/downloads\n");
-        } else {
-            char git_init_cmd[1024];
-            snprintf(git_init_cmd, sizeof(git_init_cmd), "cd %s && git init", base_dir);
-            system(git_init_cmd);
-            system("git add .");
-            system("git commit -m \"Initial commit\"");
-        }
-        char *gitignore_path = malloc(strlen(info.git_ignore_path)+10);
-        if (gitignore_path == NULL) {
-            fprintf(stderr, "Memory allocation failed!\n");
-            return 1;
-        }
-        char *gitignore_data = fetch_data(gitignore_path);
-        char gitignore_create_path[1024];
-        snprintf(gitignore_create_path, sizeof(gitignore_create_path), "%s/%s", base_dir, ".gitignore");
-        // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
-        char *gitignore_data_formatted = replace_string(gitignore_data, "${project_name}", project_name);
-        FILE *fp4 = fopen(gitignore_create_path,"w");
-        fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
-        fclose(fp4);
-        
-    }
+    
     char project_json_path[1024];
     snprintf(project_json_path, sizeof(project_json_path), "%s/project.json", base_dir);
     FILE *project_json = fopen(project_json_path, "w");
@@ -745,7 +732,18 @@ int create_project(char *project_name, char *project_description, char *project_
     fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
     fprintf(project_json, "    \"dependencies\": \"%s\",\n", project_dependencies_copy);
     fprintf(project_json, "    \"language\": \"%s\",\n",project_language);
-    fprintf(project_json, "    \"install_cmd\": \"%s\",\n",info.package_install_command);
+    if(strcmp(info.package_install_command,"none") == 0)
+    {
+    fprintf(project_json, "    \"install_cmd\": \"%s\",\n","(null)");
+
+    }
+    else
+    {
+        fprintf(project_json, "    \"install_cmd\": \"%s\",\n",info.package_install_command);
+    }
+    replace_placeholder(build_script_run,project_name);
+    replace_placeholder(build_script_build,project_name);
+
     fprintf(project_json, "    \"run_command\": \"%s\",\n",build_script_run);
     fprintf(project_json, "    \"build_command\": \"%s\"\n",build_script_build);
 
@@ -806,6 +804,37 @@ int create_project(char *project_name, char *project_description, char *project_
 
         // char *readme_data = fetch_data(readme_path);
     // Use the ProjectInfo structure for further project creation tasks...
+    if (strcmp(initialize_git, "yes") == 0) {
+        if (system("git --version") != 0) {
+            printf("Git is not installed. Download Git from https://git-scm.com/downloads\n");
+        } else {
+            char *gitignore_path = malloc(strlen(info.git_ignore_path)+10+strlen(LANG_BASE_URL));
+            if (gitignore_path == NULL) {
+                fprintf(stderr, "Memory allocation failed!\n");
+                return 1;
+            }
+            memset(gitignore_path,0,strlen(info.git_ignore_path)+strlen(LANG_BASE_URL)+10);
+            // strcpy(gitignore_path,info.git_ignore_path);
+            snprintf(gitignore_path,strlen(info.git_ignore_path)+strlen(LANG_BASE_URL)+10,"%s/%s",LANG_BASE_URL,info.git_ignore_path);
+            // printf("Adding .gitignore %s\n",gitignore_path);
+            char *gitignore_data = fetch_data(gitignore_path);
+            char gitignore_create_path[1024];
+            snprintf(gitignore_create_path, sizeof(gitignore_create_path), "%s/%s", base_dir, ".gitignore");
+            // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
+            char *gitignore_data_formatted = replace_string(gitignore_data, "${project_name}", project_name);
+            FILE *fp4 = fopen(gitignore_create_path,"w");
+            fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
+            fclose(fp4);
 
+            
+            char git_init_cmd[1024];
+            snprintf(git_init_cmd, sizeof(git_init_cmd), "cd %s && git init", base_dir);
+            system(git_init_cmd);
+            system("git add .");
+            system("git commit -m \"Initial commit with KickStart\"");
+        }
+        
+        
+    }
     return 0;
 }
