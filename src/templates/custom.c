@@ -575,14 +575,9 @@ int create_project(char *project_name, char *project_description, char *project_
         char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
         snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
         char *build_script_contents = fetch_data(build_script_url);
-        // printf("build_script_contents == [%s]\n",build_script_contents);
-
-        char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
-        if(build_script_contents == NULL)
-        {
-            printf("Build option not available\n");
-            return 0;
-        }
+        printf("build_script_contents == [%s]\n",build_script_contents);
+        
+       
         char *build_script_name__ = strchr(build_script_path, '/');
         if(build_script_name__ == NULL)
         {
@@ -590,16 +585,31 @@ int create_project(char *project_name, char *project_description, char *project_
         }
         // printf("Create file?: %d\n",info.build_systems[choice].create_file);
         // printf("Build choice: %s\n",info.build_systems[choice].name);
+        printf("HEre\n");
         if(info.build_systems[choice].create_file == true)
         {
+
             FILE *build_script = fopen(build_script_name__+1,"w");
-            // printf("build_script_contents_formatted == [%s]\n",build_script_contents_formatted);
-            fprintf(build_script,"%s",build_script_contents_formatted);
-            fclose(build_script);
-            free(build_script_contents);
-            free(build_script_url);
-            free(build_script_contents_formatted);
+            printf("build_systems is true\n");
+
+            char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
+            if(build_script_contents_formatted != NULL)
+            {
+                if(build_script_contents == NULL)
+                {
+                    printf("Build option not available\n");
+                    return 0;
+                }
+                
+                // printf("build_script_contents_formatted == [%s]\n",build_script_contents_formatted);
+                fprintf(build_script,"%s",build_script_contents_formatted);
+                fclose(build_script);
+                free(build_script_contents);
+                free(build_script_url);
+                free(build_script_contents_formatted);
+            }
         }
+        printf("%d\n",__LINE__);
         
         
     }
@@ -627,15 +637,23 @@ int create_project(char *project_name, char *project_description, char *project_
     char *formatted_main_file_path = replace_string(main_file_create_path, "${project_name}", project_name);
     // printf("main_file_create_path == %s\n",formatted_main_file_path);
     FILE *fp2 = fopen(formatted_main_file_path,"w");
-    fprintf(fp2, "%s File: %s\n",info.comment,info.default_main_file);
-    fprintf(fp2, "%s Author: %s\n",info.comment, project_author);
-    fprintf(fp2, "%s License: %s\n",info.comment, project_licence);
-    fprintf(fp2, "%s Version: %s\n", info.comment,project_version);
-    fprintf(fp2, "%s Description: %s\n\n", info.comment,project_description);
-    fwrite(main_file_data, 1, strlen(main_file_data), fp2);
-    fclose(fp2);
-    free(main_file_path);
-    free(main_file_data);
+    if(fp2 != NULL)
+    {
+        fprintf(fp2, "%s File: %s\n",info.comment,info.default_main_file);
+        fprintf(fp2, "%s Author: %s\n",info.comment, project_author);
+        fprintf(fp2, "%s License: %s\n",info.comment, project_licence);
+        fprintf(fp2, "%s Version: %s\n", info.comment,project_version);
+        fprintf(fp2, "%s Description: %s\n\n", info.comment,project_description);
+        fwrite(main_file_data, 1, strlen(main_file_data), fp2);
+        fclose(fp2);
+        free(main_file_path);
+        free(main_file_data);
+    }
+    else
+    {
+        printf("There was an issue creating the new main file %s\n",formatted_main_file_path);
+        return -1;
+    }
     // chdir(base_dir);
     //Run commnads
     for (size_t i = 0; i < info.commands_to_run_count; i++) {
@@ -648,13 +666,6 @@ int create_project(char *project_name, char *project_description, char *project_
             // return 1;
             }
     }
-    // if (strcmp(base_dir, "tests") == 0) {
-    //     // system("mkdir -p tests");
-    //     chdir("..");
-    // }
-    //Config.mk
-   
-    // free(config_mk_create_path_formatted);
     // Create README.md
     if (strcmp(create_license_file, "yes") == 0) {
         char license_file_path[1024];
