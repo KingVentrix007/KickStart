@@ -23,7 +23,9 @@
         "array": "c",
         "string": "c",
         "string_view": "c",
-        "dirent.h": "c"
+        "dirent.h": "c",
+        "run.h": "c",
+        "algorithm": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,

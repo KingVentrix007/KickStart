@@ -13,6 +13,14 @@
 #include "../licence.h"
 #include "limits.h"
 #include "stdbool.h"
+int mkdir_p(const char *path, mode_t mode) ;
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <errno.h>
+bool is_offline();
+char *fetch_json_url(const char *url);
 struct MemoryStruct {
     char *memory;
     size_t size;
@@ -95,38 +103,96 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     return realsize;
 }
 
+char *fetch_json_url(const char *url)
+{
+     CURL *curl;
+        CURLcode res;
+        char *buffer = NULL;
+        long http_code = 0;
+        curl_global_init(CURL_GLOBAL_DEFAULT);
+        curl = curl_easy_init();
+
+        if (curl) {
+            curl_easy_setopt(curl, CURLOPT_URL, url);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+            res = curl_easy_perform(curl);
+            // printf("URL: %s\n", url);
+            if (res != CURLE_OK) {
+                fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+                free(buffer);
+                buffer = NULL;
+            }
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+            if (http_code != 200) {
+                fprintf(stderr, "Failed to fetch data. HTTP response code: %ld\n", http_code);
+            }
+            
+            curl_easy_cleanup(curl);
+        }
+
+        curl_global_cleanup();
+        // printf("buffer == [%s]\n",buffer);
+        return buffer;
+}
+
 // Function to fetch JSON data from a URL
 char *fetch_json(const char *url) {
-    CURL *curl;
-    CURLcode res;
-    char *buffer = NULL;
-    long http_code = 0;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
-
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-
-        res = curl_easy_perform(curl);
-        // printf("URL: %s\n", url);
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-            free(buffer);
-            buffer = NULL;
-        }
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-        if (http_code != 200) {
-            fprintf(stderr, "Failed to fetch data. HTTP response code: %ld\n", http_code);
-        }
-        
-        curl_easy_cleanup(curl);
+    if(is_offline() == false)
+    {
+        return fetch_json_url(url);
     }
+    else
+    {
+        char *path = malloc(strlen(url));
+        strcpy(path,url);
+        char *pos = strstr(path,LANG_BASE_URL);
 
-    curl_global_cleanup();
-    // printf("buffer == [%s]\n",buffer);
-    return buffer;
+        if (pos != NULL)
+        {
+            size_t len = strlen(LANG_BASE_URL);
+            // Shift the remaining characters left to overwrite the substring
+            memmove(pos, pos + len, strlen(pos + len) + 1);
+        }
+        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path));
+        if(full_path == NULL)
+        {
+            return NULL;
+        }
+        sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
+        mkdir_p(full_path,0777 );
+        printf("full_path == %s\n",full_path);
+        FILE *fp = fopen(full_path,"r");
+        if(fp == NULL)
+        {
+            printf("This template is not installed, try running offline mode WHILE connected to the internet to install the packages\n");
+            FILE *fp_w = fopen(full_path,"w");
+            if(fp_w == NULL)
+            {
+                printf("Failed to create file: %s\n",full_path);
+            }
+            char *data = fetch_json_url(url);
+            fwrite(data,sizeof(char),strlen(data),fp_w);
+            fclose(fp_w);
+            printf("data == %s\n",data);
+            return data;
+
+        }
+        fseek(fp,0L,SEEK_END);
+
+        size_t size = ftell(fp);
+        rewind(fp);
+        char *buffer = malloc(size+100);
+        if(buffer == NULL)
+        {
+            return NULL;
+        }
+        fread(buffer,sizeof(char),size,fp);
+        fclose(fp);
+        return buffer;
+    }
+    
 }
 
 // Function to parse JSON and find the path for the given language
@@ -171,27 +237,136 @@ const char *find_language_path(const char *lang, const char *json_data) {
     return ret_path;
 }
 
+
+int mkdir_p(const char *path, mode_t mode) {
+    char *subpath = strdup(path);
+    char *p;
+
+    if (!subpath) {
+        perror("strdup failed");
+        return -1;
+    }
+
+    // Check if the last component might be a file (by checking for a dot in the name)
+    char *last_slash = strrchr(subpath, '/');
+    if (last_slash && strchr(last_slash, '.')) {
+        // If there's a dot after the last slash, assume it's a file, and terminate the path before the file name
+        *last_slash = '\0';
+    }
+
+    for (p = subpath + 1; *p; p++) {
+        if (*p == '/') {
+            *p = '\0'; // Temporarily terminate string
+            if (mkdir(subpath, mode) != 0) {
+                // Check if the error is due to the directory already existing
+                if (errno != EEXIST) {
+                    perror("mkdir failed");
+                    free(subpath);
+                    return -1; // Return error if mkdir fails
+                }
+            }
+            *p = '/';  // Restore original character
+        }
+    }
+
+    // Create the final directory (if it's not a file)
+    if (mkdir(subpath, mode) != 0) {
+        if (errno != EEXIST) {
+            perror("mkdir failed");
+            free(subpath);
+            return -1; // Return error if mkdir fails
+        }
+    }
+
+    free(subpath);
+    return 0;
+}
+
 // #define LANG_BASE_URL "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/langs"
-
+bool is_offline();
 char *get_lang_path(const char *lang) {
-    char url[1024];
-    snprintf(url, sizeof(url), "%s/index.json", LANG_BASE_URL);
+    if(is_offline() == false)
+    {
+        char url[1024];
+        snprintf(url, sizeof(url), "%s/index.json", LANG_BASE_URL);
 
-    char *json_data = fetch_json(url);
-    // printf("json_data == %s\n",json_data);
-    if (!json_data) {
-        fprintf(stderr, "Failed to fetch JSON data\n");
+        char *json_data = fetch_json(url);
+        // printf("json_data == %s\n",json_data);
+        if (!json_data) {
+            fprintf(stderr, "Failed to fetch JSON data\n");
+            return NULL;
+        }
+
+        const char *path = find_language_path(lang, json_data);
+        free(json_data);  // Free the JSON data after use
+
+        if (path) {
+            // printf("Path for language '%s': %s\n", lang, path);
+            return strdup(path);  // Return a copy of the path
+        }
         return NULL;
     }
+    else
+    {
+        // char *fopath = "/usr/local/etc/KickStart/";
+        char *index_path = "/usr/local/etc/KickStart/langs/index.json";
+        
+        FILE *index = fopen(index_path,"r");
+        if(index == NULL)
+        {
+            printf("It appears to be your first time running in offline mode. We will now download the config files\n");
+            mkdir_p("/usr/local/etc/KickStart/langs/",0777);
+            // mkdir_p(/usr/local/etc/KickStart/")
+            char url[1024];
+            snprintf(url, sizeof(url), "%s/index.json", LANG_BASE_URL);
+            printf("Here\n %d\n",__LINE__);
+            char *json_data = fetch_json(url);
+            printf("json_data == %s\n",json_data);
+            if (!json_data) {
+                fprintf(stderr, "Failed to fetch JSON data\n");
+                return NULL;
+            }
+            char *index_path = "/usr/local/etc/KickStart/langs/index.json";
+            FILE *index = fopen(index_path,"w");
+            if(index == NULL)
+            {
+                printf("Failed to make index file\n");
+                return NULL;
+            }
+            fwrite(json_data,sizeof(char),strlen(json_data),index);
+            fclose(index);
+            const char *path = find_language_path(lang, json_data);
+            free(json_data);  // Free the JSON data after use
 
-    const char *path = find_language_path(lang, json_data);
-    free(json_data);  // Free the JSON data after use
+            if (path) {
+                printf("Path for language '%s': %s\n", lang, path);
+                
+                return strdup(path);  // Return a copy of the path
+            }
+            return NULL;
 
-    if (path) {
-        // printf("Path for language '%s': %s\n", lang, path);
-        return strdup(path);  // Return a copy of the path
+
+        }
+        fseek(index,0l,SEEK_END);
+        size_t file_size = ftell(index);
+        rewind(index);
+        char *json_data = malloc(file_size+100);
+        if(json_data == NULL)
+        {
+            return NULL;
+        }
+        fread(json_data,sizeof(char),file_size,index);
+        fclose(index);
+        const char *path = find_language_path(lang, json_data);
+        free(json_data);  // Free the JSON data after use
+
+        if (path) {
+            // printf("Path for language '%s': %s\n", lang, path);
+            return strdup(path);  // Return a copy of the path
+        }
+        return NULL;
     }
-    return NULL;
+    
 }
 
 // Helper macro to free allocated memory

@@ -7,6 +7,14 @@
 #include <jansson.h>
 #include "package_manager/cpkg_main.h"
 #include "run/run.h"
+#include "stdbool.h"
+
+bool offline = false;
+bool is_offline()
+{
+    return offline;
+}
+
 int create_template();
 
 
@@ -23,7 +31,10 @@ int main(int argc, char **argv) {
         printf("\tbuild: Builds the project\n");
         return 0;
     }
-
+    if(strcmp(argv[argc-1],"-o") == 0)
+    {
+        offline = true;
+    }
     if (strcmp(argv[1], "init") == 0) {
         main_build();
     } else if (strcmp(argv[1], "install") == 0) {
