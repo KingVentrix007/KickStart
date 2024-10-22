@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
     }
     if(strcmp(argv[argc-1],"-o") == 0)
     {
+        printf("WARNING: offline mode is VERY bugged at the moment\n");
         offline = true;
     }
     if (strcmp(argv[1], "init") == 0) {
