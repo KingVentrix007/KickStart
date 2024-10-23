@@ -874,6 +874,7 @@ int create_project(char *project_name, char *project_description, char *project_
         }
         fprintf(readme_file, "# %s\n\n", project_name);
         fprintf(readme_file, "%s\n\n", project_description);
+        fprintf(readme_file,"[Example](https://github.com/othneildrew/Best-README-Template/tree/main)");
         fclose(readme_file);
     }
     
