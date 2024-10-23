@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-
+int mkdir_p(const char *path, mode_t mode) ;;
 #define INDEX_URL                                                              \
   "https://raw.githubusercontent.com/KingVentrix007/CodeStarterFiles/main/"    \
   "libs"
@@ -163,7 +163,7 @@ char *get_lib_path(const char *lib_name, const char *language) {
 
   json_error_t error;
   json_t *root = json_loads(json_data, 0, &error);
-  free(json_data);
+  // free(json_data);
 
   if (!root) {
     fprintf(stderr, "Error parsing JSON data: %s\n", error.text);
@@ -173,6 +173,10 @@ char *get_lib_path(const char *lib_name, const char *language) {
   json_t *lib_info = json_object_get(root, lib_name);
   if (!lib_info) {
     printf("Library %s not found in index.json\n", lib_name);
+    printf("Index %s\n",json_data);
+  free(json_data);
+
+
     json_decref(root);
     return NULL;
   }
@@ -279,6 +283,7 @@ void create_dirs_recursively(const char *path) {
   for (p = tmp + 1; *p; p++) {
     if (*p == '/') {
       *p = 0;
+      printf(">%s\n",tmp);
       mkdir(tmp, 0700);
       *p = '/';
     }
@@ -318,7 +323,7 @@ void save_header_files(LibraryInfo *lib_info) {
 
     printf("Fetching header file from %s\n", file_url);
     printf("Saving header file to %s\n", local_path);
-
+    mkdir_p(local_path,0777);
     if (fetch_and_save_file(file_url, local_path) == 0) {
       printf("Header file saved successfully.\n");
     } else {
@@ -391,63 +396,6 @@ int directory_exists(const char *path) {
   }
 }
 
-// int main() {
-//     const char *lib_name = "buffer";  // replace with the actual library name
-//     you're looking for const char *language = "c";       // replace with the
-//     actual language you're looking for char *path = get_lib_path(lib_name,
-//     language); if(directory_exists("libs") != 1)
-//     {
-//         mkdir("libs",0700);
-//     }
-//     char *lib_dir_path = malloc(strlen(lib_name)+strlen("libs")+20);
-//     snprintf(lib_dir_path, strlen(lib_name)+strlen("libs")+20, "libs/%s",
-//     lib_name); if(directory_exists(lib_dir_path) != 1)
-//     {
-//         mkdir(lib_dir_path,0700);
-//     }
-//     if (path) {
-//         printf("Path for library '%s' with language '%s': %s\n", lib_name,
-//         language, path);
-//     } else {
-//         printf("Library '%s' not found or language mismatch.\n", lib_name);
-//     }
-
-//     char *lib_name_buffer_file = malloc(strlen(INDEX_URL) + strlen(path) +
-//     100); printf("path == %s\n", path); snprintf(lib_name_buffer_file,
-//     strlen(INDEX_URL) + strlen(path) + 100, "%s/%s", INDEX_URL, path);
-//     printf("lib_name_buffer_file: %s\n", lib_name_buffer_file);
-
-//     char *json_data = fetch_json_data(lib_name_buffer_file);
-//     if (json_data) {
-//         LibraryInfo *lib_info = parse_library_json(json_data);
-
-//         // Use lib_info as needed
-//         if (lib_info) {
-//             printf("Library Name: %s\n", lib_info->name);
-//             printf("Git URL: %s\n", lib_info->git_url);
-//             printf("Raw Path: %s\n", lib_info->raw_path);
-//             printf("Source Paths:\n");
-//             for (size_t i = 0; i < lib_info->src_count; i++) {
-//                 printf("  %s\n", lib_info->src_paths[i]);
-//             }
-//             printf("Header Paths:\n");
-//             for (size_t i = 0; i < lib_info->header_count; i++) {
-//                 printf("  %s\n", lib_info->header_paths[i]);
-//             }
-
-//             // Save source files
-//             save_source_files(lib_info);
-//             save_header_files(lib_info);
-//             // Free allocated memory
-//             // free_library_info(lib_info);
-//         }
-
-//         free(json_data);
-//     }
-
-//     free(lib_name_buffer_file);
-//     return 0;
-// }
 
 /**
  * @brief Main function to install a package.

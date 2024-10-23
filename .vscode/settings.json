@@ -25,7 +25,8 @@
         "string_view": "c",
         "dirent.h": "c",
         "run.h": "c",
-        "algorithm": "c"
+        "algorithm": "c",
+        "stdbool.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,
