@@ -17,6 +17,9 @@ all: $(TARGET)
 # Build without DEBUG defined
 build: CFLAGS := $(filter-out -DDEBUG,$(CFLAGS))
 build: $(TARGET)
+	mkdir -p "build"
+	cp $(TARGET) "build"
+
 
 # Create object directory structure
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

@@ -26,7 +26,8 @@
         "dirent.h": "c",
         "run.h": "c",
         "algorithm": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "curl.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,
