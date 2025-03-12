@@ -22,6 +22,8 @@ char* get_lang();
 char* get_install();
 int main_build();
 int main(int argc, char **argv) {
+    
+    printf("kpm compile date: %s\n",__TIME__);
     if (argc < 2) {
         printf("Usage: %s <init|template|install|run|build> [package_name]\n", argv[0]);
         printf("\tinit: Initialize a new project\n");

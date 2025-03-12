@@ -34,13 +34,22 @@ int run_project()
     json_error_t error;
     root = json_loads( json_data, 0, &error );
     json_t *run_cmd_json = json_object_get(root,"run_command");
+    json_t *prod_name_json = json_object_get(root,"name");
+    char *prod_name = prod_name_json && json_is_string(prod_name_json) ? strdup(json_string_value(prod_name_json)) : NULL;
+    
     char *run_cmd = run_cmd_json && json_is_string(run_cmd_json) ? strdup(json_string_value(run_cmd_json)) : NULL;
-    if(run_cmd == NULL)
+    if(prod_name == NULL)
+    {
+        printf("Error getting project name: Run code like this: %s\n",run_cmd);
+    }
+    char *run_cmd_form = replace_string(run_cmd,"${project_name}",prod_name);
+    printf("Run cmd: DEBUG: %s\n",run_cmd_form);
+    if(run_cmd_form == NULL)
     {
         printf("No valid run command found\n");
         return -1;
     }
-    system(run_cmd);
+    system(run_cmd_form);
     // json_t *build_cmd;
 
    return 0;

@@ -967,7 +967,7 @@ int create_project(char *project_name, char *project_description, char *project_
         FILE *custom_file = fopen(file_path, "w");
         if (custom_file == NULL)
         {
-            // fprintf(stderr, "Failed to open file: %s\n", file_path);
+            fprintf(stderr, "Failed to open file: %s\n", file_path);
             free(file_url);
             free(file_data);
             continue;
