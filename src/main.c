@@ -8,7 +8,9 @@
 #include "package_manager/cpkg_main.h"
 #include "run/run.h"
 #include "stdbool.h"
-
+#ifdef _WIN32
+#warning "This program does not support Windows yet. Use at you own risk"
+#endif
 bool offline = false;
 bool is_offline()
 {
@@ -25,6 +27,7 @@ int main(int argc, char **argv) {
     
     printf("kpm compile date: %s\n",__TIME__);
     if (argc < 2) {
+       
         printf("Usage: %s <init|template|install|run|build> [package_name]\n", argv[0]);
         printf("\tinit: Initialize a new project\n");
         printf("\ttemplate: Create a new project template\n");
@@ -39,6 +42,9 @@ int main(int argc, char **argv) {
         offline = true;
     }
     if (strcmp(argv[1], "init") == 0) {
+        #ifdef _WIN32
+        printf("WARNING, You are running on a windows system. Commands run by kpm are for linux only. So use at your own risk\nIf you project is not setup properly, DO NOT provide a issue on github.")
+        #endif
         main_build();
     } else if (strcmp(argv[1], "install") == 0) {
         printf("Package manager DOSE NOT support big packages like libcurl or jansson\n");
