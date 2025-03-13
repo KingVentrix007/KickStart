@@ -653,6 +653,9 @@ void clean_url(char *url) {
         url[len - 2] = '\0';
     }
 }
+
+
+
 /**
  * @brief Creates a new project with the specified parameters.
  *
