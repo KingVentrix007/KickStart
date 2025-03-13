@@ -60,11 +60,14 @@ To get started with Kick Start, simply run the tool and follow the on-screen pro
     make build
     ``` 
 4. Run
+    
+     For the testing version, will create a tests dir and build project in there
     ```bash
-    make run # for the testing version, will create a tests dir and build project in there
-    ```
+    make run
+    ``` 
+    For release version
     ```bash
-    ./kpm <init|template|install> # for release version
+    ./kpm <init|template|install|run|build|langs> [package_name] 
     ```
 5. Follow the on screen prompts
 

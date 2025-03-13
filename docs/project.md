@@ -48,6 +48,7 @@ When you use the `kpm init` command, KickStart will guide you through the proces
 - **Custom Templates**: You can create custom templates for specific languages or project types. Refer to the KickStart documentation for more details.
 - **Troubleshooting**: If you encounter any issues, check the KickStart documentation or community forums for assistance.
 
+- **Offline mode**: KickStart has an offline mode, activated by add the `-o` to the end of the command. It in order for it to download a template. It must be run in offline mode **WHILE CONNECTED** to the internet, 
 ## Conclusion
 
 KickStart's `kpm init` command is a powerful tool to quickly set up a new project with all the necessary components. By automating the initial setup, you can focus more on developing your project and less on configuration.

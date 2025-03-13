@@ -469,5 +469,5 @@ int cpkg_main(char *lib_name, char *language) {
   }
 
   free(lib_name_buffer_file);
-  return 0;
+  return -1;
 }

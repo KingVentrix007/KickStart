@@ -24,6 +24,7 @@ int create_template();
 char* get_lang();
 char* get_install();
 int main_build();
+int update_deps(char *installed);
 int main(int argc, char **argv) {
     
     printf("kpm compile date: %s\n",__TIME__);
@@ -68,16 +69,26 @@ int main(int argc, char **argv) {
         char *lang = get_lang();
         char *install_cmd = get_install();
         if (strcmp(lang, "c") == 0) {
-            cpkg_main(argv[2], lang);
+            // printf("cpkg_main = [%d]",);
+            if(cpkg_main(argv[2], lang) != -1)
+            {
+                printf("Installed: %s\n",argv[2]);
+                update_deps(argv[2]);
+            }
         } else if (strcmp(install_cmd,"(null)") == 0)
         {
+            
             cpkg_main(argv[2], lang);
         }   
         else
         {
             char *command = malloc(strlen(argv[2])+strlen(install_cmd)+50);
             snprintf(command,strlen(argv[2])+strlen(install_cmd)+50,"%s %s",install_cmd,argv[2]);
-            system(command);
+            if(system(command) != -1)
+            {
+                printf("Installed: %s\n",argv[2]);
+                update_deps(argv[2]);
+            }
             free(command);
             // fprintf(stderr, "Unsupported language: %s\n", lang);
             // return 1;
@@ -86,7 +97,7 @@ int main(int argc, char **argv) {
     {
         if(argc >= 3 && strcmp(argv[2],"-f") == 0)
         {
-            printf("This feature is coming soon. It will build the json file from the contents of the current folder\n");
+            printf("This feature is not implemented. It will build the json file from the contents of the current folder\n");
         }
         else
         {   
