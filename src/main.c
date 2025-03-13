@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     }
     if(strcmp(argv[argc-1],"-o") == 0)
     {
-        printf("WARNING: offline mode is VERY bugged at the moment\n");
+        printf("WARNING: offline mode can be very buggy\n");
         offline = true;
     }
     if (strcmp(argv[1], "init") == 0) {
@@ -95,13 +95,14 @@ int main(int argc, char **argv) {
         }
     }else if (strcmp(argv[1],"template") == 0)
     {
+        
         if(argc >= 3 && strcmp(argv[2],"-f") == 0)
         {
             printf("This feature is not implemented. It will build the json file from the contents of the current folder\n");
         }
         else
         {   
-            printf("--------------------------------------------------------\nWARNING\n\nTemplate creation code is outdated\n");
+            printf("WARNING THIS COMMAND IS DECRYPTED AND NO LONER FUNCTIONS WITH THE LATEST TEMPLATE CODE\n");
             create_template();
 
         }
