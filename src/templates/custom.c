@@ -162,7 +162,7 @@ char *fetch_json(const char *url) {
         }
         sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
         mkdir_p(full_path,0777 );
-        printf("full_path == %s\n",full_path);
+        // printf("full_path == %s\n",full_path);
         FILE *fp = fopen(full_path,"r");
         if(fp == NULL)
         {
@@ -175,7 +175,7 @@ char *fetch_json(const char *url) {
             char *data = fetch_json_url(url);
             fwrite(data,sizeof(char),strlen(data),fp_w);
             fclose(fp_w);
-            printf("data == %s\n",data);
+            // printf("data == %s\n",data);
             return data;
 
         }
@@ -319,9 +319,9 @@ char *get_lang_path(const char *lang) {
             // mkdir_p(/usr/local/etc/KickStart/")
             char url[1024];
             snprintf(url, sizeof(url), "%s/index.json", LANG_BASE_URL);
-            printf("Here\n %d\n",__LINE__);
+            // printf("Here\n %d\n",__LINE__);
             char *json_data = fetch_json(url);
-            printf("json_data == %s\n",json_data);
+            // printf("json_data == %s\n",json_data);
             if (!json_data) {
                 fprintf(stderr, "Failed to fetch JSON data\n");
                 return NULL;
@@ -753,7 +753,12 @@ int create_project(char *project_name, char *project_description, char *project_
         char *build_script_url = malloc(strlen(LANG_BASE_URL)+strlen(build_script_path)+100);
         snprintf(build_script_url,strlen(LANG_BASE_URL)+strlen(build_script_path)+100,"%s/%s",LANG_BASE_URL,build_script_path);
         char *build_script_contents = fetch_data(build_script_url);
-        printf("build_script_contents == [%s]\n",build_script_contents);
+        if(build_script_contents == NULL)
+        {
+            return -1;
+        }
+        printf("Successfully fetched build script\n");
+        // printf("build_script_contents == [%s]\n",build_script_contents);
         
        
         char *build_script_name__ = strchr(build_script_path, '/');
@@ -763,12 +768,12 @@ int create_project(char *project_name, char *project_description, char *project_
         }
         // printf("Create file?: %d\n",info.build_systems[choice].create_file);
         // printf("Build choice: %s\n",info.build_systems[choice].name);
-        printf("HEre\n");
+        // printf("HEre\n");
         if(info.build_systems[choice].create_file == true)
         {
 
             FILE *build_script = fopen(build_script_name__+1,"w");
-            printf("build_systems is true\n");
+            // printf("build_systems is true\n");
 
             char *build_script_contents_formatted = replace_string(build_script_contents,"${project_name}",project_name);
             if(build_script_contents_formatted != NULL)
@@ -787,7 +792,7 @@ int create_project(char *project_name, char *project_description, char *project_
                 free(build_script_contents_formatted);
             }
         }
-        printf("%d\n",__LINE__);
+        // printf("%d\n",__LINE__);
         
         
     }
@@ -833,7 +838,7 @@ int create_project(char *project_name, char *project_description, char *project_
         return -1;
     }
     // chdir(base_dir);
-    //Run commnads
+    //Run commands
     for (size_t i = 0; i < info.commands_to_run_count; i++) {
         char *command = replace_string(info.commands_to_run[i], "${project_name}", project_name);
         // printf("Running command: %s\n", command);

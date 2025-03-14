@@ -283,7 +283,8 @@ void create_dirs_recursively(const char *path) {
   for (p = tmp + 1; *p; p++) {
     if (*p == '/') {
       *p = 0;
-      printf(">%s\n",tmp);
+      //! DEBUG
+      // printf(">%s\n",tmp);
       mkdir(tmp, 0700);
       *p = '/';
     }
@@ -320,9 +321,9 @@ void save_header_files(LibraryInfo *lib_info) {
     char file_url[512];
     snprintf(file_url, sizeof(file_url), "%s%s", lib_info->raw_path,
              lib_info->header_paths[i]);
-
-    printf("Fetching header file from %s\n", file_url);
-    printf("Saving header file to %s\n", local_path);
+    //!DEBUG
+    // printf("Fetching header file from %s\n", file_url);
+    // printf("Saving header file to %s\n", local_path);
     mkdir_p(local_path,0777);
     if (fetch_and_save_file(file_url, local_path) == 0) {
       printf("Header file saved successfully.\n");
@@ -362,6 +363,7 @@ void save_source_files(LibraryInfo *lib_info) {
     snprintf(file_url, sizeof(file_url), "%s%s", lib_info->raw_path,
              lib_info->src_paths[i]);
 
+      
     printf("Fetching file from %s\n", file_url);
     printf("Saving file to %s\n", local_path);
 
@@ -431,10 +433,10 @@ int cpkg_main(char *lib_name, char *language) {
   }
 
   char *lib_name_buffer_file = malloc(strlen(INDEX_URL) + strlen(path) + 100);
-  printf("path == %s\n", path);
+  // printf("path == %s\n", path);
   snprintf(lib_name_buffer_file, strlen(INDEX_URL) + strlen(path) + 100,
            "%s/%s", INDEX_URL, path);
-  printf("lib_name_buffer_file: %s\n", lib_name_buffer_file);
+  // printf("lib_name_buffer_file: %s\n", lib_name_buffer_file);
 
   char *json_data = fetch_json_data(lib_name_buffer_file);
   if (json_data) {

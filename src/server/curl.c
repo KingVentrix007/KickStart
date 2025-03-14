@@ -124,7 +124,7 @@ char *fetch_data(const char *url) {
             char *data = get_data_url(url);
             fwrite(data,sizeof(char),strlen(data),fp_w);
             fclose(fp_w);
-            printf("data == %s\n",data);
+            // printf("data == %s\n",data);
             return data;
 
         }
