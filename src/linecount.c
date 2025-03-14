@@ -13,6 +13,8 @@
 #include <sys/wait.h>
 #include <dirent.h> 
 #include <ctype.h>
+size_t total_lines;
+size_t total_files;
 void listFilesRecursively(const char *basePath);
 char** get_extensions(size_t *count)
 {
@@ -177,6 +179,8 @@ void listFilesRecursively(const char *basePath) {
                 {
                     // printf("Valid\n");
                     num_lines =  count_lines(path);
+                    total_lines+=num_lines;
+                    total_files+=1;
                 }
             }
             size_t val = -1;
@@ -191,11 +195,22 @@ void listFilesRecursively(const char *basePath) {
             }
         }
     }
-
+    // fprintf(file, "Total lines: %zu\n",total_lines);
+    
+    fclose(file);
     closedir(dr);
 }
 int get_line_count()
 {
     listFilesRecursively(".");
+    FILE *file = fopen("kickstart_analytics.txt", "a");  // Open the file in append mode
+    if (file == NULL) {
+        printf("Could not open kickstart_analytics.txt\n");
+        // closedir(dr);
+        return -1;
+    }
+
+    fprintf(file,"Total files: %zu\n",total_files);
+    fprintf(file,"Average lines per file: %zu\n",total_lines/total_files);
     return 0;
 }
