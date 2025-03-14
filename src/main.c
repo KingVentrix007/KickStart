@@ -13,6 +13,7 @@
 #warning "This program does not support Windows yet. Use at you own risk"
 #endif
 bool offline = false;
+int get_line_count();
 bool is_offline()
 {
     return offline;
@@ -53,7 +54,11 @@ int main(int argc, char **argv) {
     {
         show_all_langs();
     }
-     
+    else if (strcmp(argv[1],"count") == 0)
+    {
+        get_line_count();
+    }
+    
     else if (strcmp(argv[1], "install") == 0) {
         printf("Package manager DOSE NOT support big packages like libcurl or jansson\n");
         printf("In addition, due to a shortage of time. There are very,very few libraries supported, for languages like c, I recommend using clib(https://github.com/clibs/clib)\n");

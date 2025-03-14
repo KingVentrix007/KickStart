@@ -27,7 +27,8 @@
         "run.h": "c",
         "algorithm": "c",
         "stdbool.h": "c",
-        "curl.h": "c"
+        "curl.h": "c",
+        "libgen.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,

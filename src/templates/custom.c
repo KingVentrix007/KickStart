@@ -927,6 +927,15 @@ int create_project(char *project_name, char *project_description, char *project_
     fprintf(project_json, "    \"license\": \"%s\",\n", project_license_copy);
     fprintf(project_json, "    \"dependencies\": \"%s\",\n", project_dependencies_copy);
     fprintf(project_json, "    \"language\": \"%s\",\n",project_language);
+    fprintf(project_json, "    \"extensions\": [");
+    for (size_t i = 0; i < info.extensions_count; i++) {
+        fprintf(project_json, "\"%s\"", info.extensions[i]);
+        if (i < info.extensions_count - 1) {
+            fprintf(project_json, ", ");
+        }
+    }
+    fprintf(project_json, "],\n");
+
     if(strcmp(info.package_install_command,"none") == 0)
     {
     fprintf(project_json, "    \"install_cmd\": \"%s\",\n","(null)");
