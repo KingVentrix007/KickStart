@@ -820,13 +820,38 @@ int create_project(char *project_name, char *project_description, char *project_
     char *formatted_main_file_path = replace_string(main_file_create_path, "${project_name}", project_name);
     // printf("main_file_create_path == %s\n",formatted_main_file_path);
     FILE *fp2 = fopen(formatted_main_file_path,"w");
+    char *comment = malloc(100);
+    bool multi_comment = false;
+    for (size_t i = 0; i < strlen(info.comment); i++)
+    {
+        if(info.comment[i] == ',')
+        {
+            multi_comment = true;
+        }
+        
+    }
+    if(multi_comment == false)
+    {
+        // comment = info.comment
+        strcpy(comment,info.comment);
+    }
+    else
+    {
+        const char delimiter[] = ","; 
+        char *token;
+
+        // Get the first token
+        token = strtok(info.comment, delimiter);
+        strcpy(comment,token);
+
+    }
     if(fp2 != NULL)
     {
-        fprintf(fp2, "%s File: %s\n",info.comment,info.default_main_file);
-        fprintf(fp2, "%s Author: %s\n",info.comment, project_author);
-        fprintf(fp2, "%s License: %s\n",info.comment, project_licence);
-        fprintf(fp2, "%s Version: %s\n", info.comment,project_version);
-        fprintf(fp2, "%s Description: %s\n\n", info.comment,project_description);
+        fprintf(fp2, "%s File: %s\n",comment,info.default_main_file);
+        fprintf(fp2, "%s Author: %s\n",comment, project_author);
+        fprintf(fp2, "%s License: %s\n",comment, project_licence);
+        fprintf(fp2, "%s Version: %s\n", comment,project_version);
+        fprintf(fp2, "%s Description: %s\n\n",comment,project_description);
         fwrite(main_file_data, 1, strlen(main_file_data), fp2);
         fclose(fp2);
         free(main_file_path);

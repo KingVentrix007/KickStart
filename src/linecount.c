@@ -47,7 +47,7 @@ char** get_extensions(size_t *count)
         return NULL;
     }
     size_t extensions_count = json_array_size(program_extensions);
-    printf("Extensions count: %zu\n", extensions_count);
+    // printf("Extensions count: %zu\n", extensions_count);
 
     // Allocate memory for C array of strings
     char **extensions = malloc(extensions_count * sizeof(char *));
@@ -168,7 +168,7 @@ void listFilesRecursively(const char *basePath) {
         if (stat(path, &statbuf) == 0) {
             printf("%s\n", path);
             const char *filetype = get_filename_ext(path);
-            printf("filetype == [%s]\n",filetype);
+            // printf("filetype == [%s]\n",filetype);
             size_t num_lines = -1;
             // printf("Hello\n");
             for (size_t i = 0; i < extensions_count; i++)
@@ -186,7 +186,7 @@ void listFilesRecursively(const char *basePath) {
             size_t val = -1;
             // printf("Check\n");
             if (num_lines != val) {
-                printf("Write\n");
+                // printf("Write\n");
                 fprintf(file, "File: %s, Number of lines: %zu\n", path, num_lines);
             }
             // If it's a directory, recursively call the function
