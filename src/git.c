@@ -22,7 +22,7 @@ int is_file(char *path)
 
 int ignore(char **ignore, size_t ignore_count)
 {
-    printf("Hello\n");
+    // printf("Hello\n");
     for (size_t i = 0; i < ignore_count; i++)
     {
         char *cmd = malloc(1024);
@@ -31,7 +31,7 @@ int ignore(char **ignore, size_t ignore_count)
             return -1;
         }
         sprintf(cmd,"git rm --cached '%s'",ignore[i]);
-        printf("cmd == %s\n",cmd);
+        // printf("cmd == %s\n",cmd);
         system(cmd);
         free(cmd);
     }
