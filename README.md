@@ -67,7 +67,7 @@ To get started with Kick Start, simply run the tool and follow the on-screen pro
     ``` 
     For release version
     ```bash
-    ./kpm <init|template|install|run|build|langs> [package_name] 
+    ./kpm <init|template|install|run|build|langs|count> [package_name] 
     ```
 5. Follow the on screen prompts
 
