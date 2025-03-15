@@ -960,7 +960,7 @@ int create_project(char *project_name, char *project_description, char *project_
         }
     }
     fprintf(project_json, "],\n");
-
+    fprintf(project_json,"\t\"comments\":\"%s\",\n",info.comment);
     if(strcmp(info.package_install_command,"none") == 0)
     {
     fprintf(project_json, "    \"install_cmd\": \"%s\",\n","(null)");
