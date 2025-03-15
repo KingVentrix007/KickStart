@@ -13,6 +13,7 @@
 #warning "This program does not support Windows yet. Use at you own risk"
 #endif
 bool offline = false;
+int ignore(char **ignore, size_t ignore_count);
 int get_line_count();
 bool is_offline()
 {
@@ -123,6 +124,22 @@ int main(int argc, char **argv) {
         // printf("Coming soon\n");
         run_project();
     }
+    else if (strcmp(argv[1],"ignore") == 0)
+    {
+        char **items = malloc((argc-2)*sizeof(char *));
+        if(items == NULL)
+        {
+            return -1;
+        }
+        for (int i = 0; i < argc-2; i++)
+        {
+            items[i] = strdup(argv[i+2]);
+        }
+        ignore(items,argc-2);
+        
+        
+    }
+    
     
     else {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
