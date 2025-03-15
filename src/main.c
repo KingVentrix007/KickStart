@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
     }
     else if (strcmp(argv[1],"count") == 0)
     {
+        
         get_line_count();
     }
     

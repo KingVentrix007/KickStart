@@ -436,7 +436,7 @@ char **get_ext_linecount(size_t *num_ext)
     }
     size_t index;
     json_t *value;
-    printf("Words in JSON:\n");
+    // printf("Words in JSON:\n");
     size_t count = 0;
     json_array_foreach(ext, index, value) {
         if (json_is_string(value)) {
@@ -468,11 +468,21 @@ int get_line_count()
         extensions[i] = strdup(local_ext[i]);
     }
     traverse_directory(".");
-    printf("Total lines of code: [%zu]\n",line_break_down_project.program_code);
-    printf("Total blank lines: [%zu]\n",line_break_down_project.blank);
-    printf("Total code comments: [%zu]\n",line_break_down_project.comment);
-    printf("Total config lines: [%zu]\n",line_break_down_project.config);
-    printf("Total documentation lines: [%zu]\n",line_break_down_project.documentation);
+    if(system("clocc --version > /dev/null 2>&1") != 0)
+    {
+        printf("cloc is not installed, defaulting to builtin system\n");
+        printf("Total lines of code: [%zu]\n",line_break_down_project.program_code);
+        printf("Total blank lines: [%zu]\n",line_break_down_project.blank);
+        printf("Total code comments: [%zu]\n",line_break_down_project.comment);
+        printf("Total config lines: [%zu]\n",line_break_down_project.config);
+        printf("Total documentation lines: [%zu]\n",line_break_down_project.documentation);
+    }
+    else
+    {
+        printf("Using cloc instead of built in system\n");
+        system("cloc .");
+    }
+    
     
     return 0;
 }
