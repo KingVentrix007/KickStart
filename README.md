@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/KickStartLogo.png" alt="Kick Start Logo" width="200"/>
+  <img src="images/banner.png" alt="Kick Start Logo" width="500"/>
 </p>
 
 <h1 align="center">Kick Start</h1>
@@ -12,7 +12,12 @@
   <img src="https://img.shields.io/badge/status-in--development-yellow?style=flat-square"/>
 </p>
 
+
+
 ---
+![Built with KickStart](images/badge.png)
+
+
 
 ## 🚀 What is Kick Start?
 
@@ -35,15 +40,13 @@ Whether you're starting in **C, C++, Java, Python, or Rust**, Kick Start gives y
 
 - 🧱 **Scaffolded Project Structure**  
   Each project includes:
-```
-
-/src        → main source file
-/build      → compiled binaries
-libs/       → managed dependencies
-.gitignore
-README.md
-
-````
+    ```
+    /src        → main source file
+    /build      → compiled binaries
+    libs/       → managed dependencies
+    .gitignore
+    README.md
+    ````
 
 - 📄 **File Headers**  
 Author, license, and version comments auto-added to main files.
@@ -147,7 +150,5 @@ This project is licensed under the [MIT License](LICENSE).
   <i>Kick Start — Build the base. Ship the future.</i>
 </p>
 ```
-
----
 
 
