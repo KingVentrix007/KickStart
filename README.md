@@ -150,9 +150,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-### ✅ Suggested Additions:
-
-* **Screenshot folder (`images/`)**: Add `project-structure.png`, `cli-example.png`, and optionally a `template-preview.png` or GIF.
-* **README badge links**: You can use real shields.io badges once your repo is public (if not already).
-* **README banner**: Want a custom `KickStart` banner like Next.js or Rust? I can make you one.
 
