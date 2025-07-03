@@ -15,7 +15,7 @@
 
 
 ---
-![Built with KickStart](images/badge.png)
+
 
 
 
