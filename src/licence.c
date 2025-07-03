@@ -108,7 +108,7 @@ char* get_license_text(const char *license_name) {
         fprintf(stderr, "Failed to initialize curl.\n");
         return NULL;
     }
-
+    curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
     curl_easy_setopt(curl, CURLOPT_URL, new_url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_l);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memory);

@@ -1,85 +1,158 @@
-# Kick Start
+<p align="center">
+  <img src="images/KickStartLogo.png" alt="Kick Start Logo" width="200"/>
+</p>
 
-**Kick Start** is a tool that simplifies the process of starting new coding projects. With just a few steps, users can set up a fully functional project, complete with essential files, templates, and build scripts.
+<h1 align="center">Kick Start</h1>
 
-## Features
+<p align="center"><b>Jumpstart your coding projects — across multiple languages, with zero setup friction.</b></p>
 
-- **Multi-Language Support**: Kick Start comes with built-in templates for various programming languages, including C, Java, Python, C++, Rust, and more.
-- **Build Script Generation**: Automatically generates a Makefile or bash/batch script for supported projects. For Python projects, it creates a `setup.py` file.
-- **Library Management**: For languages like C, C++, and Rust, Kick Start creates a `libs` folder and offers a command-line interface to install packages similarly to `pip`. The installed libraries are tracked in a `.json` file and integrated into the Makefile for building.
-- **Main File Creation**: A simple main file is generated for each language, containing a default output statement: `"Hello from Kick Start"`.
-- **Custom Header File**: Automatically adds a custom header file (or equivalent) with version information and a compile number, which is incremented by the Makefile with each build.
-- **Project Structure**: Creates a project directory structure, with separate folders for source code and build files. The project directory includes:
-  - A source code folder with the main file.
-  - A `build` folder where compiled files are stored.
-  - A `.gitignore` file.
-  - A `README.md` file.
-- **File Header Comments**: Automatically adds a header of comments to the main file, including the author's name, license information, copyright details, and project description.
-- **Compiler Detection**: Detects whether the correct compiler is installed on the system. If not, it provides a URL for downloading the appropriate compiler.
-- **Custom Templates and Licenses**: Users can create custom templates and licenses. Additional libraries can be added to projects, with each library stored on GitHub in a JSON file. The necessary files are downloaded into the `libs` directory and built into a language-specific library archive (`.a` or the equivalent on Windows).
-- **Git Integration**: If Git is installed, Kick Start will initialize a Git repository in the project directory. It will also create an initial commit with the generated files and offer the option to link to a remote repository (GitHub, GitLab, Bitbucket, etc.).
-- **Project Configuration Files**:
-  - **`project.json`**: This file stores project metadata, including dependencies, project type, license, and other configuration details. The format is compatible with major repository hosting services (e.g., GitHub, GitLab, Bitbucket).
-  - **`package.json`**: For languages with package managers, this file includes dependencies and project metadata, similar to Node.js's `package.json`. It can be used by the software to automatically install necessary libraries.
-
-## Future Plans
-
-- **Library Management Enhancements**: The way libraries are managed may evolve, with potential changes to how they are stored, built, and integrated into projects.
-- **Custom Build System**: Develop a custom build system similar to `npm` or `npx` that allows for easy management of build scripts, running commands, and integrating dependencies across different languages.
-- **Debugger Support**: Include built-in debugger support for each language. For example:
-  - **C/C++**: Integration with GDB or LLDB.
-  - **Python**: Integration with `pdb` or other Python debuggers.
-  - **Rust**: Integration with `gdb` or `rust-lldb`.
-- **Common Project Templates**:
-  - **Operating System Template**: Creates a basic OS project structure, including a `boot.asm` file and support for bootloaders like GRUB or Limine.
-  - **Web Browser/Chat App Templates**: Provides starter templates for common project types like a web browser or chat application, influencing the main file structure and included dependencies.
-## Getting Started
-
-## Download
-!! Warning !! Downloads may be out of date
-
-To get started with Kick Start, simply run the tool and follow the on-screen prompts to create your project. The tool will guide you through the process of naming your project, providing a description, selecting a license, and more.
-
-### Build
-1. Clone the repo
-    ```bash
-    git clone https://github.com/KingVentrix007/KickStart.git
-    ```
-2. Enter `KickStart` dir
-    ```bash
-    cd KickStart
-    ```
-3. run `make` or `make build
-  
-    3.1. `make` builds the testing version
-    ```bash
-    make
-    ``` 
-    3.2. `make build` builds the release version
-    ```bash
-    make build
-    ``` 
-4. Run
-    
-     For the testing version, will create a tests dir and build project in there
-    ```bash
-    make run
-    ``` 
-    For release version
-    ```bash
-    ./kpm <init|template|install|run|build|langs|count> [package_name] 
-    ```
-5. Follow the on screen prompts
-
-Read the [Wiki](docs/home.md) for more info
-
-!! Warning !!
-1. The template code is **INCOMPLETE** and will remain so for sometime, please see one of the other lang.json file to learn from
-2. ./kpm install only works with C and languages with a built in package manger
-
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-multilang-blue?style=flat-square"/>
+  <img src="https://img.shields.io/github/license/KingVentrix007/KickStart?style=flat-square"/>
+  <img src="https://img.shields.io/badge/status-in--development-yellow?style=flat-square"/>
+</p>
 
 ---
 
-**Note**: Kick Start is a work in progress, and features may be added, modified, or removed in future updates. Stay tuned for improvements and new functionalities. Please see the [ROADMAP](ROADMAP.md)
+## 🚀 What is Kick Start?
 
+**Kick Start** is a lightweight tool that automates boilerplate creation, structure setup, and build script generation for new coding projects — so you can focus on writing code, not configuration.
+
+Whether you're starting in **C, C++, Java, Python, or Rust**, Kick Start gives you a clean, ready-to-run foundation in seconds.
+
+---
+
+## ✨ Features
+
+- 🔧 **Multi-Language Templates**  
+  Prebuilt templates for **C, C++, Java, Python, Rust**, and more.
+
+- 🛠 **Build Script Generator**  
+  Generates `Makefile`, `setup.py`, or batch/shell scripts automatically.
+
+- 📦 **Library Manager**  
+  Handles `libs/` folder, fetches dependencies, and tracks them via `.json` metadata.
+
+- 🧱 **Scaffolded Project Structure**  
+  Each project includes:
+```
+
+/src        → main source file
+/build      → compiled binaries
+libs/       → managed dependencies
+.gitignore
+README.md
+
+````
+
+- 📄 **File Headers**  
+Author, license, and version comments auto-added to main files.
+
+- 🧠 **Compiler Detection**  
+Checks if compilers are installed; provides install links if not.
+
+- 🔌 **Custom Templates & Licenses**  
+Easily create and share your own reusable templates.
+
+- 🧰 **Git Integration**  
+Auto-inits a Git repo, creates first commit, and links to remotes.
+
+- ⚙ **Config Files**  
+- `project.json` — project metadata (portable across GitHub/GitLab/Bitbucket)  
+- `package.json` — Node-style dependencies and metadata
+
+---
+
+## 📸 Screenshots & Examples
+
+> *[Optional: Replace below image paths once you have screenshots]*
+
+- 📁 *Example generated project structure:*  
+![Project structure](images/project-structure.png)
+
+- 🖥️ *CLI workflow example:*  
+![CLI demo](images/cli-example.png)
+
+---
+
+## 📚 Getting Started
+
+> ⚠️ **Warning:** Some templates are incomplete. Please refer to working `lang.json` files as examples.
+
+### 🔻 Download
+
+```bash
+git clone https://github.com/KingVentrix007/KickStart.git
+cd KickStart
+````
+
+### 🧱 Build
+
+#### For Testing:
+
+```bash
+make        # Builds debug version into /tests
+make run    # Runs the debug version
+```
+
+#### For Production:
+
+```bash
+make build  # Builds release version
+./kpm <init|template|install|run|build|langs|count> [package]
+```
+
+Follow the interactive prompts and you’re good to go.
+
+📖 Need help? See the [Wiki](docs/home.md)
+
+---
+
+## 🛣️ Roadmap
+
+Planned features:
+
+* ✅ Custom template & license support
+* 🔄 Revamped library builder
+* 🧰 Cross-language build runner (like `npx`)
+* 🐞 Debugger integrations for GDB, LLDB, PDB, etc.
+* 📦 OS/Web/Chat project templates
+
+See [ROADMAP.md](ROADMAP.md) for full list.
+
+---
+
+## 🧪 Known Limitations
+
+* `./kpm install` only works for C and package-managed languages.
+* Templates for some languages are incomplete.
+* Only basic validation currently; more error handling in future releases.
+
+---
+
+## 🤝 Contributing
+
+Contributions, feature requests, and bug reports are welcome!
+Please see the [CONTRIBUTING.md](CONTRIBUTING.md) guide.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  <i>Kick Start — Build the base. Ship the future.</i>
+</p>
+```
+
+---
+
+### ✅ Suggested Additions:
+
+* **Screenshot folder (`images/`)**: Add `project-structure.png`, `cli-example.png`, and optionally a `template-preview.png` or GIF.
+* **README badge links**: You can use real shields.io badges once your repo is public (if not already).
+* **README banner**: Want a custom `KickStart` banner like Next.js or Rust? I can make you one.
 

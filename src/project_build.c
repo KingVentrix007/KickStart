@@ -98,6 +98,17 @@ int main_build() {
             generate_readme[strcspn(generate_readme, "\n")] = 0;  // Remove trailing newline
         }
     }
+    
+    // while(strcmp(generate_readme,"yes") != 0  && strcmp(generate_readme,"no") != 0)
+    // {
+    //     printf("Generate README file? (yes/no) [default: yes]: ");
+    //     fgets(generate_readme, sizeof(generate_readme), stdin);
+    //     if (generate_readme[0] == '\n') {
+    //         strcpy(generate_readme, "yes");
+    //     } else {
+    //         generate_readme[strcspn(generate_readme, "\n")] = 0;  // Remove trailing newline
+    //     }
+    // }
 
     char initialize_git[10] = "yes";
     printf("Initialize Git repository? (yes/no) [default: %s]: ", initialize_git);

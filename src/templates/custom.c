@@ -19,6 +19,7 @@ int mkdir_p(const char *path, mode_t mode) ;
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+#include "../readme.h"
 bool is_offline();
 char *fetch_json_url(const char *url);
 struct MemoryStruct {
@@ -900,15 +901,20 @@ int create_project(char *project_name, char *project_description, char *project_
     if (strcmp(generate_readme, "yes") == 0) {
         char readme_file_path[1024];
         snprintf(readme_file_path, sizeof(readme_file_path), "%s/README.md", base_dir);
-        FILE *readme_file = fopen(readme_file_path, "w");
-        if (readme_file == NULL) {
-            perror("Error creating README.md");
-            exit(EXIT_FAILURE);
+        if(generate_readme_func(readme_file_path, project_name, project_description, project_author, project_licence, project_version, project_language, project_dependencies) !=0)
+        {
+            fprintf(stderr, "Failed to create README.md\n");
+            
         }
-        fprintf(readme_file, "# %s\n\n", project_name);
-        fprintf(readme_file, "%s\n\n", project_description);
-        fprintf(readme_file,"[Example](https://github.com/othneildrew/Best-README-Template/tree/main)");
-        fclose(readme_file);
+        // FILE *readme_file = fopen(readme_file_path, "w");
+        // if (readme_file == NULL) {
+        //     perror("Error creating README.md");
+        //     exit(EXIT_FAILURE);
+        // }
+        // fprintf(readme_file, "# %s\n\n", project_name);
+        // fprintf(readme_file, "%s\n\n", project_description);
+        // fprintf(readme_file,"[Example](https://github.com/othneildrew/Best-README-Template/tree/main)");
+        // fclose(readme_file);
     }
     
     char project_json_path[1024];
