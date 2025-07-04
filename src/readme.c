@@ -47,8 +47,6 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
     char linkedin_username[1024] = "linkedin_username";
     char email_client[1024] = "email_client";
     char email[1024] = "email";
-    printf("Tmp output: %s\n",dependencies[0]);
-    printf("Parsing README contents...\n");
     // char project_title[1024] = project_name;
     // char project_description[4096] = project_description;
     // char project_license[1024] = project_license;

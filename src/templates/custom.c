@@ -1027,7 +1027,16 @@ int create_project(char *project_name, char *project_description, char *project_
         fclose(custom_file);
     }
 }
-    if(system(info.compiler_cmd) != 0)
+    #ifdef _WIN32
+        // Windows
+        char silent_cmd[1024];
+        snprintf(silent_cmd, sizeof(silent_cmd), "%s > NUL 2>&1", info.compiler_cmd);
+    #else
+        // Unix/Linux/macOS
+        char silent_cmd[1024];
+        snprintf(silent_cmd, sizeof(silent_cmd), "%s > /dev/null 2>&1", info.compiler_cmd);
+    #endif
+    if(system(silent_cmd) != 0)
     {
         printf("Compiler for language %s is not installed\n",project_language);
         for (size_t i = 0; i < info.compiler_urls_count; i++)
@@ -1040,36 +1049,80 @@ int create_project(char *project_name, char *project_description, char *project_
         // char *readme_data = fetch_data(readme_path);
     // Use the ProjectInfo structure for further project creation tasks...
     if (strcmp(initialize_git, "yes") == 0) {
-        if (system("git --version") != 0) {
-            printf("Git is not installed. Download Git from https://git-scm.com/downloads\n");
-        } else {
-            char *gitignore_path = malloc(strlen(info.git_ignore_path)+10+strlen(LANG_BASE_URL));
-            if (gitignore_path == NULL) {
-                fprintf(stderr, "Memory allocation failed!\n");
-                return 1;
-            }
-            memset(gitignore_path,0,strlen(info.git_ignore_path)+strlen(LANG_BASE_URL)+10);
-            // strcpy(gitignore_path,info.git_ignore_path);
-            snprintf(gitignore_path,strlen(info.git_ignore_path)+strlen(LANG_BASE_URL)+10,"%s/%s",LANG_BASE_URL,info.git_ignore_path);
-            // printf("Adding .gitignore %s\n",gitignore_path);
-            char *gitignore_data = fetch_data(gitignore_path);
-            char gitignore_create_path[1024];
-            snprintf(gitignore_create_path, sizeof(gitignore_create_path), "%s/%s", base_dir, ".gitignore");
-            // char *config_mk_create_path_formatted = replace_string(config_mk_create_path, "${project_name}", project_name);
-            char *gitignore_data_formatted = replace_string(gitignore_data, "${project_name}", project_name);
-            FILE *fp4 = fopen(gitignore_create_path,"w");
-            fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
-            fclose(fp4);
+            // Check if Git is installed silently
+        #ifdef _WIN32
+            const char *check_git_cmd = "git --version > NUL 2>&1";
+        #else
+            const char *check_git_cmd = "git --version > /dev/null 2>&1";
+        #endif
 
-            
-            char git_init_cmd[1024];
-            snprintf(git_init_cmd, sizeof(git_init_cmd), "cd %s && git init", base_dir);
-            system(git_init_cmd);
-            system("git add .");
-            system("git commit -m \"Initial commit with KickStart\"");
-        }
-        
-        
-    }
+            if (system(check_git_cmd) != 0) {
+                printf("Git is not installed. Download Git from https://git-scm.com/downloads\n");
+            } else {
+                // Build the URL to fetch .gitignore
+                size_t gitignore_path_len = strlen(info.git_ignore_path) + strlen(LANG_BASE_URL) + 10;
+                char *gitignore_path = malloc(gitignore_path_len);
+                if (gitignore_path == NULL) {
+                    fprintf(stderr, "Memory allocation failed!\n");
+                    return 1;
+                }
+                snprintf(gitignore_path, gitignore_path_len, "%s/%s", LANG_BASE_URL, info.git_ignore_path);
+
+                // Fetch and process .gitignore template
+                char *gitignore_data = fetch_data(gitignore_path);
+                free(gitignore_path);  // free after use
+
+                char gitignore_create_path[1024];
+                snprintf(gitignore_create_path, sizeof(gitignore_create_path), "%s/.gitignore", base_dir);
+
+                char *gitignore_data_formatted = replace_string(gitignore_data, "${project_name}", project_name);
+                FILE *fp4 = fopen(gitignore_create_path, "w");
+                if (fp4) {
+                    fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
+                    fclose(fp4);
+                }
+
+                // Initialize git repo silently
+                char git_init_cmd[1024];
+        #ifdef _WIN32
+                snprintf(git_init_cmd, sizeof(git_init_cmd), "cd %s && git init > NUL 2>&1", base_dir);
+        #else
+                snprintf(git_init_cmd, sizeof(git_init_cmd), "cd %s && git init > /dev/null 2>&1", base_dir);
+        #endif
+                system(git_init_cmd);
+
+                // git add .
+        #ifdef _WIN32
+                system("git add . > NUL 2>&1");
+                system("git commit -m \"Initial commit with KickStart\" > NUL 2>&1");
+        #else
+                system("git add . > /dev/null 2>&1");
+                system("git commit -m \"Initial commit with KickStart\" > /dev/null 2>&1");
+        #endif
+            }
+}
+
+    char *quotes[] = {
+        "Great things start small. Let's get to work.",
+        "You're not just starting a project. You're building the future.",
+        "The best way to predict the future is to invent it.— Alan Kay",
+        "Every great project begins with a single step.",
+        "Your project is a blank canvas. Paint it with your vision.",
+        "Innovation is the key to success. Let's innovate together.",
+        "Your project is a journey. Enjoy every step of the way.",
+        "Success is the sum of small efforts, repeated day in and day out.",
+        "Your project is a reflection of your passion. Let it shine.",
+        "The future belongs to those who believe in the beauty of their dreams.",
+        "Empty folders. Infinite potential.",
+        "First, solve the problem. Then, write the code. — John Johnson",
+        "Programs must be written for people to read, and only incidentally for machines to execute. — Harold Abelson"
+
+
+
+    };
+    srand(time(NULL));
+    int idx = rand() % (sizeof(quotes) / sizeof(quotes[0]));
+    printf("Project '%s' created successfully!\n\n", project_name);
+    printf("%s\n", quotes[idx]);
     return 0;
 }
