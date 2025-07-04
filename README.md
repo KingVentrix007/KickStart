@@ -66,7 +66,7 @@ Auto-inits a Git repo, creates first commit, and links to remotes.
 
 ---
 
-## 📸 Screenshots & Examples
+<!-- ## 📸 Screenshots & Examples
 
 > *[Optional: Replace below image paths once you have screenshots]*
 
@@ -74,7 +74,7 @@ Auto-inits a Git repo, creates first commit, and links to remotes.
 ![Project structure](images/project-structure.png)
 
 - 🖥️ *CLI workflow example:*  
-![CLI demo](images/cli-example.png)
+![CLI demo](images/cli-example.png) -->
 
 ---
 
