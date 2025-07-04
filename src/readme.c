@@ -13,6 +13,8 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
      char github_username[MAX_LEN];
     char project_name[MAX_LEN];
     char temp_input[MAX_LEN];
+    memset(temp_input, 0, sizeof(temp_input));
+    strcpy(temp_input,"n");
     getc(stdin); // Clear the newline character from the input buffer
     // Copy inputs as default
     strncpy(github_username, github_username_in, MAX_LEN);
@@ -20,7 +22,7 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
 
     // Ask user to confirm GitHub username
     printf("Your current GitHub username is: %s\n", github_username_in);
-    printf("Do you want to change it? (y/n): ");
+    printf("Do you want to change it(n)? (y/n): ");
     fgets(temp_input, sizeof(temp_input), stdin);
     if (temp_input[0] == 'y' || temp_input[0] == 'Y') {
         printf("Enter new GitHub username: ");
@@ -30,7 +32,7 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
 
     // Ask user to confirm repo name
     printf("Your current repo/project name is: %s\n", project_name_in);
-    printf("Do you want to change it? (y/n): ");
+    printf("Do you want to change it(n)? (y/n): ");
     fgets(temp_input, sizeof(temp_input), stdin);
     if (temp_input[0] == 'y' || temp_input[0] == 'Y') {
         printf("Enter new repo/project name: ");
@@ -144,7 +146,7 @@ while (*src) {
     }else if (strncmp(src,"### Built With",14) == 0)
     {
         dst += sprintf(dst, "### Built With\n%s", "* [![Kickstart](https://github.com/KingVentrix007/KickStart/raw/master/images/badge.png)](https://github.com/KingVentrix007/KickStart)");
-        src += 15;
+        src += 14;
     }    
      
     else {
