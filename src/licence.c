@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "curlhelp.h"
  // For _getch()
 // Structure to hold the response data
 typedef struct {
@@ -61,7 +62,7 @@ size_t write_callback_l(void *contents, size_t size, size_t nmemb, void *userp) 
 
     return total_size;
 }
-
+char *get_data_url(const char *url);
 // Function to get license text from GitHub repository
 char* get_license_text(const char *license_name) {
     CURL *curl;
@@ -103,29 +104,31 @@ char* get_license_text(const char *license_name) {
     snprintf(url, sizeof(url), "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/LICENCE/%s", license_name);
     char *new_url = encode_url(url);
     // printf("URL:%s\n",new_url);
-    curl = curl_easy_init();
-    if (!curl) {
-        fprintf(stderr, "Failed to initialize curl.\n");
-        return NULL;
-    }
-    curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
-    curl_easy_setopt(curl, CURLOPT_URL, new_url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_l);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memory);
+    // curl = curl_easy_init();
+    // if (!curl) {
+    //     fprintf(stderr, "Failed to initialize curl.\n");
+    //     return NULL;
+    // }
+    // curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
+    // curl_easy_setopt(curl, CURLOPT_URL, new_url);
+    // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_l);
+    // curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memory);
 
-    res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        free(memory.data);
-        memory.data = NULL;
-    }
+    // res = curl_easy_perform(curl);
 
-    curl_easy_cleanup(curl);
+    // if (res != CURLE_OK) {
+    //     fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    //     free(memory.data);
+    //     memory.data = NULL;
+    // }
 
-    if(strcmp(memory.data,"404: Not Found") == 0)
-    {
-        return NULL;
-    }
+    // curl_easy_cleanup(curl);
+
+    // if(strcmp(memory.data,"404: Not Found") == 0)
+    // {
+    //     return NULL;
+    // }
+    memory.data = fetch_data(new_url);
     return memory.data;
 }
 

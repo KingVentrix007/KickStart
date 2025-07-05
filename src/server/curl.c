@@ -42,7 +42,7 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
 // s
 char *get_data_url(const char *url)
 {
-    
+        
         CURL *curl;
         CURLcode res;
         long response_code;
@@ -106,27 +106,39 @@ char *get_data_url(const char *url)
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path)+1);
+        char *full_path = malloc(strlen("~/.local/share/KickStart/langs")+strlen(path)+100);
         if(full_path == NULL)
         {
             fprintf(stderr, "Memory allocation failed!\n");
             free(path);
             return NULL;
         }
-        sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
+        const char *home = getenv("HOME");
+        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+
         // mkdir_p(full_path,0777 );
         remove_refs_heads_main(full_path); // Remove refs/heads/main from the path
         // Create the directory if it doesn't exist
-        if (mkdir_p(full_path, 0777) != 0) {
+        // Duplicate to get directory path only
+        char *dir_path = strdup(full_path);
+        char *last_slash = strrchr(dir_path, '/');
+        if (last_slash) {
+            *last_slash = '\0'; // Truncate to get directory path
+            // mkdir_p(dir_path, 0777); // Only create the directories
+            printf("Creating dir at %s\n",dir_path);
+            if (mkdir_p(dir_path, 0777) != 0) {
             fprintf(stderr, "Failed to create directory: %s\n", full_path);
             free(path);
             free(full_path);
             return data;
         }
-            FILE *fp = fopen(full_path,"w");
+        }
+        free(dir_path);
+        
+        FILE *fp = fopen(full_path,"w");
         if(fp == NULL)
         {
-            fprintf(stderr, "Failed to create file: %s\n", full_path);
+            fprintf(stderr, "Failed to create file(get_data_url): %s\n", full_path);
             free(path);
             free(full_path);
             return data;
@@ -140,7 +152,7 @@ char *get_data_url(const char *url)
     }
     else
     {
-        char *path = malloc(strlen(url) + 1);
+        char *path = malloc(strlen(url) + 100);
         if(path == NULL)
         {
             fprintf(stderr, "Memory allocation failed!\n");
@@ -154,28 +166,37 @@ char *get_data_url(const char *url)
         } else {
             strcpy(path, url); // If it doesn't start with the prefix, copy the whole URL
         }
-        char *full_path = malloc(strlen("/usr/local/etc/KickStart/other/") + strlen(path) + 1);
+        char *full_path = malloc(strlen("local/share/KickStart/other/") + strlen(path) + 100);
         if(full_path == NULL)
         {
             fprintf(stderr, "Memory allocation failed!\n");
             free(path);
             return NULL;
         }
-        sprintf(full_path, "%s%s", "/usr/local/etc/KickStart/other/", path);
+        const char *home = getenv("HOME");
+        sprintf(full_path, "%s/.%s%s",home, "local/share/KickStart/other/", path);
         
         // mkdir_p(full_path,0777 );
         remove_refs_heads_main(full_path); // Remove refs/heads/main from the path
         // Create the directory if it doesn't exist
-        if (mkdir_p(full_path, 0777) != 0) {
+        char *dir_path = strdup(full_path);
+        char *last_slash = strrchr(dir_path, '/');
+        if (last_slash) {
+            *last_slash = '\0'; // Truncate to get directory path
+            // mkdir_p(dir_path, 0777); // Only create the directories
+            printf("Creating dir at %s\n",dir_path);
+            if (mkdir_p(dir_path, 0777) != 0) {
             fprintf(stderr, "Failed to create directory: %s\n", full_path);
             free(path);
             free(full_path);
             return data;
         }
+        }
+        free(dir_path);
         FILE *fp = fopen(full_path,"w");
         if(fp == NULL)
         {
-            fprintf(stderr, "Failed to create file: %s\n", full_path);
+            fprintf(stderr, "Failed to create file(get_data_url_2): %s\n", full_path);
             free(path);
             free(full_path);
             return data;
@@ -206,13 +227,23 @@ char *handle_lang_path(const char *url)
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path));
+        char *full_path = malloc(strlen("local/share/KickStart/langs")+strlen(path)+100);
         if(full_path == NULL)
         {
             return NULL;
         }
-        sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
-        // mkdir_p(full_path,0777 );
+        const char *home = getenv("HOME");
+        
+        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+
+        // Duplicate to get directory path only
+//         char *dir_path = strdup(full_path);
+//         char *last_slash = strrchr(dir_path, '/');
+//         if (last_slash) {
+//             *last_slash = '\0'; // Truncate to get directory path
+//             mkdir_p(dir_path, 0777); // Only create the directories
+//         }
+// free(dir_path);
         FILE *fp = fopen(full_path,"r");
         if(fp == NULL)
         {
@@ -220,7 +251,7 @@ char *handle_lang_path(const char *url)
             FILE *fp_w = fopen(full_path,"w");
             if(fp_w == NULL)
             {
-                printf("Failed to create file: %s\n",full_path);
+                printf("Failed to create file(handle_lang_path): %s\n",full_path);
             }
             char *data = get_data_url(url);
             fwrite(data,sizeof(char),strlen(data),fp_w);
@@ -268,14 +299,15 @@ char *handle_other(const char *url)
     else {
         strcpy(path, url); // If it doesn't start with the prefix, copy the whole URL
     }
-    char *full_path = malloc(strlen("/usr/local/etc/KickStart/other/") + strlen(path) + 1);
+    char *full_path = malloc(strlen("local/share/KickStart/other/") + strlen(path) + 100);
     if(full_path == NULL)
     {
         fprintf(stderr, "Memory allocation failed!\n");
         free(path);
         return NULL;
     }
-    sprintf(full_path, "%s%s", "/usr/local/etc/KickStart/other/", path);
+    char *home = getenv("HOME");
+    sprintf(full_path, "%s/.%s%s",home, "local/share/KickStart/other/", path);
     remove_refs_heads_main(full_path); // Remove refs/heads/main from the path
     // Create the directory if it doesn't exist
     if (mkdir_p(full_path, 0777) != 0) {
@@ -292,7 +324,7 @@ char *handle_other(const char *url)
         FILE *fp_w = fopen(full_path, "w");
         if(fp_w == NULL)
         {
-            printf("Failed to create file: %s\n", full_path);
+            printf("Failed to create file(handle_other): %s\n", full_path);
             free(path);
             free(full_path);
             return NULL;
@@ -332,8 +364,10 @@ char *fetch_data(const char *url) {
     {
         if(strncmp(url, LANG_BASE_URL, strlen(LANG_BASE_URL)) == 0) {
             // If the URL starts with LANG_BASE_URL, handle it as a language path
+            printf("Fetching data from lang URL: %s\n",url);
             return handle_lang_path(url);
         } else {
+            printf("Fetching data from other URL: %s\n", url);
             return handle_other(url);
         }
     }

@@ -142,7 +142,50 @@ char *fetch_json_url(const char *url)
 char *fetch_json(const char *url) {
     if(is_offline() == false)
     {
-        return fetch_json_url(url);
+        char *data =  fetch_json_url(url);
+        char *path = malloc(strlen(url));
+        strcpy(path,url);
+        char *pos = strstr(path,LANG_BASE_URL);
+
+        if (pos != NULL)
+        {
+            size_t len = strlen(LANG_BASE_URL);
+            // Shift the remaining characters left to overwrite the substring
+            memmove(pos, pos + len, strlen(pos + len) + 1);
+        }
+        const char *home = getenv("HOME");
+        
+        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path)+100);
+        if(full_path == NULL)
+        {
+            return NULL;
+        }
+        // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
+        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+
+        char *dir_path = strdup(full_path);
+        char *last_slash = strrchr(dir_path, '/');
+        if (last_slash) {
+            *last_slash = '\0'; // Truncate to get directory path
+            // mkdir_p(dir_path, 0777); // Only create the directories
+            printf("Creating dir at %s\n",dir_path);
+            if (mkdir_p(dir_path, 0777) != 0) {
+            fprintf(stderr, "Failed to create directory: %s\n", full_path);
+            free(path);
+            free(full_path);
+            return NULL;
+        }
+        }
+        free(dir_path);
+        FILE *fp_w = fopen(full_path,"w");
+        if(fp_w == NULL)
+        {
+            printf("Failed to create file: %s\n",full_path);
+        }
+        // char *data = fetch_json_url(url);
+        fwrite(data,sizeof(char),strlen(data),fp_w);
+        fclose(fp_w);
+        return data;
     }
     else
     {
@@ -156,13 +199,31 @@ char *fetch_json(const char *url) {
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path));
+        const char *home = getenv("HOME");
+        
+        char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path)+100);
         if(full_path == NULL)
         {
             return NULL;
         }
-        sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
-        mkdir_p(full_path,0777 );
+        // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
+        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+
+        char *dir_path = strdup(full_path);
+        char *last_slash = strrchr(dir_path, '/');
+        if (last_slash) {
+            *last_slash = '\0'; // Truncate to get directory path
+            // mkdir_p(dir_path, 0777); // Only create the directories
+            printf("Creating dir at %s\n",dir_path);
+            if (mkdir_p(dir_path, 0777) != 0) {
+            fprintf(stderr, "Failed to create directory: %s\n", full_path);
+            free(path);
+            free(full_path);
+            return NULL;
+        }
+        }
+        free(dir_path);
+        
         // printf("full_path == %s\n",full_path);
         FILE *fp = fopen(full_path,"r");
         if(fp == NULL)
@@ -799,21 +860,21 @@ int create_project(char *project_name, char *project_description, char *project_
     }
     else
     {
-        build_script_build = malloc(10);
-        build_script_run = malloc(10);
+        build_script_build = malloc(1000);
+        build_script_run = malloc(1000);
         strcpy(build_script_build,"none");
         strcpy(build_script_run,"none");
 
     }
     
     // Create main.
-    char *main_file_path = malloc(strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 10);
+    char *main_file_path = malloc(strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 100);
     if (main_file_path == NULL) {
         fprintf(stderr, "Memory allocation failed!\n");
         return 1;
     }
     // Format the string safely using snprintf
-    snprintf(main_file_path, strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 10, "%s/%s", LANG_BASE_URL, info.main_file_template);
+    snprintf(main_file_path, strlen(LANG_BASE_URL) + strlen(info.main_file_template) + 100, "%s/%s", LANG_BASE_URL, info.main_file_template);
     // printf("main_file_path == %s\n",main_file_path);
     char *main_file_data = fetch_data(main_file_path);
     char main_file_create_path[1024];
