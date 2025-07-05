@@ -104,8 +104,24 @@ int cmd_install(int argc, char **argv) {
         }
         else
         {
-            printf("Warning: Using language '%s' for package '%s'.\n", lang, package_name);
-            printf("This is not recommended, use 'kpm install <package_name>' to install packages.\n");
+            FILE *cf = fopen("project.json", "r");
+            if(cf != NULL)
+            {
+                fclose(cf);
+                char *lang_int = get_lang();
+                if(strcmp(lang, lang_int) != 0)
+                {
+                    printf("WARNING: Installing package for language '%s', while project is in '%s'\nThese languages might not be compatible",lang,lang_int);
+                    
+                }
+                // else
+                // {
+                //     printf("Using language '%s' for package '%s'.\n", lang, package_name);
+                // }
+                
+            }
+            printf("Using language '%s' for package '%s'.\n", lang, package_name);
+            // printf("This is not recommended, use 'kpm install <package_name>' to install packages.\n");
             char *url_for_install_cmd = malloc(strlen(LANG_BASE_URL) + strlen(lang) + strlen("/lang.json") + 100);
             if (url_for_install_cmd == NULL) {
                 fprintf(stderr, "Memory allocation failed for URL.\n");
@@ -162,8 +178,14 @@ int cmd_install(int argc, char **argv) {
     if (strcmp(lang, "c") == 0) {
         if (cpkg_main(package_name, lang) != -1) {
             printf("Installed: %s\n", package_name);
+            FILE *cf = fopen("project.json", "r");
+            if(cf != NULL)
+            {
+                fclose(cf);
+                update_deps(update_deps_name);
+            }
+
             
-            update_deps(update_deps_name);
         }
     } else if (!install_cmd || strcmp(install_cmd, "(null)") == 0) {
         cpkg_main(package_name, lang);
@@ -172,7 +194,12 @@ int cmd_install(int argc, char **argv) {
         snprintf(command, sizeof(command), "%s %s", install_cmd, package_name);
         if (system(command) != -1) {
             printf("Installed: %s\n", package_name);
-            update_deps(update_deps_name);
+            FILE *cf = fopen("project.json", "r");
+            if(cf != NULL)
+            {
+                fclose(cf);
+                update_deps(update_deps_name);
+            }
         }
     }
 
