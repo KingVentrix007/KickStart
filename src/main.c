@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
-
+#include "jansson.h"
 #include "package_manager/cpkg_main.h"
 #include "run/run.h"
 #include "language.h"
+#include "templates/custom.h"
 
 #ifdef _WIN32
 #warning "This program does not support Windows yet. Use at your own risk"
@@ -60,6 +61,7 @@ int cmd_template(int argc, char **argv) {
     return 0;
 }
 
+
 int cmd_install(int argc, char **argv) {
     if (argc < 3) {
         fprintf(stderr, "Usage: %s install <package_name>\n", argv[0]);
@@ -68,22 +70,109 @@ int cmd_install(int argc, char **argv) {
 
     printf("NOTE: This package manager has limited package support.\n");
 
-    char *lang = get_lang();
-    char *install_cmd = get_install();
+    char *input = argv[2];
+    char *lang = NULL;
+    char *install_cmd = NULL;
 
+    // Check if input contains '@'
+    char *at_sign = strchr(input, '@');
+    char *package_name = input;
+
+    if (at_sign != NULL) {
+        // Split into lang and package parts
+        size_t lang_len = at_sign - input;
+
+        // Extract language string before '@'
+        char lang_buf[64];
+        if (lang_len >= sizeof(lang_buf)) {
+            fprintf(stderr, "Language string too long.\n");
+            return 1;
+        }
+        strncpy(lang_buf, input, lang_len);
+        lang_buf[lang_len] = '\0';
+
+        // Extract package name after '@'
+        package_name = at_sign + 1;
+
+        // Override lang with extracted lang
+        lang = lang_buf;
+
+        // If lang is "kpm", call install_lang_support with package_name as language
+        if (strcmp(lang, "kpm") == 0) {
+            install_lang_support_internal(package_name);
+            return 0;
+        }
+        else
+        {
+            printf("Warning: Using language '%s' for package '%s'.\n", lang, package_name);
+            printf("This is not recommended, use 'kpm install <package_name>' to install packages.\n");
+            char *url_for_install_cmd = malloc(strlen(LANG_BASE_URL) + strlen(lang) + strlen("/lang.json") + 100);
+            if (url_for_install_cmd == NULL) {
+                fprintf(stderr, "Memory allocation failed for URL.\n");
+                return 1;
+            }
+            snprintf(url_for_install_cmd, strlen(LANG_BASE_URL) + strlen(lang) + strlen("/lang.json") + 100, "%s/%s/lang.json", LANG_BASE_URL, lang);
+            printf("Fetching install command from: %s\n", url_for_install_cmd);
+            char *lang_json_data = fetch_json(url_for_install_cmd);
+            free(url_for_install_cmd);
+            if (lang_json_data == NULL) {
+                fprintf(stderr, "Failed to fetch language JSON data for %s.\n", lang);
+                return 1;
+            }
+            json_error_t error;
+            json_t *json = json_loads(lang_json_data, 0, &error);
+            free(lang_json_data);
+            if (!json) {
+                fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+                return 1;
+            }
+            json_t *install_cmd_obj = json_object_get(json, "package_install");
+            if (!json_is_string(install_cmd_obj)) {
+                fprintf(stderr, "Error: 'install_cmd' is not a string in language JSON.\n");
+                json_decref(json);
+                return 1;
+            }
+            install_cmd = strdup(json_string_value(install_cmd_obj));
+            if (!install_cmd) {
+                fprintf(stderr, "Memory allocation failed for install command.\n");
+                json_decref(json);
+                return 1;
+            }
+        }
+    }
+    else
+    {
+        lang = get_lang();
+        
+        install_cmd = get_install();
+    }
+    char *update_deps_name = malloc(strlen(package_name) + 100);
+    if (update_deps_name == NULL) {
+        fprintf(stderr, "Memory allocation failed for update_deps_name.\n");
+        return 1;
+    }
+    if(at_sign != NULL)
+    {
+         snprintf(update_deps_name, strlen(package_name) + 100, "%s@%s", lang ? lang : "default",package_name);
+    }
+    else
+    {
+        snprintf(update_deps_name, strlen(package_name) + 100, "%s", package_name);
+    }
     if (strcmp(lang, "c") == 0) {
-        if (cpkg_main(argv[2], lang) != -1) {
-            printf("Installed: %s\n", argv[2]);
-            update_deps(argv[2]);
+        if (cpkg_main(package_name, lang) != -1) {
+            printf("Installed: %s\n", package_name);
+            
+            update_deps(update_deps_name);
         }
     } else if (!install_cmd || strcmp(install_cmd, "(null)") == 0) {
-        cpkg_main(argv[2], lang);
+        cpkg_main(package_name, lang);
     } else {
         char command[512];
-        snprintf(command, sizeof(command), "%s %s", install_cmd, argv[2]);
+        snprintf(command, sizeof(command), "%s %s", install_cmd, package_name);
         if (system(command) != -1) {
-            printf("Installed: %s\n", argv[2]);
-            update_deps(argv[2]);
+            printf("Installed: %s\n", package_name);
+            update_deps(update_deps_name);
         }
     }
 
@@ -102,6 +191,15 @@ int cmd_langs(int argc, char **argv) {
     return show_all_langs();
 }
 int install_language_support(const char *lang);
+int install_lang_support_internal(char *lang)
+{
+    int res = install_language_support(lang);
+    if (res == -1) {
+        fprintf(stderr, "Failed to install language support for %s\n", lang);
+        return 1;
+    }
+    return res;
+}
 int install_lang_support(int argc, char **argv) {
     if (argc < 3) {
         fprintf(stderr, "Usage: %s langs <language>\n", argv[0]);
