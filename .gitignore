@@ -9,3 +9,7 @@ clib/libmanager
 prompt.txt
 testt
 testing
+build
+*.log
+*.tmp
+tests
