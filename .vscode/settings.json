@@ -31,7 +31,9 @@
         "libgen.h": "c",
         "sstream": "c",
         "*.tcc": "c",
-        "tuple": "c"
+        "tuple": "c",
+        "initializer_list": "c",
+        "utility": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,

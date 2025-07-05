@@ -180,7 +180,7 @@ char *fetch_json(const char *url) {
         FILE *fp_w = fopen(full_path,"w");
         if(fp_w == NULL)
         {
-            printf("Failed to create file: %s\n",full_path);
+            printf("Failed to create file(fetch_json): %s\n",full_path);
         }
         // char *data = fetch_json_url(url);
         fwrite(data,sizeof(char),strlen(data),fp_w);
@@ -232,7 +232,7 @@ char *fetch_json(const char *url) {
             FILE *fp_w = fopen(full_path,"w");
             if(fp_w == NULL)
             {
-                printf("Failed to create file: %s\n",full_path);
+                printf("Failed to create file(fetch_json_2): %s\n",full_path);
             }
             char *data = fetch_json_url(url);
             fwrite(data,sizeof(char),strlen(data),fp_w);

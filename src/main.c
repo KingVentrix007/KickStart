@@ -101,7 +101,20 @@ int cmd_build(int argc, char **argv) {
 int cmd_langs(int argc, char **argv) {
     return show_all_langs();
 }
-
+int install_language_support(const char *lang);
+int install_lang_support(int argc, char **argv) {
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s langs <language>\n", argv[0]);
+        return 1;
+    }
+    const char *lang = argv[2];
+    int res = install_language_support(lang);
+    if (res == -1) {
+        fprintf(stderr, "Failed to install language support for %s\n", lang);
+        return 1;
+    }
+    return res;
+}
 int cmd_ignore(int argc, char **argv) {
     if (argc < 3) {
         fprintf(stderr, "Usage: %s ignore <item1> [item2...]\n", argv[0]);
@@ -135,6 +148,7 @@ Command commands[] = {
     { "langs",    cmd_langs,    "List supported languages" },
     { "ignore",   cmd_ignore,   "Ignore files/folders" },
     { "count",    cmd_count,    "Count lines of code" },
+    { "install_lang", install_lang_support, "Install language support" }
 };
 
 int show_help(const char *prog_name) {
