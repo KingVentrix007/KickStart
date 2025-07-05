@@ -7,6 +7,22 @@
 #include <ctype.h>
 #include "curlhelp.h"
 #define MAX_LEN 1024
+char *resolve_description(const char *desc, const char *project_title) {
+    static char buffer[2048]; // adjust size as needed
+    char *dst = buffer;
+    const char *src = desc;
+
+    while (*src) {
+        if (strncmp(src, "project_title", 13) == 0) {
+            dst += sprintf(dst, "%s", project_title);
+            src += 13;
+        } else {
+            *dst++ = *src++;
+        }
+    }
+    *dst = '\0';
+    return buffer;
+}
 
 char *parse_readme_contents(char * contents,const char *github_username_in,const char *project_name_in, const char *project_description, const char *project_license,const char **dependencies)
 {
@@ -19,7 +35,7 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
     // Copy inputs as default
     strncpy(github_username, github_username_in, MAX_LEN);
     strncpy(project_name, project_name_in, MAX_LEN);
-
+    
     // Ask user to confirm GitHub username
     printf("Your current GitHub username is: %s\n", github_username_in);
     printf("Do you want to change it(n)? (y/n): ");
@@ -88,27 +104,37 @@ char *parse_readme_contents(char * contents,const char *github_username_in,const
     } else {
         email[strcspn(email, "\n")] = 0;  // Remove trailing newline
     }
-    //Get project title: Retrieved from the project json data
+    if(project_description == NULL || strlen(project_description) == 0)
+    {
+        char *generic_descoption = "project_title is a modern and flexible software solution designed to streamline development workflows and improve productivity. Built with scalability and maintainability in mind, this project provides a solid foundation for developers looking to build efficient, reliable, and secure applications. Whether you're prototyping a new idea or integrating it into a larger system, project_title offers clean architecture, well-documented code, and customizable features to support a wide range of use cases.";
+        project_description = resolve_description(generic_descoption,project_name);
 
-    //Get project description: Retrived from the project json data
-
-    //Get project license: Retrieved from the project json data
-
-    // Replace placeholders in the contents with user input
+    }
     char *new_contents = malloc(strlen(contents) * 2 + 1024); // overshoot instead of estimate
-if (!new_contents) {
-    fprintf(stderr, "Memory allocation failed\n");
-    return NULL;
-}
+    if (!new_contents) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
 
-char *src = contents;
-char *dst = new_contents;
-
-while (*src) {
+    char *src = contents;
+    char *dst = new_contents;
+    for (size_t i = 0; i < 2; i++)
+    {
+        /* code */
+    }
+    
+    while (*src) {
+    if (strncmp(src,"Here's a blank template",strlen("Here's a blank template")) == 0)
+    {
+        dst += sprintf(dst, "%s", "This is where you will write about your project, its features, and how to use it");
+        src+=strlen("Here's a blank template to get started. To avoid retyping too much info, do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`, `project_license`");
+    }
     if (strncmp(src, "github_username", 15) == 0) {
         dst += sprintf(dst, "%s", github_username);
         src += 15;
-    } else if (strncmp(src, "repo_name", 9) == 0) {
+    }
+     
+    else if (strncmp(src, "repo_name", 9) == 0) {
         dst += sprintf(dst, "%s", project_name); // or use actual repo_name
         src += 9;
     } else if (strncmp(src, "twitter_handle", 14) == 0) {
@@ -128,7 +154,7 @@ while (*src) {
         src += 13;
     
     } else if (strncmp(src, "project_description", 19) == 0) {
-        printf("Project description: [%s]\n", project_description);
+        // printf("Project description: [%s]\n", project_description);
         if(project_description == NULL || strlen(project_description) == 0) {
             dst += sprintf(dst, "%s","No description provided");
         }
@@ -136,7 +162,7 @@ while (*src) {
         {
             dst += sprintf(dst, "%s", project_description);
         }
-        printf("Project description after check: [%s]\n", dst);
+        // printf("Project description after check: [%s]\n", dst);
         src += 19;
     } else if (strncmp(src, "project_license", 15) == 0) {
         dst += sprintf(dst, "%s", project_license);
