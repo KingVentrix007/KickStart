@@ -90,7 +90,7 @@ char *get_data_url(const char *url)
         return NULL;
     }
 
-    const char *home = getenv("HOME");
+    const char *home = getenv(HOME_ENV_NAME);
 
     if (strncmp(url, LANG_BASE_URL, strlen(LANG_BASE_URL)) == 0) {
         // Case: LANG_BASE_URL path
@@ -108,7 +108,7 @@ char *get_data_url(const char *url)
             return NULL;
         }
 
-        sprintf(full_path, "%s/.local/share/KickStart/langs%s", home, path);
+        sprintf(full_path, "%s/.%s%s", home,STORE_PATH, path);
         remove_refs_heads_main(full_path);
 
         char *dir_path = strdup(full_path);
@@ -201,14 +201,14 @@ char *handle_lang_path(const char *url)
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        char *full_path = malloc(strlen("local/share/KickStart/langs")+strlen(path)+100);
+        char *full_path = malloc(strlen(STORE_PATH)+strlen(path)+100);
         if(full_path == NULL)
         {
             return NULL;
         }
-        const char *home = getenv("HOME");
+        const char *home = getenv(HOME_ENV_NAME);
         
-        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+        sprintf(full_path,"%s/.%s%s",home,STORE_PATH,path);
 
         // Duplicate to get directory path only
 //         char *dir_path = strdup(full_path);
@@ -280,7 +280,7 @@ char *handle_other(const char *url)
         free(path);
         return NULL;
     }
-    char *home = getenv("HOME");
+    char *home = getenv(HOME_ENV_NAME);
     sprintf(full_path, "%s/.%s%s",home, "local/share/KickStart/other/", path);
     remove_refs_heads_main(full_path); // Remove refs/heads/main from the path
     // Create the directory if it doesn't exist

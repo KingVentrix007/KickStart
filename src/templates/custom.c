@@ -153,7 +153,7 @@ char *fetch_json(const char *url) {
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        const char *home = getenv("HOME");
+        const char *home = getenv(HOME_ENV_NAME);
         
         char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path)+100);
         if(full_path == NULL)
@@ -161,7 +161,7 @@ char *fetch_json(const char *url) {
             return NULL;
         }
         // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
-        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+        sprintf(full_path,"%s/.%s%s",home,STORE_PATH,path);
 
         char *dir_path = strdup(full_path);
         char *last_slash = strrchr(dir_path, '/');
@@ -199,7 +199,7 @@ char *fetch_json(const char *url) {
             // Shift the remaining characters left to overwrite the substring
             memmove(pos, pos + len, strlen(pos + len) + 1);
         }
-        const char *home = getenv("HOME");
+        const char *home = getenv(HOME_ENV_NAME);
         
         char *full_path = malloc(strlen("/usr/local/etc/KickStart/langs")+strlen(path)+100);
         if(full_path == NULL)
@@ -207,7 +207,7 @@ char *fetch_json(const char *url) {
             return NULL;
         }
         // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
-        sprintf(full_path,"%s/.%s%s",home,"local/share/KickStart/langs",path);
+        sprintf(full_path,"%s/.%s%s",home,STORE_PATH,path);
 
         char *dir_path = strdup(full_path);
         char *last_slash = strrchr(dir_path, '/');
