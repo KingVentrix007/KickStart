@@ -502,9 +502,10 @@ typedef struct {
 #define LOG_LOCATION //printf("%s:%d\n", __FILE__, __LINE__);
 void parse_json(const char *json_data, ProjectInfo *info) {
     json_error_t error;
-
+    printf("Parsing JSON data...\n");
+    printf("JSON data: %s\n", json_data);
     // Load JSON data from the char* into a json_t object
-    json_t *root = json_loads(json_data, 0, &error);
+    json_t *root = json_loads(json_data, JSON_DISABLE_EOF_CHECK, &error);
     if (!root) {
         fprintf(stderr, "Error loading JSON data: %s\n", error.text);
         return;
@@ -746,7 +747,7 @@ int create_project(char *project_name, char *project_description, char *project_
         return 1;
     }
 
-    char lang_json[1024];
+    char lang_json[1024*3];
     snprintf(lang_json, sizeof(lang_json), "%s%s", LANG_BASE_URL, lang_path);
     free(lang_path);  // Free lang_path after use
 

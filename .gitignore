@@ -13,3 +13,4 @@ build
 *.log
 *.tmp
 tests
+kpm.exe
