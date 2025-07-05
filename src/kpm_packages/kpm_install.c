@@ -76,24 +76,43 @@ json_t *lang_value;
         snprintf(setup_path, strlen(path_str) + 100, "%s/%s", LANG_BASE_URL, path_str);
         // printf("Setup Path: %s\n", setup_path
         char *temp_data = fetch_data(setup_path);
-
-        printf("Fetched data for %s: %s\n", lang_key, temp_data ? "Success" : "Failed");
-        printf("Freeing setup_path\n");
-        free(setup_path);
-        // setup_path = NULL;
-        // printf("Temp data: %s\n", temp_data ? temp_data : "NULL");
-        // if (temp_data == NULL) {
-        //     fprintf(stderr, "Error: Failed to fetch data for %s from %s.\n", lang_key, path_str);
-        //     json_decref(json);
-        //     return -1;
-        // }
-        printf("Freeing temp_data\n");
-        if(temp_data != NULL)
+        if(strcmp(temp_data,"404: Not Found") == 0)
         {
-            free(temp_data);
+            printf("File %s not found, creating a blank file.\n", path_str);
+            // char *path_str_copy = malloc(strlen(path_str) + 100);
+            // FILE *fp = fopen(, "w");
+            // if (fp == NULL) {
+            //     fprintf(stderr, "Error: Failed to create file at %s.\n", path_str);
+            //     free(setup_path);
+            //     json_decref(json);
+            //     return -1;
+            // }
+            // printf("File %s not found, creating a blank file.\n", path_str);
+            // fclose(fp);
+            // free(setup_path);
+            // continue; // Skip to the next iteration if file not found
+        }
+        else
+        {
+            printf("Fetched data for %s: %s\n", lang_key, temp_data ? "Success" : "Failed");
+            printf("Freeing setup_path\n");
+            free(setup_path);
+            // setup_path = NULL;
+            // printf("Temp data: %s\n", temp_data ? temp_data : "NULL");
+            // if (temp_data == NULL) {
+            //     fprintf(stderr, "Error: Failed to fetch data for %s from %s.\n", lang_key, path_str);
+            //     json_decref(json);
+            //     return -1;
+            // }
+            printf("Freeing temp_data\n");
+            if(temp_data != NULL)
+            {
+                free(temp_data);
+            }
+            
+            temp_data = NULL;
         }
         
-        temp_data = NULL;
 
         // free(setup_path);
         // free(temp_data);

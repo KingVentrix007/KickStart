@@ -174,7 +174,7 @@ char *get_data_url(const char *url)
             free(path); free(full_path); free(chunk.memory);
             return NULL;
         }
-
+        
         fwrite(chunk.memory, sizeof(char), chunk.size, fp);
         fclose(fp);
 
