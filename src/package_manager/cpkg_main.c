@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "../templates/custom.h"
 int mkdir_p(const char *path, mode_t mode) ;;
 #define INDEX_URL                                                              \
   "https://raw.githubusercontent.com/KingVentrix007/CodeStarterFiles/main/"    \
@@ -251,12 +252,12 @@ int fetch_and_save_file(const char *url, const char *local_path) {
  * 
  * @param path 
  */
-void create_dir(const char *path) {
-  struct stat st = {0};
-  if (stat(path, &st) == -1) {
-    mkdir(path, 0700);
-  }
-}
+// void create_dir(const char *path) {
+//   // struct stat st = {0};
+//   // if (stat(path, &st) == -1) {
+//   //   MKDIR(path, 0700);
+//   // }
+// }
 
 /**
  * @brief Creates directories recursively if they don't exist.
@@ -285,11 +286,11 @@ void create_dirs_recursively(const char *path) {
       *p = 0;
       //! DEBUG
       // printf(">%s\n",tmp);
-      mkdir(tmp, 0700);
+      MKDIR(tmp, 0700);
       *p = '/';
     }
   }
-  mkdir(tmp, 0700);
+  MKDIR(tmp, 0700);
 }
 
 /**
@@ -417,13 +418,13 @@ int cpkg_main(char *lib_name, char *language) {
   printf("Installing package\n");
   char *path = get_lib_path(lib_name, language);
   if (directory_exists("libs") != 1) {
-    mkdir("libs", 0700);
+    MKDIR("libs", 0700);
   }
   char *lib_dir_path = malloc(strlen(lib_name) + strlen("libs") + 20);
   snprintf(lib_dir_path, strlen(lib_name) + strlen("libs") + 20, "libs/%s",
            lib_name);
   if (directory_exists(lib_dir_path) != 1) {
-    mkdir(lib_dir_path, 0700);
+    MKDIR(lib_dir_path, 0700);
   }
   if (path) {
     printf("Path for library '%s' with language '%s': %s\n", lib_name, language,

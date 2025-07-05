@@ -66,7 +66,7 @@ int create_directories(const char *full_path) {
 
             // Check if directory exists, if not, create it
             if (access(temp_path, F_OK) != 0) {
-                if (mkdir(temp_path, 0755) != 0) {
+                if (MKDIR(temp_path, 0755) != 0) {
                     perror("Error creating folder");
                     return 1;
                 }
@@ -77,7 +77,7 @@ int create_directories(const char *full_path) {
     }
 
     // Finally, create the last directory in the path if it does not exist
-    if (mkdir(temp_path, 0755) != 0 && errno != EEXIST) {
+    if (MKDIR(temp_path, 0755) != 0 && errno != EEXIST) {
         perror("Error creating folder");
         return 1;
     }
@@ -319,12 +319,12 @@ int mkdir_p(const char *path, mode_t mode) {
     for (p = subpath + 1; *p; p++) {
         if (*p == '/') {
             *p = '\0'; // Temporarily terminate string
-            if (mkdir(subpath, mode) != 0) {
+            if (MKDIR(subpath, mode) != 0) {
                 // Check if the error is due to the directory already existing
                 if (errno != EEXIST) {
-                    perror("mkdir failed");
+                    perror("MKDIR failed");
                     free(subpath);
-                    return -1; // Return error if mkdir fails
+                    return -1; // Return error if MKDIR fails
                 }
             }
             *p = '/';  // Restore original character
@@ -332,11 +332,11 @@ int mkdir_p(const char *path, mode_t mode) {
     }
 
     // Create the final directory (if it's not a file)
-    if (mkdir(subpath, mode) != 0) {
+    if (MKDIR(subpath, mode) != 0) {
         if (errno != EEXIST) {
-            perror("mkdir failed");
+            perror("MKDIR failed");
             free(subpath);
-            return -1; // Return error if mkdir fails
+            return -1; // Return error if MKDIR fails
         }
     }
 

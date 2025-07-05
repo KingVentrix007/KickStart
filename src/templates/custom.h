@@ -24,5 +24,16 @@
 #else
     #error "Unsupported OS"
 #endif
+
+#ifdef _WIN32
+#include <direct.h>
+#warning "Using _mkdir for MKDIR on Windows"
+#define MKDIR(path, mode) _mkdir(path)
+#else
+#include <sys/stat.h>
+#define MKDIR(path, mode) mkdir(path, mode)
+#endif
+
+
 char *fetch_json(const char *url);
 #endif// 

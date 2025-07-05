@@ -16,7 +16,7 @@ void create_project_py(const char *project_name, const char *project_description
 
     // Ensure base directory exists
     if (strcmp(base_dir, "tests") == 0) {
-        system("mkdir -p tests");
+        system("MKDIR -p tests");
     }
 
     // Create main.py file
@@ -99,9 +99,9 @@ void create_project_py(const char *project_name, const char *project_description
 
     // Generate project structure if generate_structure == "yes"
     if (strcmp(generate_structure, "yes") == 0) {
-        char mkdir_cmd[1024];
-        snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p %s/src %s/tests %s/docs %s/examples %s/scripts %s/data", base_dir, base_dir, base_dir, base_dir, base_dir, base_dir);
-        system(mkdir_cmd);
+        char MKDIR_cmd[1024];
+        snprintf(MKDIR_cmd, sizeof(MKDIR_cmd), "MKDIR -p %s/src %s/tests %s/docs %s/examples %s/scripts %s/data", base_dir, base_dir, base_dir, base_dir, base_dir, base_dir);
+        system(MKDIR_cmd);
 
         // Create requirements.txt with dependencies
         char requirements_file_path[1024];

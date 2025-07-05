@@ -15,7 +15,7 @@
 
 // Global offline mode flag
 static bool offline = false;
-
+int install_lang_support_internal(char *lang);
 // Function declarations
 int ignore(char **ignore_list, size_t count);
 int get_line_count();
@@ -218,6 +218,8 @@ int cmd_langs(int argc, char **argv) {
     return show_all_langs();
 }
 int install_language_support(const char *lang);
+
+
 int install_lang_support_internal(char *lang)
 {
     int res = install_language_support(lang);

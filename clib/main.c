@@ -142,8 +142,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Create necessary directories
-    mkdir(TMP_DIR, 0755);
-    mkdir(LIBS_DIR, 0755);
+    MKDIR(TMP_DIR, 0755);
+    MKDIR(LIBS_DIR, 0755);
 
     process_library(argv[1]);
 

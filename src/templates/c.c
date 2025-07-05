@@ -16,7 +16,7 @@ void create_project_c(
     #endif
 
     if (strcmp(base_dir, "tests") == 0) {
-        system("mkdir -p tests");
+        system("MKDIR -p tests");
     }
 
     char main_file_path[1024];
@@ -79,10 +79,10 @@ void create_project_c(
     }
 
     if (strcmp(generate_structure, "yes") == 0) {
-        char mkdir_cmd[1024];
-        snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p %s/src %s/build %s/include %s/tests %s/docs %s/examples %s/scripts %s/data %s/libs", 
+        char MKDIR_cmd[1024];
+        snprintf(MKDIR_cmd, sizeof(MKDIR_cmd), "MKDIR -p %s/src %s/build %s/include %s/tests %s/docs %s/examples %s/scripts %s/data %s/libs", 
                 base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir, base_dir);
-        system(mkdir_cmd);
+        system(MKDIR_cmd);
 
         char makefile_path[1024];
         snprintf(makefile_path, sizeof(makefile_path), "%s/Makefile", base_dir);

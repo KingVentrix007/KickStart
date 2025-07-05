@@ -13,7 +13,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Default rule (build with DEBUG defined)
 all: $(TARGET)
-
+# echo "Build complete. Run 'make build' to create a release build without debug information."
 # Build without DEBUG defined
 build: CFLAGS := $(filter-out -DDEBUG,$(CFLAGS))
 build: $(TARGET)
