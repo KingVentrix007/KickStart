@@ -47,6 +47,7 @@ typedef struct {
 int cmd_init(int argc, char **argv) {
 #ifdef _WIN32
     printf("WARNING: Running on Windows. kpm commands are Linux-focused.\n");
+    printf("Insure you have pulled and compiled this from the designated windows branch, as I have no bundled the linux and windows version together\n");
 #endif
     return main_build();
 }
