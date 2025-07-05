@@ -69,7 +69,7 @@ char *get_data_url(const char *url)
         } else {
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
             if (response_code != 200) {
-                printf("Failed to download file. HTTP response code: %ld\n", response_code);
+                printf("Failed to download file:(%s). HTTP response code: %ld\n",url, response_code);
             }
         }
 
