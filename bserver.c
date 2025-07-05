@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-
+#include <time.h>
 // Your autosave function
 void autosave() {
     char current_branch[128];
