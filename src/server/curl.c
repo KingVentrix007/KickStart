@@ -119,7 +119,7 @@ char *get_data_url(const char *url)
             printf("Creating dir at %s\n", dir_path);
             #endif
             if (mkdir_p(dir_path, 0777) != 0) {
-                fprintf(stderr, "Failed to create directory: %s\n", full_path);
+                fprintf(stderr, "Failed to create directory(get_data_url): %s\n", full_path);
                 free(path); free(full_path); free(dir_path); free(chunk.memory);
                 return NULL;
             }
@@ -153,7 +153,16 @@ char *get_data_url(const char *url)
             free(path); free(chunk.memory);
             return NULL;
         }
-
+        // path 
+        memset(path,0,strlen(path));
+        printf("Path: %s",path);
+        size_t len = strlen("https://raw.githubusercontent.com/");
+        if (strncmp(url, "https://raw.githubusercontent.com/",len) == 0) {
+            strcpy(path, url + len); // Skip the 
+        }
+        else {
+            strcpy(path, url); // If it doesn't start with the prefix, copy the whole URL
+        }
         sprintf(full_path, "%s/.local/share/KickStart/other/%s", home, path);
         remove_refs_heads_main(full_path);
 
@@ -165,7 +174,7 @@ char *get_data_url(const char *url)
             printf("Creating dir at %s\n", dir_path);
             #endif
             if (mkdir_p(dir_path, 0777) != 0) {
-                fprintf(stderr, "Failed to create directory: %s\n", full_path);
+                fprintf(stderr, "Failed to create directory(handle_other): %s\n", full_path);
                 free(path); free(full_path); free(dir_path); free(chunk.memory);
                 return NULL;
             }
@@ -289,7 +298,7 @@ char *handle_other(const char *url)
     remove_refs_heads_main(full_path); // Remove refs/heads/main from the path
     // Create the directory if it doesn't exist
     if (mkdir_p(full_path, 0777) != 0) {
-        fprintf(stderr, "Failed to create directory: %s\n", full_path);
+        fprintf(stderr, "Failed to create directory(handle_other): %s\n", full_path);
         free(path);
         free(full_path);
         return NULL;

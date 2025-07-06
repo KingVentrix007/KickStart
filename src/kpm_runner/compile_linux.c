@@ -44,7 +44,7 @@ static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, cha
         }
     }
 
-    *final_cmd = parse_compile_command(*compile_cmd, *user_flags, *flag_count, *output, *input_files, *file_count);
+    *final_cmd = parse_compile_command(*compile_cmd,  (const char**) *user_flags, *flag_count, *output,  (const char**)*input_files, *file_count);
     return *final_cmd ? 0 : -1;
 }
 
@@ -52,7 +52,7 @@ static int run_single_file_compile(json_t *linux_lang_obj, char *input, char *ou
     json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
     if (!json_is_string(compile_cmd_obj)) return -1;
     char *compile_cmd = strdup(json_string_value(compile_cmd_obj));
-    char *final_cmd = parse_compile_command(compile_cmd, NULL, 0, output, &input, 1);
+    char *final_cmd = parse_compile_command(compile_cmd, NULL, 0, output,  (const char**) &input, 1);
     int result = system(final_cmd);
     free(compile_cmd);
     free(final_cmd);
@@ -77,7 +77,7 @@ static int run_multi_command(json_t *linux_lang_obj) {
     return 0;
 }
 
-static void run_output_program(json_t *linux_lang_obj, const char *output) {
+static void run_output_program(json_t *linux_lang_obj, char *output) {
     json_t *run_cmd_obj = json_object_get(linux_lang_obj, "run_cmd");
     if (!json_is_string(run_cmd_obj)) return;
     char *run_cmd = strdup(json_string_value(run_cmd_obj));

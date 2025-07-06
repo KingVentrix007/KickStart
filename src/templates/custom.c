@@ -160,6 +160,15 @@ char *fetch_json(const char *url) {
         {
             return NULL;
         }
+        memset(path,0,strlen(path));
+        printf("Path: %s",path);
+        size_t len = strlen("https://raw.githubusercontent.com/");
+        if (strncmp(url, "https://raw.githubusercontent.com/",len) == 0) {
+            strcpy(path, url + len); // Skip the 
+        }
+        else {
+            strcpy(path, url); // If it doesn't start with the prefix, copy the whole URL
+        }
         // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
         sprintf(full_path,"%s/.%s%s",home,STORE_PATH,path);
 
@@ -172,7 +181,7 @@ char *fetch_json(const char *url) {
             printf("Creating dir at %s\n",dir_path);
             #endif
             if (mkdir_p(dir_path, 0777) != 0) {
-            fprintf(stderr, "Failed to create directory: %s\n", full_path);
+            fprintf(stderr, "Failed to create directory(fetch_json): %s\n", full_path);
             free(path);
             free(full_path);
             return NULL;
@@ -209,6 +218,15 @@ char *fetch_json(const char *url) {
             return NULL;
         }
         // sprintf(full_path,"%s%s","/usr/local/etc/KickStart/langs",path);
+        memset(path,0,strlen(path));
+        printf("Path: %s",path);
+        size_t len = strlen("https://raw.githubusercontent.com/");
+        if (strncmp(url, "https://raw.githubusercontent.com/",len) == 0) {
+            strcpy(path, url + len); // Skip the 
+        }
+        else {
+            strcpy(path, url); // If it doesn't start with the prefix, copy the whole URL
+        }
         sprintf(full_path,"%s/.%s%s",home,STORE_PATH,path);
 
         char *dir_path = strdup(full_path);
@@ -220,7 +238,7 @@ char *fetch_json(const char *url) {
             printf("Creating dir at %s\n",dir_path);
             #endif 
             if (mkdir_p(dir_path, 0777) != 0) {
-            fprintf(stderr, "Failed to create directory: %s\n", full_path);
+            fprintf(stderr, "Failed to create directory(fetch_json): %s\n", full_path);
             free(path);
             free(full_path);
             return NULL;

@@ -39,7 +39,7 @@ static int extract_compile_data(json_t *win_lang_obj, char ***input_files, char 
         }
     }
 
-    *final_cmd = parse_compile_command(*compile_cmd, *user_flags, *flag_count, *output, *input_files, *file_count);
+    *final_cmd = parse_compile_command(*compile_cmd,  (const char**) *user_flags, *flag_count, *output,  (const char**) *input_files, *file_count);
     return *final_cmd ? 0 : -1;
 }
 
@@ -47,7 +47,7 @@ static int run_single_file_compile(json_t *win_lang_obj, char *input, char *outp
     json_t *compile_cmd_obj = json_object_get(win_lang_obj, "compile_cmd");
     if (!json_is_string(compile_cmd_obj)) return -1;
     char *compile_cmd = strdup(json_string_value(compile_cmd_obj));
-    char *final_cmd = parse_compile_command(compile_cmd, NULL, 0, output, &input, 1);
+    char *final_cmd = parse_compile_command(compile_cmd, NULL, 0, output,  (const char**) &input, 1);
     int result = system(final_cmd);
     free(compile_cmd);
     free(final_cmd);

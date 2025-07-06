@@ -4,14 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "compile_linux.h"
-
+#include "compile_windows.h"
 
 
 //Takes in users file
 int compile(char **data,char *lang,size_t data_count)
 {
-    #ifdef defined(_WIN32)
-    return compile_windows(data,lang);
+    #if defined(_WIN32)
+    // printf("HELLO\n");
+    return compile_windows(data,lang,data_count);
     #elif defined(__APPLE__)
     // macOS specific compilation logic
     printf("Compiling on macOS with language: %s\n", lang);
