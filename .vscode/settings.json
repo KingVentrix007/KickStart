@@ -33,7 +33,9 @@
         "*.tcc": "c",
         "tuple": "c",
         "initializer_list": "c",
-        "utility": "c"
+        "utility": "c",
+        "compile_linux.h": "c",
+        "compile_utils.h": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,
