@@ -168,7 +168,9 @@ char *fetch_json(const char *url) {
         if (last_slash) {
             *last_slash = '\0'; // Truncate to get directory path
             // mkdir_p(dir_path, 0777); // Only create the directories
+            #ifdef DEBUG
             printf("Creating dir at %s\n",dir_path);
+            #endif
             if (mkdir_p(dir_path, 0777) != 0) {
             fprintf(stderr, "Failed to create directory: %s\n", full_path);
             free(path);
@@ -214,7 +216,9 @@ char *fetch_json(const char *url) {
         if (last_slash) {
             *last_slash = '\0'; // Truncate to get directory path
             // mkdir_p(dir_path, 0777); // Only create the directories
+            #ifdef DEBUG
             printf("Creating dir at %s\n",dir_path);
+            #endif 
             if (mkdir_p(dir_path, 0777) != 0) {
             fprintf(stderr, "Failed to create directory: %s\n", full_path);
             free(path);
@@ -497,13 +501,14 @@ typedef struct {
 
 
 // Function to parse JSON data into ProjectInfo structure
-//! Check this function for Segmentation fault, might be deref error
-//! Or might be a memory leak, missed ptr, etc
+
 #define LOG_LOCATION //printf("%s:%d\n", __FILE__, __LINE__);
 void parse_json(const char *json_data, ProjectInfo *info) {
     json_error_t error;
+    #ifdef DEBUG
     printf("Parsing JSON data...\n");
     printf("JSON data: %s\n", json_data);
+    #endif
     // Load JSON data from the char* into a json_t object
     json_t *root = json_loads(json_data, JSON_DISABLE_EOF_CHECK, &error);
     if (!root) {

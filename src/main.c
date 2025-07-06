@@ -56,7 +56,7 @@ int cmd_template(int argc, char **argv) {
     if (argc >= 3 && strcmp(argv[2], "-f") == 0) {
         printf("Feature not implemented yet: auto-generate template from folder.\n");
     } else {
-        printf("WARNING: This command is deprecated with the latest template system.\n");
+        printf("WARNING: This command is deprecated and not up to date with the latest template system.\n");
         return create_template();
     }
     return 0;

@@ -115,7 +115,9 @@ char *get_data_url(const char *url)
         char *last_slash = strrchr(dir_path, '/');
         if (last_slash) {
             *last_slash = '\0';
+            #ifdef DEBUG
             printf("Creating dir at %s\n", dir_path);
+            #endif
             if (mkdir_p(dir_path, 0777) != 0) {
                 fprintf(stderr, "Failed to create directory: %s\n", full_path);
                 free(path); free(full_path); free(dir_path); free(chunk.memory);
@@ -159,7 +161,9 @@ char *get_data_url(const char *url)
         char *last_slash = strrchr(dir_path, '/');
         if (last_slash) {
             *last_slash = '\0';
+            #ifdef DEBUG
             printf("Creating dir at %s\n", dir_path);
+            #endif
             if (mkdir_p(dir_path, 0777) != 0) {
                 fprintf(stderr, "Failed to create directory: %s\n", full_path);
                 free(path); free(full_path); free(dir_path); free(chunk.memory);

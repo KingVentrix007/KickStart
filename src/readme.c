@@ -187,8 +187,8 @@ return new_contents;
 int generate_readme_func(const char *readme_file_path,const char *project_name, const char *project_description, const char *project_author, const char *project_license, const char *project_version, const char *project_language, const char **project_dependencies) {
     FILE *file = fopen(readme_file_path, "w");
     printf("Generating README.md at %s\n", readme_file_path);
-    printf("Version: %s\n", project_version);
-    printf("Language: %s\n", project_language);
+    // printf("Version: %s\n", project_version);
+    // printf("Language: %s\n", project_language);
     if (!file) {
         perror("Failed to create README.md");
         return -1;
