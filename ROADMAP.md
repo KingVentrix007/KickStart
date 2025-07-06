@@ -8,12 +8,17 @@ This `ROADMAP` is only partially used, most work is going into the package manag
 - [X] Basic template loading - Templates file for other languages are supported, they sre stored in a [git repo](https://github.com/KingVentrix007/KickStartFiles/tree/main) in the langs folder
 - [X] Open-source license support. The licences supported by github are all so supported by KickStart, is currently a little buggy, but should be fixed soon
 - [X] Create a project directory structure, with separate folders for source code and build files. The project directory includes:
-- [X] Line count 
+- [X] Line count
+
+## In Progress
+- [ ] Cross platform support
+- [ ] KPM script support
+- [ ] KPM compiler
 ## Planned
 <!-- - [ ] Create a header file(or equivalent) with version information and a compile number, which is incremented by the Makefile with each build. -->
 - [X] Compiler Detection
     - [ ] Compiler installation
-- [ ] Cross platform support
+
 - [ ] Custom Licenses
 - [ ] Custom build system
 - [ ] Debugger support
