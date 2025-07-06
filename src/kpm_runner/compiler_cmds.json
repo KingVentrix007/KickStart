@@ -1,0 +1,46 @@
+{
+    "cpp": {
+        "windows": {
+            "description": "Standard C++17 build for Windows using g++",
+            "default_output": "a.exe",
+            "multi_file": true,
+            "input_glob": "*.cpp",
+            "compile_only": true,
+            "single_command": true,
+            "user_flags": "",
+            "compile_cmd": "g++ -std=c++17 {user_flags} -o {output} {input}",
+            "run_cmd": "{output}",
+            "requires": ["g++"]
+        },
+        "linux": {
+            "description": "Standard C++17 build for Linux using g++",
+            "default_output": "a.out",
+            "multi_file": true,
+            "input_glob": "*.cpp",
+            "compile_only": true,
+            "single_command": true,
+            "user_flags": "",
+            "compile_cmd": "g++ -std=c++17 {user_flags} -o {output} {input}",
+            "run_cmd": "./{output}",
+            "requires": ["g++"]
+        }
+    },
+    "python": {
+        "windows": {
+            "description": "Run Python script using system Python on Windows",
+            "default_output": null,
+            "single_command": true,
+            "compile_cmd": null,
+            "run_cmd": "python {input}",
+            "requires": ["python"]
+        },
+        "linux": {
+            "description": "Run Python script using system Python on Linux",
+            "default_output": null,
+            "single_command": true,
+            "compile_cmd": null,
+            "run_cmd": "python3 {input}",
+            "requires": ["python3"]
+        }
+    }
+}

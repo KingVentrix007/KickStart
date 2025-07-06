@@ -2,6 +2,7 @@
 #define __CUSTOM__H
 
 #define LANG_BASE_URL "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/langs"
+#define COMPILE_CMDS_URL "https://raw.githubusercontent.com/KingVentrix007/KickStartFiles/main/compile_cmds.json"
 #define HASH_URL "https://raw.githubusercontent.com/{owner}/{repo}/main/{path}"
 #define LINUX_STORE_PATH "local/share/KickStart/langs"
 #define WINDOWS_STORE_PATH "AppData/Local/KickStart/langs"

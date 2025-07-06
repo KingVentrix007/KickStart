@@ -1,0 +1,4 @@
+compile -> compile the code
+cd -> Enter a dir
+find -> Find a file matching an expression
+cp -> copy
