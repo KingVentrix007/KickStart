@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/banner.png" alt="Kick Start++ Logo" width="500"/>
+  <img src="images/KickStartPP.png" alt="Kick Start++ Logo" width="500"/>
 </p>
 
 <h1 align="center">Kick Start++</h1>
@@ -149,6 +149,6 @@ This project is licensed under the [MIT License](LICENSE).
 <p align="center">
   <i>Kick Start++ — Build the base. Ship the future.</i>
 </p>
-```
+
 
 
