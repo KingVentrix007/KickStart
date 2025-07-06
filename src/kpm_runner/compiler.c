@@ -1,18 +1,9 @@
 #include <stdio.h>
 #include "../templates/custom.h"
 #include <jansson.h>
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 char* parse_compile_command(const char* template,
                             const char** user_flags, size_t flag_count,
@@ -53,13 +44,6 @@ char* parse_compile_command(const char* template,
     return result;
 }
 
-
-
-int compile_single_cmd(char *cmd,char **files)
-{
-    printf("Compiling with command: %s\n", cmd);
-}
-
 int compile_windows(char **data,char *lang)
 {
     printf("Compiling with language: %s\n", lang);
@@ -67,7 +51,19 @@ int compile_windows(char **data,char *lang)
     // This is a placeholder, actual implementation will depend on the language and compiler used
     return 0;
 }
-
+const char* json_type_to_string(json_type type) {
+    switch (type) {
+        case JSON_OBJECT: return "object";
+        case JSON_ARRAY: return "array";
+        case JSON_STRING: return "string";
+        case JSON_INTEGER: return "integer";
+        case JSON_REAL: return "real";
+        case JSON_TRUE: return "true";
+        case JSON_FALSE: return "false";
+        case JSON_NULL: return "null";
+        default: return "unknown";
+    }
+}
 int compile_linux(char **data,char *lang,size_t data_count)
 {
     char url[1024];
@@ -103,13 +99,18 @@ int compile_linux(char **data,char *lang,size_t data_count)
         json_decref(json);
         return -1;
     }
-    //Get compile command
-    json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
-    if (!json_is_string(compile_cmd_obj)) {
-        fprintf(stderr, "Error: 'compile_cmd' is not a string in language JSON\n");
+    //Get default output
+    json_t *default_output_obj = json_object_get(linux_lang_obj, "default_output");
+    if (!json_is_string(default_output_obj)) {
+        fprintf(stderr, "1Error: 'default_output' is not a string in language JSON\n");
+        printf("Type is %s\n",json_type_to_string(json_typeof(default_output_obj)));
         json_decref(json);
         return -1;
     }
+    char *output = strdup(json_string_value(default_output_obj));
+    //Get compile command
+    json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
+    
     //Get bool for single/multi command
     json_t *single_cmd_obj = json_object_get(linux_lang_obj, "single_command");
     if (!json_is_boolean(single_cmd_obj)) {
@@ -120,6 +121,28 @@ int compile_linux(char **data,char *lang,size_t data_count)
     //Check if is single command
     if (json_is_true(single_cmd_obj)) {
         //Single command
+        if (!json_is_string(compile_cmd_obj) && !json_is_null(compile_cmd_obj)) {
+        fprintf(stderr, "Error: 'compile_cmd' is not a string in language JSON\n");
+        printf("Type is %s\n",json_type_to_string(json_typeof(compile_cmd_obj)));
+        json_decref(json);
+        return -1;
+        }
+        if(json_is_null(compile_cmd_obj))
+        {
+            json_t *run_cmd_obj =  json_object_get(linux_lang_obj, "run_cmd");
+            if (!json_is_string(run_cmd_obj))
+            {
+                 fprintf(stderr, "Error: 'run_cmd' is not a string in language JSON\n");
+                printf("Type is %s\n",json_type_to_string(json_typeof(run_cmd_obj)));
+                json_decref(json);
+                return -1;
+            }
+            compile_cmd_obj = run_cmd_obj;
+            char *compile_cmd = strdup(json_string_value(compile_cmd_obj));
+            printf("Code is not a compiled language. Atempting to run using %s\n",compile_cmd);
+            
+
+        }
         printf("Using single command for compilation\n");
         char *compile_cmd = strdup(json_string_value(compile_cmd_obj));
         if (!compile_cmd) {
@@ -127,6 +150,7 @@ int compile_linux(char **data,char *lang,size_t data_count)
             json_decref(json);
             return -1;
         }
+        // printf("Comp cmd: %s\n",compile_cmd);
         //Check if compile command supports multiple files
         json_t *supports_multiple_files_obj = json_object_get(linux_lang_obj, "multi_file");
         if (!json_is_boolean(supports_multiple_files_obj)) {
@@ -227,27 +251,27 @@ int compile_linux(char **data,char *lang,size_t data_count)
                 return -1;
             }
             //Assuming the output file is the same for all files
-            char *default_output = strdup(json_string_value(default_output_obj));
-            if (!default_output) {
-                fprintf(stderr, "Memory allocation failed for default output\n");
-                for (size_t i = 0; i < final_file_count; i++) {
-                    free(input_files[i]);
-                }
-                free(input_files);
-                for (size_t i = 0; i < user_flags_count; i++) {
-                    free(user_flags[i]);
-                }
-                free(user_flags);
-                free(compile_cmd);
-                json_decref(json);
-                return -1;
-            }
-            printf("Output file: %s\n", default_output);
+            // char *default_output = strdup(json_string_value(default_output_obj));
+            // if (!default_output) {
+            //     fprintf(stderr, "Memory allocation failed for default output\n");
+            //     for (size_t i = 0; i < final_file_count; i++) {
+            //         free(input_files[i]);
+            //     }
+            //     free(input_files);
+            //     for (size_t i = 0; i < user_flags_count; i++) {
+            //         free(user_flags[i]);
+            //     }
+            //     free(user_flags);
+            //     free(compile_cmd);
+            //     json_decref(json);
+            //     return -1;
+            // }
+            printf("Output file: [%s]\n", output);
             // char *input = data[0]; // Assuming the first file is the input
             // printf("Input file: %s\n", input);
             
             
-            char *final_cmd = parse_compile_command(compile_cmd, user_flags, user_flags_count,default_output, input_files,final_file_count);
+            char *final_cmd = parse_compile_command(compile_cmd, user_flags, user_flags_count,output, input_files,final_file_count);
 
             if (!final_cmd) {
                 fprintf(stderr, "Failed to parse compile command\n");
@@ -290,7 +314,7 @@ int compile_linux(char **data,char *lang,size_t data_count)
         else {
             //Single file command
             printf("Compile command does not support multiple files\n");
-            char *output = "output"; // Placeholder for output file name
+            // output = "output"; // Placeholder for output file name
             char *input = data[0]; // Assuming the first file is the input
             printf("Output file: %s\n", output);
             printf("Input file: %s\n", input);
@@ -319,6 +343,8 @@ int compile_linux(char **data,char *lang,size_t data_count)
         
     } else {
         //Multi command
+        printf("Support is coming soon\n");
+        printf("This code provides no output\n");
         json_t *commands = json_object_get(linux_lang_obj, "commands");
         if (!json_is_array(commands)) {
             fprintf(stderr, "Error: 'commands' is not an array in language JSON\n");
@@ -337,10 +363,38 @@ int compile_linux(char **data,char *lang,size_t data_count)
                 fprintf(stderr, "Memory allocation failed for command\n");
                 continue;
             }
-            compile_single_cmd(cmd,data);
+            //Parse command
+
+            //Run command
+            
+            // int result = system(final_cmd);
+            // if (result == -1) {
+            //     fprintf(stderr, "Failed to execute compile command\n");
+            //     free(final_cmd);
+            //     free(compile_cmd);
+            //     json_decref(json);
+            //     return -1;
+            // }
+
             free(cmd);
         }
     }
+    //Extract run command
+    json_t *run_command_object =  json_object_get(linux_lang_obj, "run_cmd");
+    if (!json_is_string(run_command_object)){
+        fprintf(stderr,"Error: 'run_cmd' is not a string\n");
+        json_decref(linux_lang_obj);
+         json_decref(json);
+        return -1;
+
+    }
+    char *run_command = strdup(json_string_value(run_command_object));
+    char *final_run_command = parse_compile_command(run_command,NULL,0,output,NULL,0);
+    if(strcmp(output,"none") != 0)
+    {
+        printf("Run [%s] with command: %s\n",output,final_run_command);
+    }
+    
     json_decref(json);
     return 0;
 
