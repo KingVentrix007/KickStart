@@ -210,14 +210,44 @@ int compile_linux(char **data,char *lang,size_t data_count)
             }
             //Replace files in command
             printf("Original compile command: %s\n", compile_cmd);
-            // char *user_flags = ""; // Placeholder for user flags, if any
-            char *output = "output"; // Placeholder for output file name
-            printf("Output file: %s\n", output);
+            //Extract output from "default_output"
+            json_t *default_output_obj = json_object_get(linux_lang_obj, "default_output");
+            if (!json_is_string(default_output_obj)) {
+                fprintf(stderr, "Error: 'default_output' is not a string in language JSON\n");
+                for (size_t i = 0; i < final_file_count; i++) {
+                    free(input_files[i]);
+                }
+                free(input_files);
+                for (size_t i = 0; i < user_flags_count; i++) {
+                    free(user_flags[i]);
+                }
+                free(user_flags);
+                free(compile_cmd);
+                json_decref(json);
+                return -1;
+            }
+            //Assuming the output file is the same for all files
+            char *default_output = strdup(json_string_value(default_output_obj));
+            if (!default_output) {
+                fprintf(stderr, "Memory allocation failed for default output\n");
+                for (size_t i = 0; i < final_file_count; i++) {
+                    free(input_files[i]);
+                }
+                free(input_files);
+                for (size_t i = 0; i < user_flags_count; i++) {
+                    free(user_flags[i]);
+                }
+                free(user_flags);
+                free(compile_cmd);
+                json_decref(json);
+                return -1;
+            }
+            printf("Output file: %s\n", default_output);
             // char *input = data[0]; // Assuming the first file is the input
             // printf("Input file: %s\n", input);
             
             
-            char *final_cmd = parse_compile_command(compile_cmd, user_flags, user_flags_count,output, input_files,final_file_count);
+            char *final_cmd = parse_compile_command(compile_cmd, user_flags, user_flags_count,default_output, input_files,final_file_count);
 
             if (!final_cmd) {
                 fprintf(stderr, "Failed to parse compile command\n");
