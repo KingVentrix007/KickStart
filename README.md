@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/banner.png" alt="Kick Start Logo" width="500"/>
+  <img src="images/banner.png" alt="Kick Start++ Logo" width="500"/>
 </p>
 
-<h1 align="center">Kick Start</h1>
+<h1 align="center">Kick Start++</h1>
 
 <p align="center"><b>Jumpstart your coding projects — across multiple languages, with zero setup friction.</b></p>
 
@@ -19,11 +19,11 @@
 
 
 
-## 🚀 What is Kick Start?
+## 🚀 What is Kick Start++?
 
-**Kick Start** is a lightweight tool that automates boilerplate creation, structure setup, and build script generation for new coding projects — so you can focus on writing code, not configuration.
+**Kick Start++** is a lightweight tool that automates boilerplate creation, structure setup, and build script generation for new coding projects — so you can focus on writing code, not configuration.
 
-Whether you're starting in **C, C++, Java, Python, or Rust**, Kick Start gives you a clean, ready-to-run foundation in seconds.
+Whether you're starting in **C, C++, Java, Python, or Rust**, Kick Start++ gives you a clean, ready-to-run foundation in seconds.
 
 ---
 
@@ -147,7 +147,7 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-  <i>Kick Start — Build the base. Ship the future.</i>
+  <i>Kick Start++ — Build the base. Ship the future.</i>
 </p>
 ```
 
