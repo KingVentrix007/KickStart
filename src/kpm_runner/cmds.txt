@@ -1,4 +1,25 @@
-compile -> compile the code
-cd -> Enter a dir
+# First to implement
+
+compile -> Compile code using the selected language and template
+run -> Run a compiled binary or script
+cd -> Enter a directory
+cp -> Copy a file or folder
+mv -> Move or rename a file or folder
+rm -> Delete a file or folder
+mkdir -> Create a directory
+echo -> Print a message to the terminal
+exit -> Exit the script with optional code
+
+# Utils 
+
 find -> Find a file matching an expression
-cp -> copy
+env -> Set or get an environment variable
+if -> Start a conditional block
+else -> Start the "else" part of a conditional block
+endif -> End a conditional block
+platform -> Get the current OS platform (e.g. windows, linux, macos)
+shell -> Run a raw shell command
+set -> Define a variable
+print -> Print the value of a variable
+exists -> Check if a file or folder exists
+wait -> Wait for a number of seconds or milliseconds
