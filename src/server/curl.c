@@ -155,7 +155,7 @@ char *get_data_url(const char *url)
         }
         // path 
         memset(path,0,strlen(path));
-        printf("Path: %s",path);
+        // printf("Path: %s",path);
         size_t len = strlen("https://raw.githubusercontent.com/");
         if (strncmp(url, "https://raw.githubusercontent.com/",len) == 0) {
             strcpy(path, url + len); // Skip the 
