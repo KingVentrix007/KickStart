@@ -14,6 +14,8 @@ int hnd_rm(char **argv, size_t argc);
 int hnd_mkdir(char **argv, size_t argc);
 int hnd_echo(char **argv, size_t argc);
 int hnd_env(char **argv, size_t argc);
+
+char **hnd_find(char **argv,size_t argc);
 char **extract_cmd_lines(char *path,size_t *line_count)
 {
     FILE *kpm_script_file = fopen(path,"r");
@@ -149,7 +151,29 @@ int execute(char **commands,size_t command_count)
             break;
         }
         else if (strcmp(command_name, "find") == 0) {
-            // Find a file matching an expression
+            char **values = hnd_find(current_command,curr_cmd_size);
+            if(values == NULL)
+            {
+                printf("This sucks\n");
+                ret = -1;
+            }
+            printf("Outputing found files\n");
+            size_t count = 0;
+            
+            while(values[count] != NULL)
+            {
+                if(values[count] == NULL)
+                {
+                    count++;
+                    continue;
+                }
+                printf("Value: %ld: %s\n",count,values[count]);
+                count++;
+            }
+            // {
+            //     
+            //     count++;
+            // }
         }
         else if (strcmp(command_name, "env") == 0) {
             ret = hnd_env(current_command,curr_cmd_size);
