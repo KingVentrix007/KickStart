@@ -14,7 +14,7 @@ int hnd_rm(char **argv, size_t argc);
 int hnd_mkdir(char **argv, size_t argc);
 int hnd_echo(char **argv, size_t argc);
 int hnd_env(char **argv, size_t argc);
-
+int hnd_wait(char **argv, size_t argc);
 char **hnd_find(char **argv,size_t argc);
 char **extract_cmd_lines(char *path,size_t *line_count)
 {
@@ -206,6 +206,7 @@ int execute(char **commands,size_t command_count)
         }
         else if (strcmp(command_name, "wait") == 0) {
             // Wait for a number of seconds or milliseconds
+            ret = hnd_wait(current_command,curr_cmd_size);
         }
         else {
             fprintf(stderr, "Unknown command: %s\n", command_name);

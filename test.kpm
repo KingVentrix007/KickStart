@@ -1,4 +1,6 @@
 echo hello world
 compile main.c 
 find . c
+wait 10000
+echo 10
 exit
