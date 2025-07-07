@@ -12,11 +12,11 @@
 // extern char* fetch_json(const char* url);
 
 static int validate_file_exists(const char *filename) {
-    printf("Finding file %s\n",filename);
+    // printf("Finding file %s\n",filename);
     FILE *file = fopen(filename, "r");
     if (!file) return 0;
     fclose(file);
-    printf("Found file\n");
+    // printf("Found file\n");
     return 1;
 }
 
@@ -26,15 +26,15 @@ static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, cha
     *output = strdup(json_string_value(default_output_obj));
 
     json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
-    printf("Getting compile command\n");
+    // printf("Getting compile command\n");
     if (!json_is_string(compile_cmd_obj)) return -1;
     *compile_cmd = strdup(json_string_value(compile_cmd_obj));
 
     *input_files = malloc(data_count * sizeof(char*));
     *user_flags = malloc(data_count * sizeof(char*));
-    printf("Checking file data\n");
+    // printf("Checking file data\n");
     if (!(*input_files) || !(*user_flags)) return -1;
-    printf("Building file list\n");
+    // printf("Building file list\n");
     *file_count = 0;
     *flag_count = 0;
     for (size_t i = 0; i < data_count; i++) {
@@ -49,7 +49,7 @@ static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, cha
             (*file_count)++;
         }
     }
-    printf("Parsing command\n");
+    // printf("Parsing command\n");
     *final_cmd = parse_compile_command(*compile_cmd,  (const char**) *user_flags, *flag_count, *output,  (const char**)*input_files, *file_count);
     return *final_cmd ? 0 : -1;
 }
@@ -107,17 +107,17 @@ int compile_linux(char **data, char *lang, size_t data_count) {
     if (!json) return -1;
 
     json_t *lang_obj = json_object_get(json, lang);
-    printf("Getting lang object\n");
+    // printf("Getting lang object\n");
     if (!json_is_object(lang_obj)) return -1;
 
     json_t *linux_lang_obj = json_object_get(lang_obj, "linux");
-    printf("Getting linux object\n");
+    // printf("Getting linux object\n");
     if (!json_is_object(linux_lang_obj)) return -1;
 
     json_t *single_cmd_obj = json_object_get(linux_lang_obj, "single_command");
-    printf("Getting single command boolean\n");
+    // printf("Getting single command boolean\n");
     if (!json_is_boolean(single_cmd_obj)) return -1;
-    printf("Checking command type\n");
+    // printf("Checking command type\n");
     if (json_is_true(single_cmd_obj)) {
         json_t *multi_file_obj = json_object_get(linux_lang_obj, "multi_file");
         if (json_is_true(multi_file_obj)) {
@@ -158,6 +158,6 @@ int compile_linux(char **data, char *lang, size_t data_count) {
     run_output_program(linux_lang_obj, output);
 
     json_decref(json);
-    printf("Done compile\n");
+    // printf("Done compile\n");
     return 0;
 }

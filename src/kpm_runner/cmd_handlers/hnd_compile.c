@@ -28,7 +28,7 @@ int cmd_compile(char **argv,size_t argc)
     //Copy file names into the array
     for (int i = 1; i < argc; ++i) {
         files[i-1] = strdup(argv[i]);
-        printf("File: %s\n",files[i-1]);
+        // printf("File: %s\n",files[i-1]);
         if (!files[i]) {
             fprintf(stderr, "Memory allocation failed for file name.\n");
             for (int j = 0; j < i - 1; ++j) {
@@ -39,7 +39,7 @@ int cmd_compile(char **argv,size_t argc)
         }
     }
     int files_count = argc-1;
-    printf("Files count %d:%s\n",files_count,files[1]);
+    // printf("Files count %d:%s\n",files_count,files[1]);
     
     return compile(files, lang,files_count);
 }
