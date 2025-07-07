@@ -9,6 +9,7 @@
 #include "language.h"
 #include "templates/custom.h"
 int compile(char **data,char *lang,size_t data_count);
+int kpm_script_runner(char *path);
 #ifdef _WIN32
 #warning "This program does not support Windows yet. Use at your own risk"
 #endif
@@ -297,6 +298,16 @@ int cmd_count(int argc, char **argv) {
     return get_line_count();
 }
 
+int cmd_execute(int argc,char **argv)
+{
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s compile <file1>\n", argv[0]);
+        return 1;
+    }
+    return kpm_script_runner(argv[1]);
+    
+}
+
 // Command registry
 Command commands[] = {
     { "init",     cmd_init,     "Initialize a new project" },
@@ -309,6 +320,7 @@ Command commands[] = {
     { "count",    cmd_count,    "Count lines of code" },
     { "install_lang", install_lang_support, "Install language support" },
     { "compile",  compiler,     "Compile source files" },
+    {"exv",cmd_execute,"execute kpm script file"},
     { NULL, NULL, NULL } // Sentinel to mark end of commands
 };
 

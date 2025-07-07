@@ -8,7 +8,12 @@
 #include "compile_windows.h"
 #include "../compile.h"
 int hnd_cd(char **argv, size_t argc);
-
+int hnd_cp(char **argv, size_t argc);
+int hnd_mv(char **argv, size_t argc);
+int hnd_rm(char **argv, size_t argc);
+int hnd_mkdir(char **argv, size_t argc);
+int hnd_echo(char **argv, size_t argc);
+int hnd_env(char **argv, size_t argc);
 char **extract_cmd_lines(char *path,size_t *line_count)
 {
     FILE *kpm_script_file = fopen(path,"r");
@@ -96,19 +101,22 @@ int execute(char **commands,size_t command_count)
             ret = hnd_cd(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "cp") == 0) {
-            // Copy a file or folder
+            ret = hnd_cp(current_command,command_count);
         }
         else if (strcmp(command_name, "mv") == 0) {
-            // Move or rename a file or folder
+            ret = hnd_mv(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "rm") == 0) {
             // Delete a file or folder
+            ret = hnd_rm(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "mkdir") == 0) {
             // Create a directory
+            ret = hnd_mkdir(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "echo") == 0) {
             // Print a message to the terminal
+            ret = hnd_echo(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "exit") == 0) {
             // Exit the script with optional code
@@ -118,6 +126,8 @@ int execute(char **commands,size_t command_count)
             // Find a file matching an expression
         }
         else if (strcmp(command_name, "env") == 0) {
+            ret = hnd_env(current_command,curr_cmd_size);
+        
             // Set or get an environment variable
         }
         else if (strcmp(command_name, "if") == 0) {
