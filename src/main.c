@@ -300,11 +300,11 @@ int cmd_count(int argc, char **argv) {
 
 int cmd_execute(int argc,char **argv)
 {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s compile <file1>\n", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s exv <file1>\n", argv[0]);
         return 1;
     }
-    return kpm_script_runner(argv[1]);
+    return kpm_script_runner(argv[2]);
     
 }
 

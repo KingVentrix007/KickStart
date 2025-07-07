@@ -34,7 +34,7 @@ char **extract_cmd_lines(char *path,size_t *line_count)
     }
     fread(kpm_script_data,sizeof(char),kpm_script_file_size,kpm_script_file);
     fclose(kpm_script_file);
-    char **kpm_cmd_lines = (char **)malloc(kpm_script_file_size);
+    char **kpm_cmd_lines = (char **)malloc(kpm_script_file_size*3);
     size_t kpm_cmd_line_count = 0;
     if(kpm_cmd_lines == NULL)
     {
@@ -47,12 +47,22 @@ char **extract_cmd_lines(char *path,size_t *line_count)
     kpm_cmd_lines[kpm_cmd_line_count] = strdup(line);
     kpm_cmd_line_count++;
     while (line != NULL) {
-        printf("Line: %s\n", line);
+        // printf("Line: %s\n", line);
         line = strtok(NULL, "\n");
+        if(line == NULL)
+        {
+            continue;
+        }
+
         kpm_cmd_lines[kpm_cmd_line_count] = strdup(line);
         kpm_cmd_line_count++;
+        // printf("Set line\n");
     }
+    // printf("Setting len %ld\n",kpm_cmd_line_count);
+    // printf("*line_count == %ld\n",*line_count);
+
     *line_count = kpm_cmd_line_count;
+    // printf("Returing lines\n");
     return kpm_cmd_lines;
 }
 
@@ -66,30 +76,45 @@ char **parse_command(char *command,size_t *argc)
         *argc = 0;
         return NULL;
     }
-    char *line = strtok(internal_cmd, "\n");
+    char *line = strtok(internal_cmd, " ");
+    size_t count = 0;
+    command_parts[count] = strdup(line);
+    count++;
     while (line != NULL) {
-    printf("Line: %s\n", line);
-    line = strtok(NULL, "\n");
-    command_parts[*argc] = strdup(line);
-    *argc++;
+        // printf("Line(parsing): %s\n", line);
+
+        line = strtok(NULL, " ");
+        if(line == NULL)
+        {
+            continue;
+        }
+        command_parts[count] = strdup(line);
+        count++;
     }
+    *argc = count;
+    // printf("Parsing cmd 0: %s\n",command_parts[0]);
     return command_parts;
 }
 
 int execute(char **commands,size_t command_count)
 {
     char **current_command = NULL;
+     size_t curr_cmd_size = 0;
     size_t current_command_index = 0;
+    // printf("First cmd %s\n",commands[current_command_index]);
+    current_command = parse_command(commands[current_command_index], &curr_cmd_size);
+    // printf("Current cmd 1 %s\n",current_command[0]);
     int ret = 0;
-    while (strcmp(current_command, "exit") != 0 && current_command_index < command_count)
+    while (strcmp(current_command[0], "exit") != 0 && current_command_index < command_count)
     {
-        size_t curr_cmd_size = 0;
-        current_command = parse_command(commands[current_command_index], &curr_cmd_size);
+       
+        
 
         // Extract command name (first word)
         char command_name[64] = {0};
-        sscanf(current_command, "%63s", command_name); // Safely extract the command keyword
-
+        // printf("Current command: %s\n",current_command[0]);
+        sscanf(current_command[0], "%63s", command_name); // Safely extract the command keyword
+        // printf("Command name: %s\n",command_name);
         if (strcmp(command_name, "compile") == 0) {
             ret = cmd_compile(current_command,curr_cmd_size);
             
@@ -116,6 +141,7 @@ int execute(char **commands,size_t command_count)
         }
         else if (strcmp(command_name, "echo") == 0) {
             // Print a message to the terminal
+            // printf("echo\n");
             ret = hnd_echo(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "exit") == 0) {
@@ -168,6 +194,7 @@ int execute(char **commands,size_t command_count)
             printf("Failed execution at line %ld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
             return ret;
         }
+        current_command = parse_command(commands[current_command_index], &curr_cmd_size);
     }
 
 }
@@ -181,6 +208,7 @@ int kpm_script_runner(char *path)
         fprintf(stderr,"ERROR(kpm_script_runner): Failed to extract lines for kpm_cmd_lines\n");
         return -1;
     }
+    printf("Executing\n");
     return execute(kpm_cmd_lines,kpm_cmd_line_count);
     return 0;
 

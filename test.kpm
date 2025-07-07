@@ -1,0 +1,3 @@
+echo hello world
+compile main.c
+exit
