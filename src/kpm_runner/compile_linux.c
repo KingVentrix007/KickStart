@@ -185,6 +185,7 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
             size_t file_count = 0, flag_count = 0;
             if (extract_compile_data(linux_lang_obj, &input_files, &user_flags, &file_count, &flag_count, &output, &compile_cmd, &final_cmd, data, data_count) != 0){
                 printf("Failed to extract command data\n");
+                free(lang);
                 return -1;
             }
             int result = system(final_cmd);
@@ -194,6 +195,7 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
             free(input_files); free(user_flags);
             if (result == -1)
             {
+                free(lang);
                 printf("Error here\n");
                 return -1;
             } 
@@ -204,6 +206,7 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
             output = strdup(json_string_value(default_output_obj));
             if (run_single_file_compile(linux_lang_obj, data[0], output) == -1){
                 printf("Failed to compile single file\n");
+                free(lang);
                 return -1;
             }
             free(output);
@@ -217,6 +220,7 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
     run_output_program(linux_lang_obj, output);
 
     json_decref(json);
+    free(lang);
     // printf("Done compile\n");
     return 0;
 }

@@ -70,6 +70,11 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
 
     *found_file_count = file_count;
     all_files[file_count] = NULL;  // Null-terminate
+    for (size_t i = 0; i < parm_count; i++)
+    {
+       free( parms[i]);
+    }
+    free(parms);
     return all_files;
 }
 

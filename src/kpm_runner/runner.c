@@ -73,35 +73,46 @@ char **extract_cmd_lines(char *path, size_t *line_count)
 }
 
 
-char **parse_command(char *command,size_t *argc)
+char **parse_command(char *command, size_t *argc)
 {
     char *internal_cmd = strdup(command);
-    char **command_parts = malloc((strlen(internal_cmd)+10)*sizeof(char *));
-    if(command_parts == NULL)
-    {
-        fprintf(stderr,"ERROR(parse_command): Failed to allocate memory\n");
+    if (!internal_cmd) {
+        fprintf(stderr, "ERROR(parse_command): Failed to duplicate command\n");
         *argc = 0;
         return NULL;
     }
-    char *line = strtok(internal_cmd, " ");
-    size_t count = 0;
-    command_parts[count] = strdup(line);
-    count++;
-    while (line != NULL) {
-        // printf("Line(parsing): %s\n", line);
 
-        line = strtok(NULL, " ");
-        if(line == NULL)
-        {
-            continue;
-        }
-        command_parts[count] = strdup(line);
-        count++;
+    char **command_parts = malloc((strlen(internal_cmd) + 10) * sizeof(char *));
+    if (!command_parts) {
+        fprintf(stderr, "ERROR(parse_command): Failed to allocate memory\n");
+        free(internal_cmd);
+        *argc = 0;
+        return NULL;
     }
+
+    size_t count = 0;
+    char *line = strtok(internal_cmd, " ");
+    while (line != NULL) {
+        command_parts[count] = strdup(line);
+        if (!command_parts[count]) {
+            fprintf(stderr, "ERROR(parse_command): strdup failed\n");
+            // Cleanup before exit
+            for (size_t i = 0; i < count; ++i)
+                free(command_parts[i]);
+            free(command_parts);
+            free(internal_cmd);
+            *argc = 0;
+            return NULL;
+        }
+        count++;
+        line = strtok(NULL, " ");
+    }
+
     *argc = count;
-    // printf("Parsing cmd 0: %s\n",command_parts[0]);
+    free(internal_cmd);
     return command_parts;
 }
+
 typedef struct variable
 {
     char name[100];
@@ -124,11 +135,13 @@ char *get_variable_value(const char *name) {
 int execute(char **commands,size_t command_count_in)
 {
     char **current_command = NULL;
+    char **current_command_save = NULL;
     size_t command_count = command_count_in;
      size_t curr_cmd_size = 0;
     size_t current_command_index = 0;
     // printf("First cmd %s\n",commands[current_command_index]);
     current_command = parse_command(commands[current_command_index], &curr_cmd_size);
+    current_command_save = current_command;
     // printf("Current cmd 1 %s\n",current_command[0]);
     int ret = 0;
     bool var_set = false;
@@ -219,6 +232,11 @@ int execute(char **commands,size_t command_count_in)
             ret = hnd_echo(current_command,curr_cmd_size);
         }
         else if (strcmp(command_name, "exit") == 0) {
+            for (size_t i = 0; i < curr_cmd_size; i++)
+            {
+                free(current_command[i]);
+            }
+            free(current_command_save);
             // Exit the script with optional code
             break;
         }
@@ -283,6 +301,12 @@ int execute(char **commands,size_t command_count_in)
                     num_current_vars++;
                     // printf("Varset done\n");
                     var_set = false;
+                    for (size_t i = 0; values[i] != NULL; ++i)
+                    {
+                        free(values[i]);
+                    }
+                    free(values);
+                    free(var_name);
                 
             }
             // {
@@ -331,6 +355,7 @@ int execute(char **commands,size_t command_count_in)
                 all_vars[num_current_vars].value = strdup(command_name); // strdup allocates value
                 num_current_vars++;
                 var_set = false;
+                free(var_name);
             }
             else
             {
@@ -344,10 +369,28 @@ int execute(char **commands,size_t command_count_in)
         {
             current_command_index--;
             printf("Failed execution at line %ld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
+            for (size_t i = 0; i < curr_cmd_size; i++)
+            {
+                free(current_command[i]);
+            }
+            free(current_command_save);
             return ret;
         }
+
+        for (size_t i = 0; i < curr_cmd_size; i++)
+        {
+            free(current_command[i]);
+        }
+        free(current_command_save);
+        
         current_command = parse_command(commands[current_command_index], &curr_cmd_size);
+        current_command_save = current_command;
     }
+    for (size_t i = 0; i < curr_cmd_size; i++)
+    {
+        free(current_command[i]);
+    }
+    free(current_command_save);
     return ret;
 }
 

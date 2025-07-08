@@ -1,5 +1,5 @@
 echo hello world
-$PETE = find . -r *.c 
+$PETE = find . *.c 
 echo compiling $PETE
 compile $PETE -Werror
 exit

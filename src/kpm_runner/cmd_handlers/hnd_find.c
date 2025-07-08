@@ -33,6 +33,17 @@ char **hnd_find(char **argv,size_t argc)
         parms[i-1] = strdup(argv[i]);
     }
     // printf("Calling functions\n");
-    return hnd_find_linux(parms,argc-1,&num_found_files);
+    char **return_values =  hnd_find_linux(parms,argc-1,&num_found_files);
+    for (size_t i = 1; i < argc; i++)
+    {
+        // printf("argv[i] %s\n",argv[i]);
+        if(argv[i] == NULL)
+        {
+            continue;
+        }
+        free(parms[i-1]);
+    }
+    free(parms);
+    return return_values;
     
 }

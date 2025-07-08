@@ -143,7 +143,7 @@ char *fetch_json(const char *url) {
     if(is_offline() == false)
     {
         char *data =  fetch_json_url(url);
-        char *path = malloc(strlen(url));
+        char *path = malloc(strlen(url)+strlen(LANG_BASE_URL)+1);
         strcpy(path,url);
         char *pos = strstr(path,LANG_BASE_URL);
 
@@ -196,6 +196,8 @@ char *fetch_json(const char *url) {
         // char *data = fetch_json_url(url);
         fwrite(data,sizeof(char),strlen(data),fp_w);
         fclose(fp_w);
+        free(path);
+        free(full_path);
         return data;
     }
     else
