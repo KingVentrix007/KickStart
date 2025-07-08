@@ -7,6 +7,7 @@
 #include "compile_utils.h"
 #include "compile_windows.h"
 #include "../compile.h"
+#include "stdbool.h"
 int hnd_cd(char **argv, size_t argc);
 int hnd_cp(char **argv, size_t argc);
 int hnd_mv(char **argv, size_t argc);
@@ -97,16 +98,37 @@ char **parse_command(char *command,size_t *argc)
     // printf("Parsing cmd 0: %s\n",command_parts[0]);
     return command_parts;
 }
+typedef struct variable
+{
+    char name[100];
+    char *value;
+}variable_t;
+variable_t all_vars[1024] = {0};
+size_t num_current_vars = 0;
 
-int execute(char **commands,size_t command_count)
+char *get_variable_value(const char *name) {
+    for (size_t i = 0; i < num_current_vars; i++) {
+        // printf("Var: %ld:%s\n",i,all_vars[i].name);
+        if (strcmp(all_vars[i].name, name) == 0) {
+            return all_vars[i].value;
+        }
+    }
+    return NULL;  // Not found
+}
+
+
+int execute(char **commands,size_t command_count_in)
 {
     char **current_command = NULL;
+    size_t command_count = command_count_in;
      size_t curr_cmd_size = 0;
     size_t current_command_index = 0;
     // printf("First cmd %s\n",commands[current_command_index]);
     current_command = parse_command(commands[current_command_index], &curr_cmd_size);
     // printf("Current cmd 1 %s\n",current_command[0]);
     int ret = 0;
+    bool var_set = false;
+    const char *var_name ;
     while (strcmp(current_command[0], "exit") != 0 && current_command_index < command_count)
     {
        
@@ -117,6 +139,52 @@ int execute(char **commands,size_t command_count)
         // printf("Current command: %s\n",current_command[0]);
         sscanf(current_command[0], "%63s", command_name); // Safely extract the command keyword
         // printf("Command name: %s\n",command_name);
+        
+        if (command_name[0] == '$')
+        {
+            size_t name_len = strlen(command_name);
+            // Case: $var=value
+            char *equal_sign = strchr(command_name, '=');
+            if (equal_sign != NULL)
+            {
+                var_set = true;
+
+                // Split var name and value
+                *equal_sign = '\0'; // null-terminate var name
+                var_name = command_name + 1;
+                // printf("Var name $: %s\n",var_name);
+                // Store or set the variable here
+                // set_variable(var_name, var_value);
+
+                // Skip this command by moving current_command pointer forward
+                current_command++; // Skip the $var=value part
+                curr_cmd_size--;   // Adjust count too
+            }
+            // Case: $var = value
+            else if (strcmp(current_command[1], "=") == 0 && current_command[2] != NULL)
+            {
+                var_set = true;
+
+                var_name = strdup(command_name + 1);
+                // printf("Var name ($var = value): %s\n",var_name);
+                // Store or set the variable here
+                // set_variable(var_name, var_value);
+
+                // Skip all 3 parts of the assignment
+                current_command += 2;
+                curr_cmd_size -= 2;
+            }
+            else
+            {
+                fprintf(stderr, "ERROR(execute): Incorrect format\n");
+                return -1;
+            }
+
+            memset(command_name,0,64);
+            sscanf(current_command[0], "%63s", command_name);
+        }
+
+        
         if (strcmp(command_name, "compile") == 0) {
             ret = cmd_compile(current_command,curr_cmd_size);
             
@@ -151,13 +219,20 @@ int execute(char **commands,size_t command_count)
             break;
         }
         else if (strcmp(command_name, "find") == 0) {
+            // printf("IN here:%d\n",curr_cmd_size);
+            // for (size_t i = 0; i < curr_cmd_size; i++)
+            // {
+            //     printf("%d:%s\n",i,current_command[i]);
+            // }
+            // printf("Calling\n");
             char **values = hnd_find(current_command,curr_cmd_size);
+            // printf("Call done\n");
             if(values == NULL)
             {
                 printf("This sucks\n");
                 ret = -1;
             }
-            printf("Outputing found files\n");
+            // printf("Outputing found files\n");
             size_t count = 0;
             
             while(values[count] != NULL)
@@ -167,8 +242,42 @@ int execute(char **commands,size_t command_count)
                     count++;
                     continue;
                 }
-                printf("Value: %ld: %s\n",count,values[count]);
+                // printf("Value: %ld: %s\n",count,values[count]);
                 count++;
+            }
+            if(var_set == true)
+            {
+                
+                
+                    // 1. Join all `values` into a single string
+                    size_t total_len = 0;
+                    for (size_t i = 0; values[i] != NULL; ++i)
+                    {
+                        total_len += strlen(values[i]) + 3;  // +1 for space or newline
+                    }
+
+                    char *joined = (char *)malloc(total_len + 10); // +1 for null terminator
+                    if (!joined) {
+                        fprintf(stderr, "ERROR: Failed to allocate memory for joined result.\n");
+                        ret = -1;
+                        return;
+                    }
+
+                    joined[0] = '\0';
+                    for (size_t i = 0; values[i] != NULL; ++i)
+                    {
+                        strcat(joined, values[i]);
+                        strcat(joined, " ");  // newline between files
+                    }
+
+                    // 2. Assign to variable array
+                    strcpy(all_vars[num_current_vars].name, var_name);
+                    // printf("Setting var %s\n",all_vars[num_current_vars].name);
+                    all_vars[num_current_vars].value = joined; // already malloc'ed above
+                    num_current_vars++;
+                    // printf("Varset done\n");
+                    var_set = false;
+                
             }
             // {
             //     
@@ -209,7 +318,19 @@ int execute(char **commands,size_t command_count)
             ret = hnd_wait(current_command,curr_cmd_size);
         }
         else {
-            fprintf(stderr, "Unknown command: %s\n", command_name);
+            if(var_set == true)
+            {
+                variable_t *new_var = (variable_t *)malloc(sizeof(new_var));
+                strcpy(all_vars[num_current_vars].name, var_name);
+                all_vars[num_current_vars].value = strdup(command_name); // strdup allocates value
+                num_current_vars++;
+                var_set = false;
+            }
+            else
+            {
+                fprintf(stderr, "Unknown command: %s\n", command_name);
+            }
+            
         }
 
         current_command_index++;
@@ -221,7 +342,7 @@ int execute(char **commands,size_t command_count)
         }
         current_command = parse_command(commands[current_command_index], &curr_cmd_size);
     }
-
+    return ret;
 }
 
 int kpm_script_runner(char *path)
