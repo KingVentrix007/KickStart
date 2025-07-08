@@ -7,39 +7,58 @@
 #include "compile_windows.h"
 #include "../../compile.h"
 
+char *get_variable_value(const char *name);
 
-int cmd_compile(char **argv,size_t argc)
+
+int cmd_compile(char **argv, size_t argc)
 {
-    // if (argc < 3) {
-    //     fprintf(stderr, "Usage: %s compile <file1> [file2...]\n", argv[0]);
-    //     return 1;
-    // }
-    char **files = malloc((100) * sizeof(char *));
+    char **files = malloc(100 * sizeof(char *));
     if (!files) {
         fprintf(stderr, "Memory allocation failed.\n");
         return 1;
     }
+
     char lang[1024] = "cpp"; // Default language
-    //Extract language from file extension if provided
-    char *lang_ext = strrchr(argv[1], '.');
-    if (lang_ext){
-        strcpy(lang, lang_ext + 1); // Copy the extension without the dot
-    }
-    //Copy file names into the array
+
     for (int i = 1; i < argc; ++i) {
-        files[i-1] = strdup(argv[i]);
-        // printf("File: %s\n",files[i-1]);
-        if (!files[i]) {
-            fprintf(stderr, "Memory allocation failed for file name.\n");
-            for (int j = 0; j < i - 1; ++j) {
-                free(files[j]);
+        const char *arg = argv[i];
+        char *resolved_arg;
+
+        if (arg[0] == '$') {
+            resolved_arg = get_variable_value(arg + 1);
+            if (!resolved_arg) {
+                fprintf(stderr, "Undefined variable: %s\n", arg + 1);
+                // free previously allocated memory
+                for (int j = 0; j < i - 1; ++j) free(files[j]);
+                free(files);
+                return 1;
             }
+        } else {
+            resolved_arg = arg;
+        }
+
+        files[i - 1] = strdup(resolved_arg);
+        if (!files[i - 1]) {
+            fprintf(stderr, "Memory allocation failed for file name.\n");
+            for (int j = 0; j < i - 1; ++j) free(files[j]);
             free(files);
             return 1;
         }
+
+        // Extract language from first valid file if applicable
+        if (i == 1) {
+            char *lang_ext = strrchr(resolved_arg, '.');
+            if (lang_ext) {
+                strcpy(lang, lang_ext + 1); // Copy the extension without the dot
+            }
+        }
     }
-    int files_count = argc-1;
-    // printf("Files count %d:%s\n",files_count,files[1]);
+
+    int files_count = argc - 1;
+    for (size_t i = 0; i < files_count; i++)
+    {
+        printf("File: %d:%s\n",i,files[i]); 
+    }
     
-    return compile(files, lang,files_count);
+    return compile(files, lang, files_count);
 }

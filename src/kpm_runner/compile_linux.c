@@ -10,9 +10,28 @@
 
 
 // extern char* fetch_json(const char* url);
+char *trim_whitespace(const char *str) {
+    if (!str) return NULL;
 
+    while (isspace((unsigned char)*str)) str++;  // Skip leading space
+
+    if (*str == '\0') return strdup("");  // All spaces
+
+    const char *end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    size_t len = end - str + 1;
+
+    char *trimmed = malloc(len + 1);
+    if (!trimmed) return NULL;
+
+    strncpy(trimmed, str, len);
+    trimmed[len] = '\0';
+
+    return trimmed;
+}
 static int validate_file_exists(const char *filename) {
-    // printf("Finding file %s\n",filename);
+    printf("Finding file [%s]\n",filename);
     FILE *file = fopen(filename, "r");
     if (!file) return 0;
     fclose(file);
@@ -26,31 +45,57 @@ static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, cha
     *output = strdup(json_string_value(default_output_obj));
 
     json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
-    // printf("Getting compile command\n");
     if (!json_is_string(compile_cmd_obj)) return -1;
     *compile_cmd = strdup(json_string_value(compile_cmd_obj));
 
     *input_files = malloc(data_count * sizeof(char*));
     *user_flags = malloc(data_count * sizeof(char*));
-    // printf("Checking file data\n");
     if (!(*input_files) || !(*user_flags)) return -1;
-    // printf("Building file list\n");
+
     *file_count = 0;
     *flag_count = 0;
+
     for (size_t i = 0; i < data_count; i++) {
-        if (data[i][0] == '-') {
-            (*user_flags)[*flag_count] = strdup(data[i]);
-            (*flag_count)++;
-        } else {
-            if (!validate_file_exists(data[i])){ 
-                printf("File doesn't exist: %d:%s\n",i,data[i]);
-                return -1;}
-            (*input_files)[*file_count] = strdup(data[i]);
-            (*file_count)++;
+    char *trimmed = trim_whitespace(data[i]);
+    if (!trimmed) return -1;
+
+    if (trimmed[0] == '-') {
+        // Check if next argument is a value (and not another flag)
+        char *next = NULL;
+        if ((i + 1) < data_count) {
+            next = trim_whitespace(data[i + 1]);
+            if (next && next[0] != '-') {
+                // Combine: "-o" + " " + "file"
+                size_t len = strlen(trimmed) + strlen(next) + 2;
+                char *combined = malloc(len);
+                if (!combined) return -1;
+                snprintf(combined, len, "%s %s", trimmed, next);
+
+                (*user_flags)[*flag_count] = combined;
+                (*flag_count)++;
+
+                free(trimmed);
+                free(next);
+                i++; // Skip the next item since it’s used
+                continue;
+            }
+            if (next) free(next);  // not used, so free
         }
+
+        // Single flag without argument
+        (*user_flags)[*flag_count] = trimmed;
+        (*flag_count)++;
+    } else {
+        if (!validate_file_exists(trimmed)) {
+            printf("File doesn't exist: %zu:%s\n", i, trimmed);
+            free(trimmed);
+            return -1;
+        }
+        (*input_files)[*file_count] = trimmed;
+        (*file_count)++;
     }
-    // printf("Parsing command\n");
-    *final_cmd = parse_compile_command(*compile_cmd,  (const char**) *user_flags, *flag_count, *output,  (const char**)*input_files, *file_count);
+}
+    *final_cmd = parse_compile_command(*compile_cmd, (const char**) *user_flags, *flag_count, *output, (const char**)*input_files, *file_count);
     return *final_cmd ? 0 : -1;
 }
 
@@ -95,8 +140,21 @@ static void run_output_program(json_t *linux_lang_obj, char *output) {
     free(final_run);
 }
 
-int compile_linux(char **data, char *lang, size_t data_count) {
-    printf("Compiling with language: %s\n", lang);
+int compile_linux(char **data, char *lang_in, size_t data_count) {
+    char *lang = malloc(strlen(lang_in)+5);
+    size_t count = 0;
+    for (size_t i = 0; i < strlen(lang_in); i++)
+    {
+        printf("[%c]\n",lang_in[i]);
+        if(lang_in[i] != ' ')
+        {
+            lang[count] = lang_in[i];
+            count++;
+        }
+    }
+    lang[count] = '\0';
+    
+    printf("Compiling with language: %s:%d\n", lang,strlen(lang));
 
     char *json_string = fetch_json(COMPILE_CMDS_URL);
     if (!json_string) return -1;
@@ -107,17 +165,17 @@ int compile_linux(char **data, char *lang, size_t data_count) {
     if (!json) return -1;
 
     json_t *lang_obj = json_object_get(json, lang);
-    // printf("Getting lang object\n");
+    printf("Getting lang object\n");
     if (!json_is_object(lang_obj)) return -1;
-
+    printf("Geting linux obj\n");
     json_t *linux_lang_obj = json_object_get(lang_obj, "linux");
-    // printf("Getting linux object\n");
+    printf("Getting linux object\n");
     if (!json_is_object(linux_lang_obj)) return -1;
 
     json_t *single_cmd_obj = json_object_get(linux_lang_obj, "single_command");
-    // printf("Getting single command boolean\n");
+    printf("Getting single command boolean\n");
     if (!json_is_boolean(single_cmd_obj)) return -1;
-    // printf("Checking command type\n");
+    printf("Checking command type\n");
     if (json_is_true(single_cmd_obj)) {
         json_t *multi_file_obj = json_object_get(linux_lang_obj, "multi_file");
         if (json_is_true(multi_file_obj)) {
