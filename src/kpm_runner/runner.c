@@ -224,15 +224,15 @@ int execute(char **commands,size_t command_count_in)
         }
         else if (strcmp(command_name, "find") == 0) {
             // printf("IN here:%d\n",curr_cmd_size);
-            for (size_t i = 0; i < curr_cmd_size; i++)
-            {
-                printf("%d:%s\n",i,current_command[i]);
-            }
-            printf("Doing test alloc\n");
-            char *test_alloc = malloc(10000);
-            printf("Calling\n");
+            // for (size_t i = 0; i < curr_cmd_size; i++)
+            // {
+            //     // printf("%d:%s\n",i,current_command[i]);
+            // }
+            // printf("Doing test alloc\n");
+            // char *test_alloc = malloc(10000);
+            // printf("Calling\n");
             char **values = hnd_find(current_command,curr_cmd_size);
-            printf("Call done\n");
+            // printf("Call done\n");
             if(values == NULL)
             {
                 printf("This sucks\n");

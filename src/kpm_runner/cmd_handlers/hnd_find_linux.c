@@ -12,26 +12,26 @@ char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pat
 
 char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_count)
 {
-    printf("Doing alloc for parms\n");
+    // printf("Doing alloc for parms\n");
     char **parms = malloc((parm_count + 1) * sizeof(char *));
-    printf("Done parm alloc\n");
+    // printf("Done parm alloc\n");
     for (size_t i = 0; i < parm_count; i++)
     {
         parms[i] = strdup(parms_in[i]);
     }
     
-    printf("Starting seach: %s\n",parms[1]);
+    // printf("Starting seach: %s\n",parms[1]);
     int recursive = 0;
     size_t pattern_start = 1;
 
     if (parm_count > 1 && strcmp(parms[1], "-r") == 0) {
-        printf("Is rec\n");
+        // printf("Is rec\n");
         recursive = 1;
         pattern_start = 2;
     }
-    printf("Setting patterns\n");
+    // printf("Setting patterns\n");
     size_t pattern_count = parm_count - pattern_start;
-    printf("pattern_start = %zu, parm_count = %zu\n", pattern_start, parm_count);
+    // printf("pattern_start = %zu, parm_count = %zu\n", pattern_start, parm_count);
 // for (size_t i = 0; i < parm_count; i++) {
 //     printf("parms[%zu] = %s\n", i, parms[i]);
 // }
@@ -41,26 +41,26 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
         fprintf(stderr, "ERROR: Failed to allocate patterns array\n");
         return NULL;
     }
-    printf("Test allocation\n");
-    char *temp_alloc2 = malloc(1000);
-    printf("Doing value sets\n");
+    // printf("Test allocation\n");
+    // char *temp_alloc2 = malloc(1000);
+    // printf("Doing value sets\n");
     for (size_t i = 0; i < pattern_count; i++) {
         patterns[i] = strdup(parms[pattern_start + i]);
     }
-    char *temp_alloc = malloc(1000);
+    // char *temp_alloc = malloc(1000);
     size_t file_count = 0;
     size_t max_files = 24;
-    printf("max_files = %zu\n", max_files);
-    printf("Doing allocation\n");
+    // printf("max_files = %zu\n", max_files);
+    // printf("Doing allocation\n");
     char **all_files = malloc(max_files * sizeof(char *));
 
 
-    printf("Allocation complete\n");
+    // printf("Allocation complete\n");
     if (!all_files) {
         fprintf(stderr, "ERROR(hnd_find_linux): Failed to allocate memory\n");
         return NULL;
     }
-    printf("Calling internal\n");
+    // printf("Calling internal\n");
     if (!hnd_find_linux_internal(parms[0], patterns, pattern_count, &file_count, &max_files, &all_files, recursive)) {
         fprintf(stderr,"ERROR(hnd_find_linux): Call to hnd_find_linux internal failed\n");
         for (size_t i = 0; i < file_count; i++) free(all_files[i]);
@@ -126,7 +126,7 @@ char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pat
 
         if (*file_count + 1 >= *max_files) {
             *max_files *= 2;
-            printf("Call realoc\n");
+            // printf("Call realoc\n");
             char **temp = realloc(file_list, (*max_files) * sizeof(char *));
             if (!temp) {
                 fprintf(stderr, "ERROR: realloc failed\n");
