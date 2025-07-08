@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+#include "custom.h"
 #define TMP_DIR "/tmp/libmanager"
 #define LIBS_DIR "libs"
 

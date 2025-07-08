@@ -6,6 +6,7 @@
 #include "compile_linux.h"
 #include "compile_utils.h"
 #include "compile_windows.h"
+#include <ctype.h>
 // compile_linux.c
 
 
@@ -31,7 +32,7 @@ char *trim_whitespace(const char *str) {
     return trimmed;
 }
 static int validate_file_exists(const char *filename) {
-    printf("Finding file [%s]\n",filename);
+    // printf("Finding file [%s]\n",filename);
     FILE *file = fopen(filename, "r");
     if (!file) return 0;
     fclose(file);
@@ -165,17 +166,17 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
     if (!json) return -1;
 
     json_t *lang_obj = json_object_get(json, lang);
-    printf("Getting lang object\n");
+    // printf("Getting lang object\n");
     if (!json_is_object(lang_obj)) return -1;
-    printf("Geting linux obj\n");
+    // printf("Geting linux obj\n");
     json_t *linux_lang_obj = json_object_get(lang_obj, "linux");
-    printf("Getting linux object\n");
+    // printf("Getting linux object\n");
     if (!json_is_object(linux_lang_obj)) return -1;
 
     json_t *single_cmd_obj = json_object_get(linux_lang_obj, "single_command");
-    printf("Getting single command boolean\n");
+    // printf("Getting single command boolean\n");
     if (!json_is_boolean(single_cmd_obj)) return -1;
-    printf("Checking command type\n");
+    // printf("Checking command type\n");
     if (json_is_true(single_cmd_obj)) {
         json_t *multi_file_obj = json_object_get(linux_lang_obj, "multi_file");
         if (json_is_true(multi_file_obj)) {

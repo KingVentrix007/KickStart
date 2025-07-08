@@ -37,7 +37,7 @@ char **extract_cmd_lines(char *path,size_t *line_count)
     }
     fread(kpm_script_data,sizeof(char),kpm_script_file_size,kpm_script_file);
     fclose(kpm_script_file);
-    char **kpm_cmd_lines = (char **)malloc(kpm_script_file_size*3);
+    char **kpm_cmd_lines = (char **)malloc((kpm_script_file_size*3)*sizeof(char *));
     size_t kpm_cmd_line_count = 0;
     if(kpm_cmd_lines == NULL)
     {
@@ -47,10 +47,14 @@ char **extract_cmd_lines(char *path,size_t *line_count)
     }
     //Extract lines
     char *line = strtok(kpm_script_data, "\n");
+    if(line == NULL)
+    {
+        printf("Line is null\n");
+    }
     kpm_cmd_lines[kpm_cmd_line_count] = strdup(line);
     kpm_cmd_line_count++;
     while (line != NULL) {
-        // printf("Line: %s\n", line);
+        printf("Line: %s\n", line);
         line = strtok(NULL, "\n");
         if(line == NULL)
         {
@@ -220,13 +224,15 @@ int execute(char **commands,size_t command_count_in)
         }
         else if (strcmp(command_name, "find") == 0) {
             // printf("IN here:%d\n",curr_cmd_size);
-            // for (size_t i = 0; i < curr_cmd_size; i++)
-            // {
-            //     printf("%d:%s\n",i,current_command[i]);
-            // }
-            // printf("Calling\n");
+            for (size_t i = 0; i < curr_cmd_size; i++)
+            {
+                printf("%d:%s\n",i,current_command[i]);
+            }
+            printf("Doing test alloc\n");
+            char *test_alloc = malloc(10000);
+            printf("Calling\n");
             char **values = hnd_find(current_command,curr_cmd_size);
-            // printf("Call done\n");
+            printf("Call done\n");
             if(values == NULL)
             {
                 printf("This sucks\n");
