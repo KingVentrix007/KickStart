@@ -17,66 +17,66 @@ int hnd_echo(char **argv, size_t argc);
 int hnd_env(char **argv, size_t argc);
 int hnd_wait(char **argv, size_t argc);
 char **hnd_find(char **argv,size_t argc);
-char **extract_cmd_lines(char *path,size_t *line_count)
+char **extract_cmd_lines(char *path, size_t *line_count)
 {
-    FILE *kpm_script_file = fopen(path,"r");
-    if(kpm_script_file == NULL)
-    {
-        fprintf(stderr,"ERROR: Failed to open kpm_script_file at path %s\n",path);
+    FILE *kpm_script_file = fopen(path, "r");
+    if (kpm_script_file == NULL) {
+        fprintf(stderr, "ERROR: Failed to open kpm_script_file at path %s\n", path);
         return NULL;
     }
+
     fseek(kpm_script_file, 0L, SEEK_END);
     size_t kpm_script_file_size = ftell(kpm_script_file);
     rewind(kpm_script_file);
-    char *kpm_script_data = (char *)malloc(kpm_script_file_size*2+1);
-    if(kpm_script_data == NULL)
-    {
-        fprintf(stderr,"ERROR: Failed to allocate memory for kpm_script_data");
+
+    char *kpm_script_data = (char *)calloc(kpm_script_file_size + 1, sizeof(char));
+    if (kpm_script_data == NULL) {
+        fprintf(stderr, "ERROR: Failed to allocate memory for kpm_script_data\n");
         fclose(kpm_script_file);
         return NULL;
     }
-    fread(kpm_script_data,sizeof(char),kpm_script_file_size,kpm_script_file);
+
+    fread(kpm_script_data, sizeof(char), kpm_script_file_size, kpm_script_file);
     fclose(kpm_script_file);
-    char **kpm_cmd_lines = (char **)malloc((kpm_script_file_size*3)*sizeof(char *));
-    size_t kpm_cmd_line_count = 0;
-    if(kpm_cmd_lines == NULL)
-    {
-        fprintf(stderr,"ERROR: Failed to allocate memory for kpm_cmd_lines");
+
+    size_t capacity = 64;
+    char **kpm_cmd_lines = (char **)malloc(capacity * sizeof(char *));
+    if (kpm_cmd_lines == NULL) {
+        fprintf(stderr, "ERROR: Failed to allocate memory for kpm_cmd_lines\n");
         free(kpm_script_data);
         return NULL;
     }
-    //Extract lines
+
+    size_t kpm_cmd_line_count = 0;
     char *line = strtok(kpm_script_data, "\n");
-    if(line == NULL)
-    {
-        printf("Line is null\n");
-    }
-    kpm_cmd_lines[kpm_cmd_line_count] = strdup(line);
-    kpm_cmd_line_count++;
+
     while (line != NULL) {
-        printf("Line: %s\n", line);
-        line = strtok(NULL, "\n");
-        if(line == NULL)
-        {
-            continue;
+        if (kpm_cmd_line_count >= capacity) {
+            capacity *= 2;
+            char **tmp = realloc(kpm_cmd_lines, capacity * sizeof(char *));
+            if (!tmp) {
+                fprintf(stderr, "ERROR: realloc failed\n");
+                break;
+            }
+            kpm_cmd_lines = tmp;
         }
 
-        kpm_cmd_lines[kpm_cmd_line_count] = strdup(line);
-        kpm_cmd_line_count++;
-        // printf("Set line\n");
+        kpm_cmd_lines[kpm_cmd_line_count++] = strdup(line);  // LINE 68 (safe now)
+        line = strtok(NULL, "\n");
     }
-    // printf("Setting len %ld\n",kpm_cmd_line_count);
-    // printf("*line_count == %ld\n",*line_count);
 
+    kpm_cmd_lines[kpm_cmd_line_count] = NULL; // NULL-terminate the array
     *line_count = kpm_cmd_line_count;
-    // printf("Returing lines\n");
+
+    free(kpm_script_data);  // ✅ Free the data buffer now that lines are duplicated
     return kpm_cmd_lines;
 }
+
 
 char **parse_command(char *command,size_t *argc)
 {
     char *internal_cmd = strdup(command);
-    char **command_parts = malloc(strlen(internal_cmd)+10);
+    char **command_parts = malloc((strlen(internal_cmd)+10)*sizeof(char *));
     if(command_parts == NULL)
     {
         fprintf(stderr,"ERROR(parse_command): Failed to allocate memory\n");

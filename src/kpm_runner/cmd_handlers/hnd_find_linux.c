@@ -77,7 +77,7 @@ char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pat
                                size_t *file_count, size_t *max_files,
                                char ***file_list_ptr, int recursive)
 {
-    printf("Opening dir\n");
+    // printf("Opening dir\n");
     DIR *dp = opendir(dir_path);
     if (!dp) {
         perror("Couldn't open directory");
