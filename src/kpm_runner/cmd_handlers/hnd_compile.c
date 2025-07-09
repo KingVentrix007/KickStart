@@ -39,7 +39,8 @@ char **split_whitespace(const char *input, size_t *count) {
 int cmd_compile(char **argv, size_t argc) {
     size_t max_files = 100;
     char **files = malloc(max_files * sizeof(char *));
-    if (!files) {
+    if (files == NULL) {
+        // free(files);
         fprintf(stderr, "Memory allocation failed.\n");
         return 1;
     }
@@ -62,8 +63,11 @@ int cmd_compile(char **argv, size_t argc) {
 
             size_t split_count = 0;
             char **split_files = split_whitespace(value, &split_count);
-            if (!split_files) {
+            if (split_files == NULL) {
                 fprintf(stderr, "Memory split failed.\n");
+                for (size_t k = 0; k < file_index; ++k) free(files[k]);
+                free(files);
+                
                 return 1;
             }
 
