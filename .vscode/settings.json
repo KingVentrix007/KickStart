@@ -38,7 +38,8 @@
         "compile_utils.h": "c",
         "compile_windows.h": "c",
         "compile.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "typeinfo": "c"
     },
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,

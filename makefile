@@ -37,7 +37,9 @@ $(TARGET): $(OBJS)
 run: $(TARGET)
 	mkdir -p "tests"
 	(cd tests && ../$(TARGET) init)
-
+run-d:
+	mkdir -p "tests"
+	(cd tests && valgrind --track-origins=yes --leak-check=full ../$(TARGET) init)
 # Clean up build files
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) build

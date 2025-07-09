@@ -94,6 +94,7 @@ char **parse_command(char *command, size_t *argc)
     char *line = strtok(internal_cmd, " ");
     while (line != NULL) {
         command_parts[count] = strdup(line);
+        // free(line);
         if (!command_parts[count]) {
             fprintf(stderr, "ERROR(parse_command): strdup failed\n");
             // Cleanup before exit
@@ -141,6 +142,7 @@ int execute(char **commands,size_t command_count_in)
     size_t current_command_index = 0;
     // printf("First cmd %s\n",commands[current_command_index]);
     current_command = parse_command(commands[current_command_index], &curr_cmd_size);
+    size_t og_cmd_size = curr_cmd_size;
     current_command_save = current_command;
     // printf("Current cmd 1 %s\n",current_command[0]);
     int ret = 0;
@@ -369,26 +371,29 @@ int execute(char **commands,size_t command_count_in)
         {
             current_command_index--;
             printf("Failed execution at line %ld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
-            for (size_t i = 0; i < curr_cmd_size; i++)
+            for (size_t i = 0; i < og_cmd_size; i++)
             {
-                free(current_command[i]);
+                free(current_command_save[i]);
             }
             free(current_command_save);
             return ret;
         }
+        
+        
 
-        for (size_t i = 0; i < curr_cmd_size; i++)
+        for (size_t i = 0; i < og_cmd_size; i++)
         {
-            free(current_command[i]);
+            free(current_command_save[i]);
         }
         free(current_command_save);
         
         current_command = parse_command(commands[current_command_index], &curr_cmd_size);
         current_command_save = current_command;
+        og_cmd_size = curr_cmd_size;
     }
-    for (size_t i = 0; i < curr_cmd_size; i++)
+    for (size_t i = 0; i < og_cmd_size; i++)
     {
-        free(current_command[i]);
+        free(current_command_save[i]);
     }
     free(current_command_save);
     return ret;
@@ -404,7 +409,14 @@ int kpm_script_runner(char *path)
         return -1;
     }
     printf("Executing\n");
-    return execute(kpm_cmd_lines,kpm_cmd_line_count);
-    return 0;
+    int exe_ret =  execute(kpm_cmd_lines,kpm_cmd_line_count);
+    for (size_t i = 0; i < kpm_cmd_line_count; i++)
+    {
+        free(kpm_cmd_lines[i]);
+    }
+    free(kpm_cmd_lines);
+    return exe_ret;
+    
+    
 
 }

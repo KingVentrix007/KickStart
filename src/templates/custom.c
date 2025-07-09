@@ -26,6 +26,70 @@ struct MemoryStruct {
     char *memory;
     size_t size;
 };
+#include <stdlib.h>
+
+void free_string_array(char **array, size_t count) {
+    if (!array) return;
+    for (size_t i = 0; i < count; i++) {
+        free(array[i]);
+    }
+    free(array);
+}
+void free_build_system(BuildSystem *bs) {
+    if (!bs) return;
+
+    free(bs->name);
+    free(bs->path);
+    free(bs->build_command);
+    free(bs->run_command);
+
+    // Optional: clear the struct for safety
+    memset(bs, 0, sizeof(BuildSystem));
+}
+
+void free_project_info(ProjectInfo *info) {
+    if (!info) return;
+
+    // Free single strings
+    free(info->name);
+    free(info->git_ignore_path);
+    free(info->version_template_path);
+    free(info->description);
+    free(info->template_author);
+    free(info->git_repo);
+    free(info->lang_license_type);
+    free(info->lang_license_url);
+    free(info->default_main_file);
+    free(info->instructions);
+    free(info->template_version);
+    free(info->update_url);
+    free(info->main_file_path);
+    free(info->main_file_template);
+    free(info->comment);
+    free(info->compiler_cmd);
+    free(info->package_install_command);
+
+    // Free string arrays
+    free_string_array(info->system_support, info->system_support_count);
+    free_string_array(info->build_type, 2);  // If known fixed size, adjust this
+    free_string_array(info->extensions, info->extensions_count);
+    free_string_array(info->dependencies, info->dependencies_count);
+    free_string_array(info->folders_to_create, info->folders_to_create_count);
+    free_string_array(info->commands_to_run, info->commands_to_run_count);
+    free_string_array(info->compiler_urls, info->compiler_urls_count);
+    free_string_array(info->files_to_include, info->files_to_include_count);
+
+    // Do NOT free `build_file_paths` and `build_systems` unless ownership is clear
+    // If you allocated `build_systems`:
+    for (size_t i = 0; i < info->build_systems_count; ++i) {
+        free_build_system(&info->build_systems[i]);
+    }
+    free(info->build_systems);
+
+    // Zero the struct (optional, for safety)
+    memset(info, 0, sizeof(ProjectInfo));
+}
+
 // Function to replace ${project_name} with the actual project name
 char *replace_placeholder(const char *path, const char *project_name) {
     const char *placeholder = "${project_name}";
@@ -388,7 +452,9 @@ char *get_lang_path(const char *lang) {
 
         if (path) {
             // printf("Path for language '%s': %s\n", lang, path);
-            return strdup(path);  // Return a copy of the path
+            char *ret =  strdup(path);  // Return a copy of the path
+            free(path);
+            return ret;
         }
         return NULL;
     }
@@ -463,61 +529,8 @@ char *get_lang_path(const char *lang) {
         } \
         free(array); \
     } while (0)
-typedef struct {
-    char *makefile_path;
-    char *bash_path;
-} BuildFilePaths;
 
-typedef struct{
-    char *name;
-    char *path;
-    char *build_command;
-    char *run_command;
-    bool create_file;
-}BuildSystem;
 // Structure to hold project information
-typedef struct {
-    char *name;
-    int version;
-    char **system_support;
-    size_t system_support_count;
-    char **build_type;
-    // size_t build_type_count; 
-    int lib_support;
-    bool special_build; // Only present in version 2
-    BuildFilePaths build_file_paths;  //Might not be present in version 2
-    BuildSystem *build_systems;
-    size_t build_systems_count;
-    char *git_ignore_path;            
-    char *version_template_path;
-    char *description;
-    char *template_author;
-    char *git_repo;
-    char *lang_license_type;
-    char *lang_license_url;
-    char *default_main_file;
-    char **extensions;
-    size_t extensions_count;
-    char **dependencies;
-    size_t dependencies_count;
-    char *instructions;
-    char *template_version;
-    char *update_url;
-    char **folders_to_create;
-    size_t folders_to_create_count;
-    char **commands_to_run;
-    size_t commands_to_run_count;
-    char *main_file_path;
-    char *main_file_template;
-    char *comment;
-     char **compiler_urls;
-    size_t compiler_urls_count;
-    char **files_to_include; // Only in version 2
-    size_t files_to_include_count; // Only in version 2
-    char *compiler_cmd; 
-    char *package_install_command;
-    bool create_file;
-} ProjectInfo;
 
 
 // Function to parse JSON data into ProjectInfo structure
@@ -723,7 +736,7 @@ void parse_json(const char *json_data, ProjectInfo *info) {
             info->files_to_include[i] = strdup(json_string_value(json_array_get(files_to_include, i)));
         }
     }
-
+    json_decref(root);
     // Return the parsed information
     // return info;
 }
@@ -785,7 +798,7 @@ int create_project(char *project_name, char *project_description, char *project_
     // Initialize ProjectInfo structure
     ProjectInfo info;
         memset(&info, 0, sizeof(info));
-    parse_json(lang_json_data, &info);
+    parse_json(lang_json_data, &info); //TODO Improve free info system, for externsions and other mallocs
     free(lang_json_data);  // Free lang_json_data after use
     
     for (size_t i = 0; i < info.folders_to_create_count; i++) {
@@ -944,12 +957,15 @@ int create_project(char *project_name, char *project_description, char *project_
         fclose(fp2);
         free(main_file_path);
         free(main_file_data);
+        free(comment);
     }
     else
     {
         printf("There was an issue creating the new main file %s\n",formatted_main_file_path);
+        free(formatted_main_file_path);
         return -1;
     }
+    free(formatted_main_file_path);
     // chdir(base_dir);
     //Run commands
     for (size_t i = 0; i < info.commands_to_run_count; i++) {
@@ -1063,8 +1079,9 @@ int create_project(char *project_name, char *project_description, char *project_
     {
         fprintf(project_json, "    \"install_cmd\": \"%s\",\n",info.package_install_command);
     }
-    replace_placeholder(build_script_run,project_name);
-    replace_placeholder(build_script_build,project_name);
+    
+    build_script_run = replace_placeholder(build_script_run,project_name); // Here
+    build_script_build = replace_placeholder(build_script_build,project_name);
 
     fprintf(project_json, "    \"run_command\": \"%s\",\n",build_script_run);
     fprintf(project_json, "    \"build_command\": \"%s\"\n",build_script_build);
@@ -1074,46 +1091,46 @@ int create_project(char *project_name, char *project_description, char *project_
     fprintf(project_json, "}\n");
     fclose(project_json);
     if(info.version >= 2)
-{
-    char **files_to_include = info.files_to_include;
-    for (size_t i = 0; i < info.files_to_include_count; i++)
     {
-        char *file_path = files_to_include[i];
-        char *file_url = malloc(strlen(LANG_BASE_URL) + strlen(file_path) + 100);
-        if (file_url == NULL)
+        char **files_to_include = info.files_to_include;
+        for (size_t i = 0; i < info.files_to_include_count; i++)
         {
-            fprintf(stderr, "Memory allocation failed for file_url\n");
-            continue;
-        }
-        
-        snprintf(file_url, strlen(LANG_BASE_URL) + strlen(file_path) + 100, "%s/%s/%s", LANG_BASE_URL, project_language, file_path);
+            char *file_path = files_to_include[i];
+            char *file_url = malloc(strlen(LANG_BASE_URL) + strlen(file_path) + 100);
+            if (file_url == NULL)
+            {
+                fprintf(stderr, "Memory allocation failed for file_url\n");
+                continue;
+            }
+            
+            snprintf(file_url, strlen(LANG_BASE_URL) + strlen(file_path) + 100, "%s/%s/%s", LANG_BASE_URL, project_language, file_path);
 
-        char *file_data = fetch_data(file_url);
-        if (file_data == NULL)
-        {
-            fprintf(stderr, "Failed to fetch data from URL: %s\n", file_url);
-            free(file_url);
-            FILE *blankfile = fopen(file_path,"w");
-            fprintf(blankfile,"%s","# Template\n");
-            fclose(blankfile);
-            continue;
-        }
+            char *file_data = fetch_data(file_url);
+            if (file_data == NULL)
+            {
+                fprintf(stderr, "Failed to fetch data from URL: %s\n", file_url);
+                free(file_url);
+                FILE *blankfile = fopen(file_path,"w");
+                fprintf(blankfile,"%s","# Template\n");
+                fclose(blankfile);
+                continue;
+            }
 
-        FILE *custom_file = fopen(file_path, "w");
-        if (custom_file == NULL)
-        {
-            fprintf(stderr, "Failed to open file: %s\n", file_path);
+            FILE *custom_file = fopen(file_path, "w");
+            if (custom_file == NULL)
+            {
+                fprintf(stderr, "Failed to open file: %s\n", file_path);
+                free(file_url);
+                free(file_data);
+                continue;
+            }
+
+            fprintf(custom_file, "%s", file_data);
             free(file_url);
             free(file_data);
-            continue;
+            fclose(custom_file);
         }
-
-        fprintf(custom_file, "%s", file_data);
-        free(file_url);
-        free(file_data);
-        fclose(custom_file);
     }
-}
     #ifdef _WIN32
         // Windows
         char silent_cmd[1024];
@@ -1168,7 +1185,7 @@ int create_project(char *project_name, char *project_description, char *project_
                     fwrite(gitignore_data_formatted, 1, strlen(gitignore_data_formatted), fp4);
                     fclose(fp4);
                 }
-
+                free(gitignore_data_formatted);
                 // Initialize git repo silently
                 char git_init_cmd[1024];
         #ifdef _WIN32
@@ -1211,5 +1228,10 @@ int create_project(char *project_name, char *project_description, char *project_
     int idx = rand() % (sizeof(quotes) / sizeof(quotes[0]));
     printf("Project '%s' created successfully!\n\n", project_name);
     printf("%s\n", quotes[idx]);
+    free_project_info(&info);
+    free(build_script_run);
+    free(build_script_build);
+    // free(build_script_run);
+
     return 0;
 }

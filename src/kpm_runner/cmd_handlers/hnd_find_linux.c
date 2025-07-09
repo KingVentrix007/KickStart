@@ -74,6 +74,12 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
     {
        free( parms[i]);
     }
+    for (size_t i = 0; i < pattern_count; i++)
+    {
+        free(patterns[i]);
+    }
+    free(patterns);
+    
     free(parms);
     return all_files;
 }

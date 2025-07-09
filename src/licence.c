@@ -129,6 +129,7 @@ char* get_license_text(const char *license_name) {
     //     return NULL;
     // }
     memory.data = fetch_data(new_url);
+    free(new_url);
     return memory.data;
 }
 
