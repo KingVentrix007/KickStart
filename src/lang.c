@@ -140,7 +140,8 @@ int update_deps(char *installed)
     }
 
     printf("Successfully updated dependencies\n");
-
+    free(new_deps);
+    json_decref(root);
     return 0;
     
 

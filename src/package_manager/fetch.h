@@ -24,4 +24,5 @@ typedef struct {
 } LibraryInfo;
 
 LibraryInfo *parse_library_json(const char *json_data);
+void free_library_info(LibraryInfo *lib) ;
 #endif

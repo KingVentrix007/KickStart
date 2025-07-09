@@ -99,7 +99,7 @@ char *fetch_index_json() {
 
   curl_easy_cleanup(curl_handle);
   curl_global_cleanup();
-
+  free(url);
   return chunk.memory;
 }
 
@@ -168,6 +168,7 @@ char *get_lib_path(const char *lib_name, const char *language) {
 
   if (!root) {
     fprintf(stderr, "Error parsing JSON data: %s\n", error.text);
+    free(json_data);
     return NULL;
   }
 
@@ -187,6 +188,7 @@ char *get_lib_path(const char *lib_name, const char *language) {
     printf("Language mismatch for library %s. Expected: %s, Found: %s\n",
            lib_name, language, lib_lang ? lib_lang : "N/A");
     json_decref(root);
+    free(json_data);
     return NULL;
   }
 
@@ -199,6 +201,7 @@ char *get_lib_path(const char *lib_name, const char *language) {
 
   char *result = strdup(path);
   json_decref(root);
+  free(json_data);
   return result;
 }
 
@@ -462,12 +465,18 @@ int cpkg_main(char *lib_name, char *language) {
       save_header_files(lib_info);
       free(json_data);
       free(lib_name_buffer_file);
+      free(path);
+      free(lib_dir_path);
+      // free(lib_dir_path)
+      free_library_info(lib_info);
+      // free(lib_info);
       return 0;
 
       // Free allocated memory
       // free_library_info(lib_info);
     }
-
+    free(lib_dir_path);
+    free(path);
     free(json_data);
   }
 

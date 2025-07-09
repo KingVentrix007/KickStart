@@ -167,6 +167,7 @@ int cmd_install(int argc, char **argv) {
     char *update_deps_name = malloc(strlen(package_name) + 100);
     if (update_deps_name == NULL) {
         fprintf(stderr, "Memory allocation failed for update_deps_name.\n");
+        free(lang);
         return 1;
     }
     if(at_sign != NULL)
@@ -204,7 +205,9 @@ int cmd_install(int argc, char **argv) {
             }
         }
     }
-
+    free(install_cmd);
+    free(lang);
+    free(update_deps_name);
     return 0;
 }
 
