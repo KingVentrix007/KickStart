@@ -17,6 +17,8 @@ int hnd_echo(char **argv, size_t argc);
 int hnd_env(char **argv, size_t argc);
 int hnd_wait(char **argv, size_t argc);
 char **hnd_find(char **argv,size_t argc);
+int hnd_run();
+int hnd_build();
 char **extract_cmd_lines(char *path, size_t *line_count)
 {
     FILE *kpm_script_file = fopen(path, "r");
@@ -147,7 +149,7 @@ int execute(char **commands,size_t command_count_in)
     // printf("Current cmd 1 %s\n",current_command[0]);
     int ret = 0;
     bool var_set = false;
-    const char *var_name ;
+    char *var_name ;
     while (strcmp(current_command[0], "exit") != 0 && current_command_index < command_count)
     {
        
@@ -161,7 +163,7 @@ int execute(char **commands,size_t command_count_in)
         
         if (command_name[0] == '$')
         {
-            size_t name_len = strlen(command_name);
+            // size_t name_len = strlen(command_name);
             // Case: $var=value
             char *equal_sign = strchr(command_name, '=');
             if (equal_sign != NULL)
@@ -209,7 +211,11 @@ int execute(char **commands,size_t command_count_in)
             
         }
         else if (strcmp(command_name, "run") == 0) {
-            //
+            ret = hnd_run();
+        }
+        else if (strcmp(command_name,"build") == 0)
+        {
+            ret = hnd_build();
         }
         else if (strcmp(command_name, "cd") == 0) {
             ret = hnd_cd(current_command,curr_cmd_size);
@@ -286,7 +292,7 @@ int execute(char **commands,size_t command_count_in)
                     if (!joined) {
                         fprintf(stderr, "ERROR: Failed to allocate memory for joined result.\n");
                         ret = -1;
-                        return;
+                        return ret;
                     }
 
                     joined[0] = '\0';

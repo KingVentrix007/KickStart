@@ -24,9 +24,9 @@ char *resolve_description(const char *desc, const char *project_title) {
     return buffer;
 }
 
-char *parse_readme_contents(char * contents,const char *github_username_in,const char *project_name_in, const char *project_description, const char *project_license,const char **dependencies)
+char *parse_readme_contents(char * contents,const char *github_username_in,const char *project_name_in, const char *project_description, const char *project_license)
 {
-     char github_username[MAX_LEN];
+    char github_username[MAX_LEN];
     char project_name[MAX_LEN];
     char temp_input[MAX_LEN];
     memset(temp_input, 0, sizeof(temp_input));
@@ -184,7 +184,7 @@ return new_contents;
 }
 
 
-int generate_readme_func(const char *readme_file_path,const char *project_name, const char *project_description, const char *project_author, const char *project_license, const char *project_version, const char *project_language, const char **project_dependencies) {
+int generate_readme_func(const char *readme_file_path,const char *project_name, const char *project_description, const char *project_author, const char *project_license) {
     FILE *file = fopen(readme_file_path, "w");
     printf("Generating README.md at %s\n", readme_file_path);
     // printf("Version: %s\n", project_version);
@@ -199,7 +199,7 @@ int generate_readme_func(const char *readme_file_path,const char *project_name, 
         fclose(file);
         return -1;
     }
-    char *parsed_content = parse_readme_contents(readnme_content,project_author, project_name, project_description, project_license, project_dependencies);
+    char *parsed_content = parse_readme_contents(readnme_content,project_author, project_name, project_description, project_license);
     if (parsed_content == NULL) {
         fprintf(stderr, "Failed to parse README contents\n");
         free(readnme_content);

@@ -346,7 +346,7 @@ char *fetch_json(const char *url) {
 }
 
 // Function to parse JSON and find the path for the given language
-const char *find_language_path(const char *lang, const char *json_data) {
+char *find_language_path(const char *lang, const char *json_data) {
     json_error_t error;
     json_t *root;
     json_t *langs;
@@ -381,7 +381,7 @@ const char *find_language_path(const char *lang, const char *json_data) {
     }
 
     const char *path = json_string_value(path_obj);
-    const char *ret_path = strdup(path);
+    char *ret_path = strdup(path);
     json_decref(root);
 
     return ret_path;
@@ -447,7 +447,7 @@ char *get_lang_path(const char *lang) {
             return NULL;
         }
 
-        const char *path = find_language_path(lang, json_data);
+        char *path = find_language_path(lang, json_data);
         free(json_data);  // Free the JSON data after use
 
         if (path) {
@@ -1004,7 +1004,7 @@ int create_project(char *project_name, char *project_description, char *project_
     if (strcmp(generate_readme, "yes") == 0) {
         char readme_file_path[1024];
         snprintf(readme_file_path, sizeof(readme_file_path), "%s/README.md", base_dir);
-        if(generate_readme_func(readme_file_path, project_name, project_description, project_author, project_licence, project_version, project_language, project_dependencies) !=0)
+        if(generate_readme_func(readme_file_path, project_name, project_description, project_author, project_licence) !=0)
         {
             fprintf(stderr, "Failed to create README.md\n");
             

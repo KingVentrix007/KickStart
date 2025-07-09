@@ -45,8 +45,8 @@ if (!json_is_object(build_file_path)) {
     json_decref(json);
     return -1;
 }
-    size_t index;
-    json_t *value;
+    // size_t index;
+    // json_t *value;
     const char *lang_key;
 json_t *lang_value;
     json_object_foreach(build_file_path, lang_key, lang_value) {
@@ -65,8 +65,8 @@ json_t *lang_value;
         }
 
         const char *path_str = json_string_value(path);
-        const char *build_str = json_string_value(build);
-        const char *run_str = json_string_value(run);
+        // const char *build_str = json_string_value(build);
+        // const char *run_str = json_string_value(run);
         char *setup_path = malloc(strlen(path_str) + 1000);
         if (setup_path == NULL) {
             fprintf(stderr, "Error: Memory allocation failed for setup_path.\n");
@@ -154,5 +154,5 @@ json_t *lang_value;
         json_decref(json);
         return -1;
     }
-
+    return 0;
 }

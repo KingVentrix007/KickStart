@@ -129,7 +129,7 @@ static int run_multi_command(json_t *linux_lang_obj) {
     return 0;
 }
 
-static void run_output_program(json_t *linux_lang_obj, char *output) {
+static void run_output_program(json_t *linux_lang_obj, const char *output) {
     json_t *run_cmd_obj = json_object_get(linux_lang_obj, "run_cmd");
     if (!json_is_string(run_cmd_obj)) return;
     char *run_cmd = strdup(json_string_value(run_cmd_obj));
@@ -155,7 +155,7 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
     }
     lang[count] = '\0';
     
-    printf("Compiling with language: %s:%d\n", lang,strlen(lang));
+    printf("Compiling with language: %s:%ld\n", lang,strlen(lang));
 
     char *json_string = fetch_json(COMPILE_CMDS_URL);
     if (!json_string) return -1;

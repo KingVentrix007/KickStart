@@ -46,6 +46,8 @@ typedef struct {
 
 // Command implementations
 int cmd_init(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
 #ifdef _WIN32
     printf("WARNING: Running on Windows. kpm commands are Linux-focused.\n");
     printf("Insure you have pulled and compiled this from the designated windows branch, as I have no bundled the linux and windows version together\n");
@@ -212,14 +214,20 @@ int cmd_install(int argc, char **argv) {
 }
 
 int cmd_run(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     return run_project();
 }
 
 int cmd_build(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     return build_project();
 }
 
 int cmd_langs(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     return show_all_langs();
 }
 int install_language_support(const char *lang);
@@ -298,6 +306,8 @@ int cmd_ignore(int argc, char **argv) {
 }
 
 int cmd_count(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
     return get_line_count();
 }
 
