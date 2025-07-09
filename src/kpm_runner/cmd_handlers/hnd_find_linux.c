@@ -45,6 +45,10 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
     // char *temp_alloc2 = malloc(1000);
     // printf("Doing value sets\n");
     for (size_t i = 0; i < pattern_count; i++) {
+        if(pattern_start + i > pattern_count)
+        {
+            break;
+        }
         patterns[i] = strdup(parms[pattern_start + i]);
     }
     // char *temp_alloc = malloc(1000);
@@ -58,6 +62,12 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
     // printf("Allocation complete\n");
     if (!all_files) {
         fprintf(stderr, "ERROR(hnd_find_linux): Failed to allocate memory\n");
+        for (size_t i = 0; i < parm_count; i++)
+        {
+            free( parms[i]);
+            
+        }
+        free(parms);
         return NULL;
     }
     // printf("Calling internal\n");
@@ -65,6 +75,13 @@ char **hnd_find_linux(char **parms_in, size_t parm_count, size_t *found_file_cou
         fprintf(stderr,"ERROR(hnd_find_linux): Call to hnd_find_linux internal failed\n");
         for (size_t i = 0; i < file_count; i++) free(all_files[i]);
         free(all_files);
+        for (size_t i = 0; i < parm_count; i++)
+        {
+            free( parms[i]);
+            
+        }
+        free(parms);
+
         return NULL;
     }
 

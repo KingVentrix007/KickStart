@@ -82,6 +82,12 @@ int cmd_compile(char **argv, size_t argc) {
                     fprintf(stderr, "Memory allocation failed.\n");
                     for (size_t k = 0; k < file_index; ++k) free(files[k]);
                     free(files);
+                    for (size_t l = 0; l < split_count; l++)
+                    {
+                        free(split_files[l]);
+                    }
+                    free(split_files);
+                    
                     return 1;
                 }
 
