@@ -243,6 +243,7 @@ int install_lang_support_internal(char *lang)
     return res;
 }
 int compiler(int argc, char **argv) {
+    printf("Compilr\n");
     if (argc < 3) {
         fprintf(stderr, "Usage: %s compile <file1> [file2...]\n", argv[0]);
         return 1;
@@ -362,7 +363,12 @@ int main(int argc, char **argv) {
 
     for (size_t i = 0; i < sizeof(commands)/sizeof(commands[0]); ++i) {
         if (strcmp(commands[i].name, command) == 0)
-            return commands[i].handler(argc, argv);
+        {
+            int ret = commands[i].handler(argc, argv);
+            // printf("comp-ret = %d\n",ret);
+            return ret;
+        }
+            
     }
 
     fprintf(stderr, "Unknown command: %s\n", command);

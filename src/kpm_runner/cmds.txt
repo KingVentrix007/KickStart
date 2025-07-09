@@ -23,3 +23,17 @@ set -> Define a variable
 print -> Print the value of a variable
 exists -> Check if a file or folder exists
 wait -> Wait for a number of seconds or milliseconds
+
+
+#implemented
+
+compile: compile <files/flags>
+run: run file
+find: find <dir> <flag(-r)> <paterns or files>
+cd: cd dir
+mv: mv <file> <loc>
+cp: cp <file> <file>
+echo: echo <messages>
+exit
+rm: rm <file>
+wait: wait seconds

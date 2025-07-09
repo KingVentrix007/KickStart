@@ -7,6 +7,7 @@
 #include "compile_utils.h"
 #include "compile_windows.h"
 #include <ctype.h>
+#include <sys/wait.h> // For WEXITSTATUS
 // compile_linux.c
 
 
@@ -193,21 +194,24 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
             for (size_t i = 0; i < file_count; i++) free(input_files[i]);
             for (size_t i = 0; i < flag_count; i++) free(user_flags[i]);
             free(input_files); free(user_flags);
-            if (result == -1)
+            if (result != 0)
             {
                 free(lang);
-                printf("Error here\n");
-                return -1;
+                // printf("Error here\n");
+                int exit_code = WEXITSTATUS(result);  // Get actual GCC return code
+                return exit_code;
             } 
         } else {
             char *output = NULL;
             json_t *default_output_obj = json_object_get(linux_lang_obj, "default_output");
             if (!json_is_string(default_output_obj)) return -1;
             output = strdup(json_string_value(default_output_obj));
-            if (run_single_file_compile(linux_lang_obj, data[0], output) == -1){
+            int single_ret = run_single_file_compile(linux_lang_obj, data[0], output);
+            printf("single_ret == %d\n",single_ret);
+            if (single_ret != 0){
                 printf("Failed to compile single file\n");
                 free(lang);
-                return -1;
+                return single_ret;
             }
             free(output);
         }
