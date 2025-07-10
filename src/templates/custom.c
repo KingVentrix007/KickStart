@@ -389,6 +389,10 @@ char *find_language_path(const char *lang, const char *json_data) {
 
 
 int mkdir_p(const char *path, mode_t mode) {
+    #ifdef __linux__
+    #else
+    (void)mode;
+    #endif
     char *subpath = strdup(path);
     char *p;
 
@@ -835,17 +839,17 @@ int create_project(char *project_name, char *project_description, char *project_
 
         for (size_t i = 0; i < info.build_systems_count; i++)
         {
-            printf("%ld: %s\n",i,info.build_systems[i].name);
+            printf("%lld: %s\n",i,info.build_systems[i].name);
 
         }
         printf("Please select a supported build system: ");
 
         size_t choice = 0;
-        scanf("%ld",&choice);
+        scanf("%lld",&choice);
         while(choice > info.build_systems_count)
         {
             printf("Invalid option: ");
-            scanf("%ld",&choice);
+            scanf("%lld",&choice);
         }
         char *build_script_path = info.build_systems[choice].path;
         build_script_build = info.build_systems[choice].build_command;
@@ -1145,7 +1149,7 @@ int create_project(char *project_name, char *project_description, char *project_
         printf("Compiler for language %s is not installed\n",project_language);
         for (size_t i = 0; i < info.compiler_urls_count; i++)
         {
-            printf("%ld: %s",i,info.compiler_urls[i]);
+            printf("%lld: %s",i,info.compiler_urls[i]);
         }
         
     }

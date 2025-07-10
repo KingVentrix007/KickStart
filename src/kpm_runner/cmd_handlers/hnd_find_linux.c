@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#ifdef __linux__
 #include <fnmatch.h>
 #include <sys/stat.h>
+#endif
 #include <unistd.h>
-
+#ifdef __linux__
 char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pattern_count,
                                size_t *file_count, size_t *max_files,
                                char ***file_list_ptr, int recursive);
@@ -178,3 +180,16 @@ char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pat
     closedir(dp);
     return *file_list_ptr;
 }
+#else
+char **hnd_find_linux_internal(const char *dir_path, char **patterns, size_t pattern_count,size_t *file_count, size_t *max_files,char ***file_list_ptr, int recursive)
+{
+    (void)dir_path;
+    (void)patterns;
+    (void)pattern_count;
+    (void)file_count;
+    (void)max_files;
+    (void)file_list_ptr;
+    (void)recursive;
+    return NULL;
+}
+#endif

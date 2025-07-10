@@ -7,7 +7,9 @@
 #include "compile_utils.h"
 #include "compile_windows.h"
 #include <ctype.h>
+#ifdef __linux__
 #include <sys/wait.h> // For WEXITSTATUS
+#endif
 // compile_linux.c
 
 
@@ -40,6 +42,7 @@ static int validate_file_exists(const char *filename) {
     // printf("Found file\n");
     return 1;
 }
+
 
 static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, char ***user_flags, size_t *file_count, size_t *flag_count, char **output, char **compile_cmd, char **final_cmd, char **data, size_t data_count) {
     json_t *default_output_obj = json_object_get(linux_lang_obj, "default_output");
@@ -100,7 +103,7 @@ static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, cha
     *final_cmd = parse_compile_command(*compile_cmd, (const char**) *user_flags, *flag_count, *output, (const char**)*input_files, *file_count);
     return *final_cmd ? 0 : -1;
 }
-
+#ifdef __linux__
 static int run_single_file_compile(json_t *linux_lang_obj, char *input, char *output) {
     json_t *compile_cmd_obj = json_object_get(linux_lang_obj, "compile_cmd");
     if (!json_is_string(compile_cmd_obj)) return -1;
@@ -198,7 +201,12 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
             {
                 free(lang);
                 // printf("Error here\n");
+                #ifdef __linux__
                 int exit_code = WEXITSTATUS(result);  // Get actual GCC return code
+                #else
+                printf("ERROR: You should not be seeing this output here %s:%d if you are not on linux, please inspect your code\n",__func__,__LINE__);
+                int exit_code = -1;
+                #endif
                 return exit_code;
             } 
         } else {
@@ -228,3 +236,6 @@ int compile_linux(char **data, char *lang_in, size_t data_count) {
     // printf("Done compile\n");
     return 0;
 }
+#else
+static int extract_compile_data(json_t *linux_lang_obj, char ***input_files, char ***user_flags, size_t *file_count, size_t *flag_count, char **output, char **compile_cmd, char **final_cmd, char **data, size_t data_count)__attribute__((unused));
+#endif

@@ -358,7 +358,7 @@ int execute(char **commands,size_t command_count_in)
         else {
             if(var_set == true)
             {
-                variable_t *new_var = (variable_t *)malloc(sizeof(new_var));
+                // variable_t *new_var = (variable_t *)malloc(sizeof(variable_t));
                 strcpy(all_vars[num_current_vars].name, var_name);
                 all_vars[num_current_vars].value = strdup(command_name); // strdup allocates value
                 num_current_vars++;
@@ -376,7 +376,7 @@ int execute(char **commands,size_t command_count_in)
         if(ret != 0)
         {
             current_command_index--;
-            printf("Failed execution at line %ld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
+            printf("Failed execution at line %lld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
             for (size_t i = 0; i < og_cmd_size; i++)
             {
                 free(current_command_save[i]);

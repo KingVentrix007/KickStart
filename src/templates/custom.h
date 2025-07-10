@@ -28,7 +28,7 @@
 
 #ifdef _WIN32
 #include <direct.h>
-#warning "Using _mkdir for MKDIR on Windows"
+// #warning "Using _mkdir for MKDIR on Windows"
 #define MKDIR(path, mode) _mkdir(path)
 #else
 #include <sys/stat.h>

@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined(WIN32)
-
-#else
+#endif
+#ifdef __linux__
 #include <sys/types.h>
 #include <dirent.h>
 #include <fnmatch.h>
@@ -14,6 +14,7 @@ char **hnd_find_linux(char **parms, size_t parm_count, size_t *found_file_count)
 
 char **hnd_find(char **argv,size_t argc)
 {
+    #ifdef __linux__
     size_t num_found_files = 0;
     // printf("Doing alloc: %ld\n",argc);
     char **parms = malloc(argc+100);
@@ -45,5 +46,10 @@ char **hnd_find(char **argv,size_t argc)
     }
     free(parms);
     return return_values;
-    
+    #else
+    (void)argv;
+    (void)argc;
+    printf("Coming soon to windows\n");
+    return NULL;
+    #endif
 }
