@@ -376,7 +376,11 @@ int execute(char **commands,size_t command_count_in)
         if(ret != 0)
         {
             current_command_index--;
+            #ifdef __linux__
+            printf("Failed execution at line %ld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
+            #else
             printf("Failed execution at line %lld:(%s) with error %d\n",current_command_index,commands[current_command_index],ret);
+            #endif
             for (size_t i = 0; i < og_cmd_size; i++)
             {
                 free(current_command_save[i]);

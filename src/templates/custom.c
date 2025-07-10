@@ -839,17 +839,29 @@ int create_project(char *project_name, char *project_description, char *project_
 
         for (size_t i = 0; i < info.build_systems_count; i++)
         {
-            printf("%lld: %s\n",i,info.build_systems[i].name);
+            #ifdef __linux__
+            printf("%ld: %s\n",i,info.build_systems[i].name);
+            #else
+                printf("%lld: %s\n",i,info.build_systems[i].name);
+            #endif
 
         }
         printf("Please select a supported build system: ");
 
         size_t choice = 0;
-        scanf("%lld",&choice);
+        #ifdef __linux__
+            scanf("%ld",&choice);
+        #else
+            scanf("%lld",&choice);
+        #endif
         while(choice > info.build_systems_count)
         {
             printf("Invalid option: ");
-            scanf("%lld",&choice);
+            #ifdef __linux__
+                scanf("%ld",&choice);
+            #else
+                scanf("%lld",&choice);
+            #endif
         }
         char *build_script_path = info.build_systems[choice].path;
         build_script_build = info.build_systems[choice].build_command;
@@ -1149,7 +1161,12 @@ int create_project(char *project_name, char *project_description, char *project_
         printf("Compiler for language %s is not installed\n",project_language);
         for (size_t i = 0; i < info.compiler_urls_count; i++)
         {
-            printf("%lld: %s",i,info.compiler_urls[i]);
+            #ifdef __linux__
+                printf("%ld: %s",i,info.compiler_urls[i]);
+            #else
+                printf("%lld: %s",i,info.compiler_urls[i]);
+            #endif
+            
         }
         
     }
